@@ -13,9 +13,21 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from django.conf.urls import url,include
 from django.contrib import admin
-from django.urls import path
+from django.conf import settings
+from django.conf.urls import * 
+from django.views.static import serve
+from apps.users import urls
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    url(r'^admin/', admin.site.urls),
+    url(r'^',include(urls)),
+    # url(r'^',include('apps.inmueble.urls')),
 ]
+
+
+#este código es utilizado para subir archivos
+# urlpatterns += [
+#     url(r'^(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT, }),
+# ]
