@@ -7,6 +7,7 @@ db.sqlite3
 *.jpeg
 *.png
 *.gif
+!static/images/*
 .DS_Store
 inmobiliaria/settings/local.py
 # Windows image file caches
