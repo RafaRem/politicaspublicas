@@ -5,6 +5,14 @@ from django.dispatch import receiver
 # Create your models here.
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+    types=(
+        ('s', 'Super usuarios'),
+        ('a', 'Administrador'),
+        ('e', 'Enlace'),
+        ('i', 'Inspector')
+    )
+    telephone = models.CharField(max_length=30, blak=True)
+    tipo = models.CharField(max_length=30,choices=types)
     def definirCadena(self):
         cadena = ""
         return cadena.format()
