@@ -8,6 +8,7 @@ class Dependencia(models.Model):
     tipo = models.CharField(max_length=30, blank=True)
 
 class Departamento(models.Model):
-
     dependencia = models.ForeignKey(Dependencia,on_delete=models.CASCADE)
+    nombre = models.CharField(max_length=100)
+    encargado = models.CharField(max_length=100)
 
