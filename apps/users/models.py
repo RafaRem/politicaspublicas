@@ -11,7 +11,7 @@ class Profile(models.Model):
         ('e', 'Enlace'),
         ('i', 'Inspector')
     )
-    telephone = models.CharField(max_length=30, blak=True)
+    telephone = models.CharField(max_length=30, blank=True)
     tipo = models.CharField(max_length=30,choices=types)
     def definirCadena(self):
         cadena = ""
