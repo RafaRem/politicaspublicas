@@ -13,11 +13,11 @@ class ProgramaOperativo(models.Model):
     )
     nombre = models.CharField(max_length=100)
     descripcion = models.CharField(max_length=600)
-    tipoPrograma = models.CharField(max_lenght=30,choices=opcionesTipoPrograma)
+    tipoPrograma = models.CharField(max_length=30,choices=opcionesTipoPrograma)
     objetivos = models.CharField(max_length=600)
     estrategias = models.CharField(max_length=600)
     beneficiarios = models.CharField(max_length=600)
     justificacion = models.CharField(max_length=600)
-    problematicaSocial = models.CharField(max_lenth=600)
+    problematicaSocial = models.CharField(max_length=600)
     objetivoTransversal = models.ForeignKey(ObjetivoTransversal, on_delete=models.CASCADE)
     

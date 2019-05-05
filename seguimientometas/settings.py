@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'apps.users',
     'apps.dependencia',
     'apps.objetivoTransversal',
+    'apps.programaOperativo',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

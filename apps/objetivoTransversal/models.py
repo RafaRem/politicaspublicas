@@ -10,7 +10,7 @@ class ObjetivoTransversal(models.Model):
         ('4','Seguridad Ciudadana y Protección Civil'),
         ('5','Combate a la Corrupción y Participación Ciudadana')
     )
-    descripcion = models.CharField()
+    descripcion = models.CharField(max_length=300)
     meta = models.CharField(max_length=200,blank=True)
     estrategia = models.CharField(max_length=200, blank=True)
     ejeTransversal = models.CharField(max_length=30,choices=ejesTransversales)
