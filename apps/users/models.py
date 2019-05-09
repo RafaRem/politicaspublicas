@@ -9,12 +9,12 @@ from apps.dependencia.models import *
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     types=(
-        ('s', 'Super usuarios'),
+        ('s', 'Super usuario'),
         ('a', 'Administrador'),
         ('e', 'Enlace'),
         ('i', 'Inspector')
     )
-    dependencia = models.ForeignKey(Dependencia,on_delete=models.CASCADE)
+    dependencia = models.OneToOneField(Dependencia,blank=True, null=True, on_delete=models.CASCADE)
     telephone = models.CharField(max_length=30, blank=True)
     tipo = models.CharField(max_length=30,choices=types)
     #The auto_now_add will set the timezone.now() only when the instance is created, 
