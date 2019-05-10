@@ -3,6 +3,8 @@ from . import forms
 from django.views.generic import View
 from .forms import RegistrarPersona
 from .models import Persona
+from django.contrib import messages
+from django.shortcuts import redirect
 # Create your views here.a
 import time
 import json
@@ -12,6 +14,12 @@ from django.core import serializers
 # Create your views here.
 def index(request):
     return render(request,'sideBar/sidebar.html')
+
+
+class CalendarView(View):
+    def get(self,request, *args, **kwargs):
+        return render(request, 'users/calendario.html', { })
+
 
 def vista_registrar(request):
     if request.method=='POST':
@@ -41,8 +49,12 @@ class CharData(APIView):
         #Var
         labels = ['Nombres', 'Apellidos P', 'Apellidos M', 'Edades']
         default_items = [nom,apepat,apemat,ed]
+        title= 'Prueba'
+        fecha= '2019-05-10'
         data ={
         "labels": labels,
         "default": default_items,
+        "titulo": title,
+        "fecha":fecha,
         }
         return Response(data)
