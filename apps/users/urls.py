@@ -6,6 +6,7 @@ urlpatterns = [
     url(r'^registrar/',vista_registrar , name="registrar" ),
     url(r'^graficas/', GraficaView.as_view() , name="grafica" ),
     url(r'^data/', CharData.as_view()),
+    url(r'^calendario/', CalendarView.as_view() , name="calendar" ),
     # url(r'^login/', vista_login, name="login" ),
     # url(r'^usuarios/registrar',vista_registrar , name="registrar" ),
     # url(r'^logout/',vista_logout,name='logout'),
