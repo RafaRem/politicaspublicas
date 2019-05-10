@@ -1,0 +1,31 @@
+/* En el caso de los :hover solo se aplicará si son botones o links */
+.guinda{
+    background-color: rgb(155, 16, 30) !important;
+    border-color: rgb(155, 16, 30) !important;
+}
+button.guinda:hover{
+    background-color: rgb(176, 129, 134) !important;
+    border-color: rgb(176, 129, 134) !important;
+    color: white !important;
+}
+a.guinda:hover{
+    background-color: rgb(176, 129, 134) !important;
+    border-color: rgb(176, 129, 134) !important;
+    color: white !important;
+}
+.guinda-oscuro{
+    background-color: rgb(96, 2, 12) !important;
+    border-color: rgb(96, 2, 12) !important;
+}
+button.guinda-oscuro:hover{
+    background-color: rgb(176, 129, 134) !important;
+    border-color: rgb(176, 129, 134) !important;
+}
+a.guinda-oscuro{
+    background-color: rgb(176, 129, 134) !important;
+    border-color: rgb(176, 129, 134) !important;
+}
+.dorado{
+    background-color: rgb(224, 187, 117) !important;
+    border-color: rgb(224, 187, 117) !important;
+}

@@ -13,7 +13,7 @@ from rest_framework.response import Response
 from django.core import serializers
 # Create your views here.
 def index(request):
-    return render(request,'index.html')
+    return render(request,'sideBar/sidebar.html')
 
 
 class CalendarView(View):

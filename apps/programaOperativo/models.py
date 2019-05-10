@@ -20,4 +20,6 @@ class ProgramaOperativo(models.Model):
     justificacion = models.CharField(max_length=600)
     problematicaSocial = models.CharField(max_length=600)
     objetivoTransversal = models.ForeignKey(ObjetivoTransversal, on_delete=models.CASCADE)
+    def __str__(self):
+        return self.nombre
     
