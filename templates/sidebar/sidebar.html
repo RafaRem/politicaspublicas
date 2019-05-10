@@ -1,0 +1,106 @@
+{% extends "base/base.html" %}
+{% load staticfiles %}
+		{% block extracss %}
+    	<link rel="stylesheet" href="{%static 'css/sidebar/sideBar.css'%}">
+		{% endblock extracss %}
+
+{% block nav %}
+						<div class="wrapper">
+					<nav id="sidebar" class="guinda">
+						<div class="sidebar-header guinda">
+							<h3>BOOTSTRAP SIDEBAR</h3>
+						</div>
+						
+						
+						<ul class="list-unstyled components">
+							<p>Dummy Heading</p>
+							<li class="active guinda">
+								<a href="#homeSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle guinda">Home</a>
+								<ul class="collapse list-unstyled guinda" id="homeSubmenu">
+									<li>
+										<a class="guinda" href="#">home1</a>
+									</li>
+								</ul> 
+							</li>
+							
+							<li>
+								<a class="guinda" href="#">About</a>
+							</li>
+							<li>
+								<a class="guinda" href="#pageSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Page</a>
+								<ul class="collapse list-unstyled guinda" id="pageSubmenu">
+									<li>
+										<a class="guinda" href="#">page1</a>
+									</li>
+									<li>
+										<a class="guinda" href="#">page2</a>
+									</li>
+									<li>
+										<a class="guinda" href="#">page3</a>
+									</li>
+								</ul> 
+							</li>
+							<li>
+								<a class="guinda" href="#">Services</a>
+							</li>
+							<li>
+								<a class="guinda" href="#">Contact Us</a>
+							</li>
+						</ul>
+						
+						<ul class="list-unstyled CTAs">
+							<li>
+								<a class="guinda" href="#" class="download">Download code</a>
+							</li>
+							<li>
+								<a class="guinda" href="#" class="article">article</a>
+							</li>
+						</ul>
+					</nav>
+					
+					<div class="content">
+					
+					
+			<button type="button" id="sidebarCollapse" data-target="#" class="btn btn-info guinda-oscuro">
+				<i class="fa fa-align-justify"></i> <span></span>
+			</button>
+					
+
+
+					
+					</div>
+					
+					
+					
+					
+					
+				</div>
+
+
+
+
+{% endblock nav %}
+    
+
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    {% comment %} <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script> {% endcomment %}
+    {% block extrascripts %}
+		<script>
+	    $(document).ready(function(){
+			//ESTO HACE QUE EL SIDEBAR SE COLAPSE CON EL BOTÓN
+			$('#sidebarCollapse').on('click',function(){
+				$('#sidebar').toggleClass('active');
+			});
+		});  
+		//ESTO HACE QUE EL NAVBAR SE COLAPSE
+		$('#togglerNavBar').on('click', function() {
+			$('')
+		})
+	</script>
+		{% endblock extrascripts %}
+    
+    
