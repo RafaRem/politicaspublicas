@@ -1,6 +1,6 @@
 #coding: utf-8
 from django import forms
-from .models import Persona
+from .models import Persona, User
 from django.core import validators
 
 class RegistrarPersona(forms.ModelForm):
@@ -18,4 +18,9 @@ class RegistrarPersona(forms.ModelForm):
             'apellidomaterno':'Apellido Materno',
             'edad': 'Edad',
         }
+
+class UsuariosForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = '__all__'
      

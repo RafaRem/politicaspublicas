@@ -1,5 +1,5 @@
 from django.db import models
-from apps.objetivoTransversal.models import *
+from apps.objetivo.models import *
 
 # Create your models here.
 class ProgramaOperativo(models.Model):
@@ -19,7 +19,7 @@ class ProgramaOperativo(models.Model):
     beneficiarios = models.CharField(max_length=600)
     justificacion = models.CharField(max_length=600)
     problematicaSocial = models.CharField(max_length=600)
-    objetivoTransversal = models.ForeignKey(ObjetivoTransversal, on_delete=models.CASCADE)
+    objetivo = models.ForeignKey(Objetivo, on_delete=models.CASCADE)
     def __str__(self):
         return self.nombre
     

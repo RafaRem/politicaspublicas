@@ -1,24 +1,35 @@
 from django.shortcuts import render
+#forms
 from . import forms
+from .forms import UsuariosForm
+#Views
 from django.views.generic import View
 from .forms import RegistrarPersona
+from rest_framework.views import APIView
+#Models
 from .models import Persona
 from django.contrib import messages
 from django.shortcuts import redirect
 # Create your views here.a
 import time
 import json
-from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.core import serializers
 # Create your views here.
 def index(request):
-    return render(request,'sideBar/sidebar.html')
+    return render(request,'index.html')
 
 
 class CalendarView(View):
     def get(self,request, *args, **kwargs):
         return render(request, 'users/calendario.html', { })
+
+
+class UsuarioView(View):
+    def get(self, request):
+        return render(request, 'index.html')
+
+
 
 
 def vista_registrar(request):
