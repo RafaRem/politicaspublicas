@@ -3,6 +3,7 @@ from django.shortcuts import render,redirect
 from django.contrib.auth import login,logout,authenticate
 from django.core import serializers
 from django.contrib import messages
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse, HttpResponseBadRequest
 # decorators for login
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
@@ -127,9 +128,9 @@ def report(request):
 
     #Header
     c.setLineWidth(.3)
-    c.drawImage("Ayuntamiento.jpg", 30, 750, width=70, height=70)
-    c.drawImage("Ahome.png", 390, 750, width=170, height=60)
-    c.drawImage("Marca.jpg", 65, 0, width=530, height=450)
+    c.drawImage("static/images/Ayuntamiento.jpg", 30, 750, width=70, height=70)
+    c.drawImage("static/images/Ahome.png", 390, 750, width=170, height=60)
+    c.drawImage("static/images/Marca.jpg", 65, 0, width=530, height=450)
     c.setFont('Helvetica',14)
     c.drawString(30,730,'Dirección de Planeación e Innovación Gubernamental')
     c.setFont('Helvetica',12)
