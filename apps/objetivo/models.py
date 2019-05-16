@@ -14,6 +14,7 @@ class Objetivo(models.Model):
         ('t', 'Transversal'),
         ('e', 'Estratégico')
     )
+    numero = models.CharField(max_length=30,blank=True)
     nombre = models.CharField(max_length=100,blank=True)
     tipo = models.CharField(max_length=30,choices=opcionesTipoObjetivo)
     descripcion = models.CharField(max_length=300, blank=True)
@@ -21,7 +22,7 @@ class Objetivo(models.Model):
     estrategia = models.CharField(max_length=200, blank=True)
     ejeTransversal = models.CharField(max_length=30,choices=opcionesEjesTransversales)
     def __str__(self):
-        return self.nombre
+        return self.numero + ',' + self.nombre
     
 
 #Esta clase es utilizada para incluir a varias dependencias en los objetivos transversales

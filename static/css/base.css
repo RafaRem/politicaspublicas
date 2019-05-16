@@ -4,8 +4,15 @@ html{
     padding: 0px;
 }
 body{
+    background:  rgb(96, 2, 12) !important;
     height: 100%;
     width: 100%;
+}
+
+
+
+.container{
+    background: white !important;
 }
 
 .animated {

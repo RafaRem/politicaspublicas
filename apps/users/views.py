@@ -41,9 +41,9 @@ class UsuarioView(View):
 
 class LoginView(View):
     def post(self,request):
-        username= str(request.POST['username']).lower()
+        username = str(request.POST['usuario']).lower()
         password = str(request.POST['pass'])
-        if username and password:
+        if username:
             user = authenticate(username=username,password=password)
             login(request,user)
             return redirect(request.path) 
@@ -51,7 +51,8 @@ class LoginView(View):
         return render(request,"users/login.html")
         pass
     def get(self,request):
-        if request.user.is_authenticated():
+        # print(request.user.is_authenticated)
+        if request.user.is_authenticated:
             return redirect('index')
         return render(request,"users/login.html")
         pass

@@ -1,12 +1,12 @@
 .container{
-    -webkit-box-shadow: -5px 3px 58px 8px rgba(0,0,0,0.8);
-    -moz-box-shadow: -5px 3px 58px 8px rgba(0,0,0,0.8);
-    box-shadow: -5px 3px 58px 8px rgba(0,0,0,0.8);
+    -webkit-box-shadow: -1px 1px 6px 7px rgba(71,0,7,1);
+    -moz-box-shadow: -1px 1px 6px 7px rgba(71,0,7,1);
+    box-shadow: -1px 1px 6px 7px rgba(71,0,7,1);
     height: 70%;
     align-items: center;
     overflow-y: scroll;
     margin-top: 5% !important;
-    max-width: 50% !important;
+    max-width: 50% !important; 
 }
 
 
@@ -41,3 +41,7 @@
         height: 70%;
     }
  }
+
+ footer{
+    background: black !important;
+}
