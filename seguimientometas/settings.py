@@ -79,14 +79,15 @@ WSGI_APPLICATION = 'seguimientometas.wsgi.application'
 
 
 # Database
-# https://docs.djangoproject.com/en/2.2/ref/settings/#databases
+# http
+# s://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
 DATABASES = {
         'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'politicaspublicas',
         'USER': 'postgres',
-        'PASSWORD':'wi8h51u1',
+        'PASSWORD':'cetis107',
         'HOST':'localhost',
         'PORT':'',
     }

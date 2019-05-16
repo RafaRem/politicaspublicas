@@ -24,18 +24,7 @@
                    date = data.fecha
                    console.log(date)
                    console.log(title)
-                   setCalendar()
-                },
-               error: function(error_data){
-                   console.log("error")
-                   console.log(error_data)
-               }
-           
-           })
-           function setCalendar()
-           {
-          document.addEventListener('DOMContentLoaded', function() {
-                var calendarEl = document.getElementById('calendar');
+                   var calendarEl = document.getElementById('calendar');
 
                 var calendar = new FullCalendar.Calendar(calendarEl, {
                       plugins: [ 'interaction', 'dayGrid', 'timeGrid','timeline' ],
@@ -47,8 +36,8 @@
                 },
                     events: [
                       {
-                        title: data.titulo,
-                        start: data.fecha
+                        title: title,
+                        start: date
                       },
                       {
                         title: 'Evento largo',
@@ -59,9 +48,14 @@
                       });
                         calendar.render();
 
-                          
-                      });
-           }
+                },
+               error: function(error_data){
+                   console.log("error")
+                   console.log(error_data)
+               }
+           
+           })
+           
             })
 </script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
