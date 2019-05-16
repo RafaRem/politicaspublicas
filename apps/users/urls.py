@@ -1,11 +1,12 @@
 from django.conf.urls import url
 from apps.users.views import *
-from .views import vista_registrar
+from .views import vista_registrar, report
 urlpatterns = [
     url(r'^$', index, name="index" ),
     url(r'^registrar/',vista_registrar , name="registrar" ),
     url(r'^graficas/', GraficaView.as_view() , name="grafica" ),
     url(r'^data/', CharData.as_view()),
+    url(r'^reporte/', report, name='report'),
     url(r'^calendario/', CalendarView.as_view() , name="calendar" ),
     # url(r'^login/', vista_login, name="login" ),
     # url(r'^usuarios/registrar',vista_registrar , name="registrar" ),

@@ -79,7 +79,8 @@ WSGI_APPLICATION = 'seguimientometas.wsgi.application'
 
 
 # Database
-# https://docs.djangoproject.com/en/2.2/ref/settings/#databases
+# http
+# s://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
 DATABASES = {
         'default': {
