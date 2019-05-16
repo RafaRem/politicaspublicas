@@ -2,8 +2,9 @@ from django.conf.urls import url
 from apps.users.views import *
 from .views import vista_registrar, report
 urlpatterns = [
-    url(r'^$', index, name="index" ),
-    url(r'^registrar/',vista_registrar , name="registrar" ),
+    url(r'^$', IndexView.as_view(), name="index" ),
+    url(r'^login/',LoginView.as_view(), name="login" ),
+    url(r'^registrar/',vista_registrar, name="registrar" ),
     url(r'^graficas/', GraficaView.as_view() , name="grafica" ),
     url(r'^data/', CharData.as_view()),
     url(r'^reporte/', report, name='report'),
