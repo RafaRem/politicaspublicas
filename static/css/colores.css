@@ -17,6 +17,10 @@ a.guinda:hover{
     background-color: rgb(96, 2, 12) !important;
     border-color: rgb(96, 2, 12) !important;
 }
+.beige-alto{
+    background-color: rgb(178, 171, 154) !important;
+    border-color: rgb(178, 171, 154) !important;
+}
 button.guinda-oscuro:hover{
     background-color: rgb(176, 129, 134) !important;
     border-color: rgb(176, 129, 134) !important;

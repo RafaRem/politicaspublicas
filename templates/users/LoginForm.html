@@ -4,6 +4,22 @@
 {%endblock%}
 
 <div class="container">
+    <div class="row justify-content-center d-flex mt-3 mb-3">
+        <img src="{%static 'images/ahome.png'%}" alt="">
+    </div>
+    {% block messages %}
+		{% if messages %}
+			<ul class="messages">
+					{% for message in messages %}
+					<li{% if message.tags == "success" %} class="alert alert-success"
+				{%else%}
+				class="alert alert-danger"
+				{% endif %}>
+				{{ message }}</li>
+					{% endfor %}
+			</ul>
+		{% endif %}
+	{% endblock messages %}
     <form enctype="multipart/form-data" method="POST">
         {%csrf_token%}
         <h2 class="text-center">Iniciar sesión</h2>
@@ -18,7 +34,7 @@
             <div class="d-flex justify-content-center">
                 <a href="">¿Olvidaste la contraseña?</a>
             </div>
-        <div class="align-center d-flex justify-content-center">
+        <div class="align-center mt-3 d-flex justify-content-center">
                 
                 <button class="btn btn-primary guinda" type="submit">Iniciar sesión</button>
         </div>

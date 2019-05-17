@@ -4,6 +4,7 @@ from django.contrib.auth import login,logout,authenticate
 from django.core import serializers
 from django.contrib import messages
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse, HttpResponseBadRequest
+from django.contrib import messages
 # decorators for login
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
@@ -63,8 +64,14 @@ class LoginView(View):
         password = str(request.POST['pass'])
         if username:
             user = authenticate(username=username,password=password)
-            login(request,user)
-            return redirect(request.path) 
+            if user != None:
+                login(request,user)
+                return redirect(request.path) 
+            else:
+                messages.error(request,'Usuario o contraseña inválidos')
+                return redirect('login')
+                
+            
         print(request.POST['usuario'])
         return render(request,"users/login.html")
         pass

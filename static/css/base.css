@@ -4,12 +4,18 @@ html{
     padding: 0px;
 }
 body{
-    background:  rgb(96, 2, 12) !important;
+    background:  rgb(215, 208, 186) !important;
     height: 100%;
     width: 100%;
 }
 
+h2,input,label,h1{
+    font-family: 'Montserrat', sans-serif;
+}
+h2{
+    font-family: 'Montserrat', sans-serif;
 
+}
 
 .container{
     background: white !important;

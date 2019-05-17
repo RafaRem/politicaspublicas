@@ -9,6 +9,9 @@
  <link rel="stylesheet" href="{%static 'css/responsiveContainer.css'%}">
 {%endblock%}
 
+	{% block messages %}
+    {% endblock%}
+
 {% block content %}
 {%include "users/LoginForm.html"%}
 {% endblock content %}

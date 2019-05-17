@@ -32,4 +32,4 @@ class DetallesObjetivo(models.Model):
     class Meta:
         unique_together=('objetivo','dependencia')
     def __str__(self):
-        self.objetivo.nombre + ', ' + self.dependencia.nombre
+        return self.objetivo.nombre + ', ' + self.dependencia.nombre
