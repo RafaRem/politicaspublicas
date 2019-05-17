@@ -20,6 +20,7 @@ a.guinda:hover{
 .beige-alto{
     background-color: rgb(178, 171, 154) !important;
     border-color: rgb(178, 171, 154) !important;
+    color:black;
 }
 button.guinda-oscuro:hover{
     background-color: rgb(176, 129, 134) !important;
@@ -32,4 +33,26 @@ a.guinda-oscuro{
 .dorado{
     background-color: rgb(224, 187, 117) !important;
     border-color: rgb(224, 187, 117) !important;
+}
+
+.eje1{
+    background-color: rgb(60, 91, 80) !important;
+    border-color: rgb(60, 91, 80) !important;
+}
+.eje2{
+    background-color: rgb(133, 42, 71) !important;
+    border-color: rgb(133, 42, 71) !important;
+}
+.eje3{
+    background-color: rgb(87, 32, 52) !important;
+    border-color: rgb(87, 32, 52) !important;
+}
+.eje4{
+    background-color: rgb(175, 147, 96) !important;
+    border-color: rgb(175, 147, 96) !important;
+}
+
+.eje5{
+    background-color: rgb(81, 47, 44) !important;
+    border-color: rgb(81, 47, 44) !important;
 }

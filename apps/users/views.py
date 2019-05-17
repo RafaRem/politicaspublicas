@@ -36,15 +36,69 @@ from io import StringIO, BytesIO
 import time
 
 # Create your views here.
-def index(request):
-    return render(request,'index.html')
+
+ejes = [
+    {
+        'numero':'Eje I',
+        'nombre':'Desarrollo Integral',
+        'clase':'eje1'
+    },
+    {
+        'numero':'Eje II',
+        'nombre':'Desarrollo Social y Humano',
+        'clase':'eje2'
+    },
+    {
+        'numero':'Eje III',
+        'nombre':'Promoción Económica y Medio Ambiente',
+        'clase':'eje3'
+    },
+    {
+        'numero':'Eje IV',
+        'nombre':'Seguridad Ciudadana y Protección Civil',
+        'clase':'eje4'
+    },
+    {
+        'numero':'Eje V',
+        'nombre':'Combate a la Corrupción y Participación Ciudadana',
+        'clase':'eje5'
+    }
+]
 
 
 class IndexView(View):
+    ejes = [
+        {
+            'numero':'Eje I',
+            'nombre':'Desarrollo Integral',
+            'clase':'eje1'
+        },
+        {
+            'numero':'Eje II',
+            'nombre':'Desarrollo Social y Humano',
+            'clase':'eje2'
+        },
+        {
+            'numero':'Eje III',
+            'nombre':'Promoción Económica y Medio Ambiente',
+            'clase':'eje3'
+        },
+        {
+            'numero':'Eje IV',
+            'nombre':'Seguridad Ciudadana y Protección Civil',
+            'clase':'eje4'
+        },
+        {
+            'numero':'Eje V',
+            'nombre':'Combate a la Corrupción y Participación Ciudadana',
+            'clase':'eje5'
+        }
+]
     template_name = 'users/login.html'
     @method_decorator(login_required(login_url='login'))
     def get(self,request, *args, **kwargs):
-        return render(request,'index.html')
+        print(self.ejes)
+        return render(request,'index.html',{'ejes':self.ejes})
 
 
 class CalendarView(View):

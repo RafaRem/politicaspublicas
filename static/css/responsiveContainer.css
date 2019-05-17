@@ -1,3 +1,7 @@
+body{
+    background-color: rgb(96, 2, 12) !important;
+}
+
 .container{
     -webkit-box-shadow: -1px 1px 6px 7px rgba(71,0,7,1);
     -moz-box-shadow: -1px 1px 6px 7px rgba(71,0,7,1);
