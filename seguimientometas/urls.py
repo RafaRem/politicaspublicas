@@ -19,10 +19,12 @@ from django.conf import settings
 from django.conf.urls import * 
 from django.views.static import serve
 from apps.users import urls as usersUrls
+from apps.programaOperativo import urls  as ProgramUrls
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^',include(usersUrls)),
+    #url(r'^',include(ProgramUrls)),
     # url(r'^',include('apps.inmueble.urls')),
 ]
 

@@ -40,3 +40,4 @@ class Persona(models.Model):
     apellidopaterno= models.CharField(max_length=30, blank=True)
     apellidomaterno = models.CharField(max_length=30, blank=True)
     edad = models.IntegerField(blank=True)   
+    

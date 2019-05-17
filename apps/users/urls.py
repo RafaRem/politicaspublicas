@@ -1,5 +1,6 @@
 from django.conf.urls import url
 from apps.users.views import *
+from apps.programaOperativo.views import Actividad
 from .views import vista_registrar, report
 urlpatterns = [
     url(r'^$', IndexView.as_view(), name="index" ),
@@ -9,6 +10,7 @@ urlpatterns = [
     url(r'^data/', CharData.as_view()),
     url(r'^reporte/', report, name='report'),
     url(r'^calendario/', CalendarView.as_view() , name="calendar" ),
+    url(r'^RegistroActividad/', Actividad, name="Regactividad" ),
     # url(r'^login/', vista_login, name="login" ),
     # url(r'^usuarios/registrar',vista_registrar , name="registrar" ),
     # url(r'^logout/',vista_logout,name='logout'),

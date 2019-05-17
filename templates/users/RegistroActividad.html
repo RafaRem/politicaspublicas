@@ -1,0 +1,92 @@
+{%extends 'base/base.html'%}
+{% load staticfiles %}
+{% block extracss %}
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css" />
+<style>
+#btn_registrar
+{
+    background-color:#efb810 ;
+}
+body
+{
+background-color: black;
+}
+#id_frm_registrar
+{
+color: white;
+}
+</style>
+{% endblock %}
+{% block extrascripts %}
+<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+<script src="http://code.jquery.com/ui/1.10.1/jquery-ui.js"></script>
+<script>
+$(function () {
+$("#datepicker").datepicker();
+$('#datepicker2').datepicker();
+});
+</script>
+{% endblock %}
+{%block content%}
+<div  class="container col-lg-9 col-md-12">
+    <form  method="POST">
+        {%csrf_token%}
+        <div class="form-group">
+            <br>
+            <h4 align="center">Registro de Actividades</h4>
+                <br>
+                <br>
+            <label class="form-control-label">
+                Usuario*
+            </label>
+            <input maxlength="30" name="user" class="col-lg-9 col-md-12 form-control" type="text">
+            <strong style="color:red;font-size: 11;visibility: hidden;"></strong>
+        </div>
+        
+        <div class="form-group" >
+            <label  class="form-control-label">
+                Programa Operativo*
+            </label>
+            <input maxlength="30" class="col-lg-9 col-md-12 form-control"  name="programaoperativo" type="text">
+            <strong  style="color:red;font-size: 11;visibility: hidden;"></strong>
+        </div>
+        
+        <div class="form-group" >
+                <label  class="form-control-label">
+                Nombre*
+                </label>
+                <input maxlength="18" class="col-lg-9 col-md-12 form-control"  name="nombre" type="text">
+        </div>
+        <br>
+        <div class="form-group">
+                    <label for="descprom">Descripción del Programa*</label>
+                    <textarea name="descripcion" class="form-control" id="descprom" rows="3"></textarea>
+        </div>
+        <br>
+        <label  class="form-control-label">
+                Fecha Inicial*
+        </label>
+        <div id="datepicker" name="fecha_in"></div>
+        <br>
+        <br>
+        <label  class="form-control-label">
+                Fecha de Término*
+        </label>
+        <div id="datepicker2" name="fecha_fi"></div>
+        <br>
+        <br>
+        <div style="text-align: center;">
+            <button id="btn_registrar" class="btn btn-success" type="submit" value="Entrar"><i class="fa fa-cloud"></i>  Aceptar</button>
+        </div>
+        <br>
+        <br>
+        <br>
+    </form>
+    
+</div>
+
+{%endblock%}
+
+{%block scripts%}
+
+{%endblock%}
