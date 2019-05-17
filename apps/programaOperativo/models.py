@@ -1,5 +1,6 @@
 from django.db import models
 from apps.objetivo.models import *
+from django.contrib.auth.models import User
 
 # Create your models here.
 class ProgramaOperativo(models.Model):
@@ -23,3 +24,13 @@ class ProgramaOperativo(models.Model):
     def __str__(self):
         return self.nombre
     
+
+class Actividad(models.Model):
+    user = models.ForeignKey(User, on_delete= models.CASCADE)
+    programaoperativo = models.ForeignKey(ProgramaOperativo, on_delete = models.CASCADE)
+    nombre = models.CharField(max_length=100)
+    descripcion = models.TextField(max_length=300)
+    fecha_in = models.DateField()
+    fecha_fi = models.DateField()
+    def __str__(self):
+        return self.nombre

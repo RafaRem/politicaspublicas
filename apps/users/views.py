@@ -16,7 +16,7 @@ from .forms import RegistrarPersona
 from rest_framework.views import APIView
 #Models
 from .models import Persona
-# Create your views here.a
+#Create your views here.a
 import time
 import json
 from rest_framework.response import Response
