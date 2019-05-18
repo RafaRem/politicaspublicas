@@ -8,3 +8,13 @@ admin.site.register(Raiz)
 class DependenciaAdmin(admin.ModelAdmin):
     list_display = ('nombre', 'tipo')
     search_fields = ('nombre', 'tipo')
+    filter_horizontal = ('adscrita',)
+    # fieldsets = (
+    #     ('Dependencia', {
+    #         "fields": (
+    #             'nombre',
+    #             'tipo'
+    #         ),
+    #     }),
+    # )
+    

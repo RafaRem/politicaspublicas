@@ -1,5 +1,6 @@
 from django.db import models
 from apps.objetivo.models import *
+from apps.dependencia.models import *
 from django.contrib.auth.models import User
 
 # Create your models here.
@@ -20,14 +21,15 @@ class ProgramaOperativo(models.Model):
     beneficiarios = models.CharField(max_length=600)
     justificacion = models.CharField(max_length=600)
     problematicaSocial = models.CharField(max_length=600)
-    objetivo = models.ForeignKey(Objetivo, on_delete=models.CASCADE)
+    objetivo = models.ForeignKey(Objetivo, on_delete=models.PROTECT)
+    dependencia = models.ForeignKey(Dependencia, on_delete=models.PROTECT)
     def __str__(self):
         return self.nombre
     
 
 class Actividad(models.Model):
-    user = models.ForeignKey(User, on_delete= models.CASCADE)
-    programaoperativo = models.ForeignKey(ProgramaOperativo, on_delete = models.CASCADE)
+    user = models.ForeignKey(User, on_delete= models.PROTECT)
+    programaoperativo = models.ForeignKey(ProgramaOperativo, on_delete = models.PROTECT)
     nombre = models.CharField(max_length=100)
     descripcion = models.TextField(max_length=300)
     fecha_in = models.DateField()

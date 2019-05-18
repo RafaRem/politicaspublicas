@@ -27,8 +27,8 @@ class Objetivo(models.Model):
 
 #Esta clase es utilizada para incluir a varias dependencias en los objetivos transversales
 class DetallesObjetivo(models.Model):
-    objetivo = models.ForeignKey(Objetivo,on_delete=models.CASCADE)
-    dependencia = models.ForeignKey(Dependencia,on_delete=models.CASCADE)
+    objetivo = models.ForeignKey(Objetivo,on_delete=models.PROTECT)
+    dependencia = models.ForeignKey(Dependencia,on_delete=models.PROTECT)
     class Meta:
         unique_together=('objetivo','dependencia')
     def __str__(self):

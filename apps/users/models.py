@@ -7,16 +7,19 @@ from apps.dependencia.models import *
 
     #Proxy model que extiende el perfil de usuarios
 class Profile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.PROTECT)
     types=(
         ('s', 'Super usuario'),
         ('a', 'Administrador'),
         ('e', 'Enlace'),
         ('i', 'Inspector')
     )
-    dependencia = models.OneToOneField(Dependencia,blank=True, null=True, on_delete=models.CASCADE)
-    telephone = models.CharField(max_length=30, blank=True)
-    tipo = models.CharField(max_length=30,choices=types)
+    dependencia = models.OneToOneField(Dependencia,blank=True, null=True, on_delete=models.PROTECT,verbose_name='Dependencia a la que pertenece')
+    nombre = models.CharField(max_length=30, verbose_name='Nombre')
+    apellido = models.CharField(max_length=30, verbose_name='Apellido(s)')
+    telephone = models.CharField(max_length=30, blank=True, verbose_name='Teléfono')
+    correo = models.EmailField(max_length=40,verbose_name='Correo electrónico')
+    tipo = models.CharField(max_length=30,choices=types,verbose_name='Tipo de usuario')
     #The auto_now_add will set the timezone.now() only when the instance is created, 
     # and auto_now will update the field everytime the save method is called.
     created = models.DateTimeField(auto_now_add=True)
