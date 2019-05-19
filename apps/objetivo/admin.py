@@ -1,6 +1,6 @@
 from django.contrib import admin
 # Register your models here.
-from apps.objetivo.models import Objetivo, DetallesObjetivo
+from apps.objetivo.models import Objetivo
 
 @admin.register(Objetivo)
 class ObjetivoAdmin(admin.ModelAdmin):
@@ -10,9 +10,6 @@ class ObjetivoAdmin(admin.ModelAdmin):
     search_fields = ('nombre', 'tipo', 'numero')
     # actions = [make_published]
 
-@admin.register(DetallesObjetivo)
-class DetallesObjetivoAdmin(admin.ModelAdmin):
-    list_display = ['objetivo', 'dependencia']
 
 
 

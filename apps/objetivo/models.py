@@ -24,13 +24,3 @@ class Objetivo(models.Model):
     dependencia = models.ManyToManyField(Dependencia,blank=True)
     def __str__(self):
         return self.numero + ',' + self.nombre
-    
-
-#Esta clase es utilizada para incluir a varias dependencias en los objetivos transversales
-class DetallesObjetivo(models.Model):
-    objetivo = models.ForeignKey(Objetivo,on_delete=models.PROTECT)
-    dependencia = models.ForeignKey(Dependencia,on_delete=models.PROTECT)
-    class Meta:
-        unique_together=('objetivo','dependencia')
-    def __str__(self):
-        return self.objetivo.nombre + ', ' + self.dependencia.nombre
