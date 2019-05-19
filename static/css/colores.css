@@ -56,3 +56,17 @@ a.guinda-oscuro{
     background-color: rgb(81, 47, 44) !important;
     border-color: rgb(81, 47, 44) !important;
 }
+
+.blanquito{
+    background-color: #f4f2ef !important;
+    border-color: #f4f2ef !important;
+}
+
+.text-dorado{
+    color: #b5ac8a !important;
+}
+
+.mitad-h3{
+    font-size: 1rem !important;
+    color: #f1f3f2 !important;
+}
