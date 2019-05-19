@@ -30,10 +30,18 @@ class ProgramaOperativo(models.Model):
 
 
 class Actividad(models.Model):
+    opcionesEstado = (
+        ('p','Programada'),
+        ('r','Realizada')
+    )
     user = models.ForeignKey(User, on_delete= models.PROTECT)
-    programaoperativo = models.ForeignKey(ProgramaOperativo, on_delete = models.PROTECT)
+    programaOperativo = models.ForeignKey(ProgramaOperativo, on_delete = models.PROTECT)
     nombre = models.CharField(max_length=100)
     descripcion = models.TextField(max_length=300)
+    presupuestoProgramado = models.CharField(max_length=300)
+    presupuestoEjercido = models.CharField(max_length=300,blank=True, null=True)
+    personasInvolucradas = models.CharField(max_length=10,blank=True, null=True )
+    evidencia = models.FileField()
     fecha_in = models.DateField()
     fecha_fi = models.DateField()
     def __str__(self):
