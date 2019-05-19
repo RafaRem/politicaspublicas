@@ -1,5 +1,5 @@
 from django.conf.urls import url
-from .views import Actividad
+# from .views import Actividad
 urlpatterns = [
     
 ]

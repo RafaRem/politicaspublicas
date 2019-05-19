@@ -27,6 +27,8 @@ class ProgramaOperativo(models.Model):
         return self.nombre
     
 
+
+
 class Actividad(models.Model):
     user = models.ForeignKey(User, on_delete= models.PROTECT)
     programaoperativo = models.ForeignKey(ProgramaOperativo, on_delete = models.PROTECT)
