@@ -26,7 +26,7 @@ class Dependencia(models.Model):
     direccion = models.CharField(max_length=100, blank=True)
     telefono = models.CharField(max_length=100, blank=True)
     tipo = models.CharField(max_length=30, choices=opcionesTipo, blank=True)
-    adscrita = models.ManyToManyField(Raiz,blank=True)
+    adscrita = models.ForeignKey(Raiz,blank=True, null=True, on_delete=models.PROTECT)
     def __str__(self):
         return self.nombre
     

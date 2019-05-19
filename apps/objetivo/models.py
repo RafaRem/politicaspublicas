@@ -21,6 +21,7 @@ class Objetivo(models.Model):
     meta = models.CharField(max_length=200,blank=True)
     estrategia = models.CharField(max_length=1000, blank=True)
     ejeTransversal = models.CharField(max_length=300,choices=opcionesEjesTransversales)
+    dependencia = models.ManyToManyField(Dependencia,blank=True)
     def __str__(self):
         return self.numero + ',' + self.nombre
     

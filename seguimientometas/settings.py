@@ -85,7 +85,7 @@ WSGI_APPLICATION = 'seguimientometas.wsgi.application'
 DATABASES = {
         'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'politicaspublicas',
+        'NAME': 'prueba1',
         'USER': 'postgres',
         'PASSWORD':'wi8h51u1',
         'HOST':'localhost',
