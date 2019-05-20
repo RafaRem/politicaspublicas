@@ -14,7 +14,7 @@ class Objetivo(models.Model):
         ('t', 'Transversal'),
         ('e', 'Estratégico')
     )
-    numero = models.CharField(max_length=300,blank=True)
+    numero = models.CharField(max_length=300,blank=True, null=True)
     nombre = models.CharField(max_length=300,blank=True)
     tipo = models.CharField(max_length=300,choices=opcionesTipoObjetivo)
     descripcion = models.CharField(max_length=1000, blank=True)

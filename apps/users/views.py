@@ -232,3 +232,6 @@ def report(request):
     buffer.close()
     response.write(pdf)
     return response
+
+def vista_middleware_ejemplo(request):
+    return render("users/LoginForm.html")
