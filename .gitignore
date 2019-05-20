@@ -7,6 +7,7 @@ db.sqlite3
 *.jpeg
 *.png
 *.gif
+media/*
 !static/images/*
 .DS_Store
 inmobiliaria/settings/local.py

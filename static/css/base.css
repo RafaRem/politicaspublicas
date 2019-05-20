@@ -2,6 +2,8 @@ html{
     height: 100%;
     width: 100%;
     padding: 0px;
+    font-family: 'Arapey';
+
 }
 body{
     background:  rgb(215, 208, 186) !important;
