@@ -177,6 +177,12 @@ class CharData(APIView):
         return Response(data)
 
 
+@login_required
+def logout_view(request):
+    logout(request)
+    return redirect('login')
+
+
 def report(request):
     hour = timezone.localtime(timezone.now())
     formatedHour = hour.strftime("%H:%M:%S")
