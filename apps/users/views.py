@@ -17,6 +17,8 @@ from .forms import RegistrarPersona
 from rest_framework.views import APIView
 #Models
 from .models import Persona
+from apps.programaOperativo.models import Actividad
+from django.db.models import  *
 #Create your views here.a
 import time
 import json
@@ -101,9 +103,22 @@ class IndexView(View):
         return render(request,'index.html',{'ejes':self.ejes})
 
 
-class CalendarView(View):
-    def get(self,request, *args, **kwargs):
-        return render(request, 'users/calendario.html', { })
+def CalendarView(request):
+    matchs = Actividad.objects.all()
+    if request.method== 'POST':
+        srch = request.POST['srh']
+        
+        if srch:
+            match = Actividad.objects.filter(Q(nombre__icontains=srch))
+
+            contador = match.count()
+            if match: 
+                return render(request, 'users/calendario.html', {'actividad':match, 'contador': contador })
+            else:
+                messages.error(request,'Resultados no encontrados')    
+        else:
+            return HttpResponseRedirect('/calendario/')    
+    return render(request, 'users/calendario.html',{'actividad':matchs})
 
 
 class UsuarioView(View):

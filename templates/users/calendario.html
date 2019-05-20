@@ -8,6 +8,13 @@
 <link rel="stylesheet" href="https://fullcalendar.io/releases/core/4.1.0/main.min.css" >
 <link rel="stylesheet" href="https://fullcalendar.io/releases/daygrid/4.1.0/main.min.css">
 <link rel="stylesheet" href="https://fullcalendar.io/releases/timegrid/4.1.0/main.min.css">
+<style>
+#search-egresados
+{
+  width: 100px;
+	margin: 5px 0 0 850px;
+}
+</style>
 {% endblock %}
 {% block extrascripts %}
 <script>
@@ -29,22 +36,23 @@
                 var calendar = new FullCalendar.Calendar(calendarEl, {
                       plugins: [ 'interaction', 'dayGrid', 'timeGrid','timeline' ],
                       locale:'es',
+                      editable: true,
                       header: {
                       left: 'prev,next today',
                       center: 'title',
                       right: 'dayGridMonth,timeGridWeek,timeGridDay'
-                },
-                    events: [
-                      {
-                        title: title,
-                        start: date
-                      },
-                      {
-                        title: 'Evento largo',
-                        start: '2019-05-07',
-                        end: '2019-05-10'
-                      }
-                      ]
+                  },
+                      events: [
+                  {% for i in actividad %}
+                  {
+                      title: "{{ i.nombre}}",
+                      start: '{{ i.fecha_in|date:"Y-m-d" }}',
+                      end: '{{ i.fecha_fi|date:"Y-m-d" }}',
+
+                  },
+                  {% endfor %}
+
+                            ]
                       });
                         calendar.render();
 
@@ -76,13 +84,48 @@
 <br>
 <br>
 <br>
-<br>
-<br>
-<br>
-<br>
-<br>
 <form id="formulario" method="POST">
                 {%csrf_token%}
+                <h2 align="center">Calendario de Actividades</h2>
+                <br>
+                <br>
+                <div class="container col-lg-9 col-md-12"  id="Select1">
+                    <label for="exampleSelect1">Dependencia</label>
+                    <select name="srh" class="container col-lg-9 col-md-12">
+					  					<option >evento</option>
+                      <option>Dirección de Inspección y Normatividad</option>
+                      <option>Dirección de Asuntos Jurídicos</option>
+                      <option>Dirección de Comunicación Social</option>a
+                      <option>Dirección General de Seguridad Pública y Tránsito Municipal</option>
+                      <option>Dirección de Desarrollo Social y Humano</option>a
+                      <option>Dirección de Servicios Públicos</option>
+                      <option>Dirección de Salud Municipal</option>a
+                      <option>Dirección de Medio Ambiente y Desarrollo Urbano</option>
+                      <option>Dirección de Educación</option>a
+                      <option>Dirección de Egresos</option>
+                      <option>Dirección de Planeación e Innovación Gubernamental</option>a
+                      <option>Dirección de Administración</option>
+                      <option>Dirección de la Unidad de Transparencia</option>a
+                      <option>Dirección de Informática</option>
+                      <option>Coordinación Municipal de Protección Civil</option>a
+                      <option>Instituto Municipal de Arte y Cultura de Ahome</option>
+                      <option>Instituto Municipal del Deporte de Ahome</option>
+                      <option>Junta de Agua Potable y Alcantarillado del Municipio de Ahome</option>
+                      <option>Sistema DIF Ahome</option>
+                      <option>Dirección General de la Comisión Municipal de Desarrollo de Centros Poblados</option>
+                      <option>Instituto Municipal de las Mujeres de Ahome</option>
+                      <option>Instituto Municipal de Planeación de Ahome</option>
+                      <option>Instituto para la Prevención de Adicciones del Municipio de Ahome</option>
+                      <option>Dirección de Atención y Participación Ciudadana</option>
+                      <option>Dirección de Obras Públicas</option>
+                      <option>Instituto Municipal de la Juventud de Ahome</option>
+                    </select>
+            </div>
+            <button class="btn btn-secondary" id="search-egresados" type="submit">Buscar</button>
+            <br>
+            <br>
+            <h4 class="container col-lg-9 col-md-12">Número de actividades encontradas: {{contador}}</h4>
+            <br>
    <div class="container col-lg-9 col-md-12" url-endpoint='{% url "calendar" %}' id='calendar'></div>
 </form>
 <br>

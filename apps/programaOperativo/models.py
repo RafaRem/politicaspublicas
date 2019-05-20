@@ -40,7 +40,7 @@ class Actividad(models.Model):
     descripcion = models.TextField(max_length=300)
     presupuestoProgramado = models.CharField(max_length=300)
     presupuestoEjercido = models.CharField(max_length=300,blank=True, null=True)
-    personasInvolucradas = models.CharField(max_length=10,blank=True, null=True )
+    personasInvolucradas = models.CharField(max_length=10,blank=True, null=True)
     evidencia = models.FileField(blank=True, null=True)
     fecha_in = models.DateField()
     fecha_fi = models.DateField()
