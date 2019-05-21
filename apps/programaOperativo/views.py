@@ -3,9 +3,10 @@ from django.contrib import messages
 from django.views.generic import View
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-#Views
 from django.views.generic import View
 from apps.users.forms import RegistrarActividad
+"""Modelos"""
+from apps.programaOperativo.models import ProgramaOperativo
 # Create your views here.
 def Actividad(request):
     if request.method=='POST':
@@ -20,5 +21,6 @@ def Actividad(request):
 
 class ProgramasOperativos(View):
     def get(self, request):
+        programas = ProgramaOperativo.objects.filter()
         return render(request,'programasOperativos/list.html')
 
