@@ -19,11 +19,12 @@ from django.conf import settings
 from django.conf.urls.static  import static
 from django.views.static import serve
 from apps.users import urls as usersUrls
-from apps.programaOperativo import urls  as ProgramUrls
+from apps.programaOperativo import urls as posUrls
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^',include(usersUrls)),
+    url(r'^',include(posUrls)),
     #url(r'^',include(ProgramUrls)),
     # url(r'^',include('apps.inmueble.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

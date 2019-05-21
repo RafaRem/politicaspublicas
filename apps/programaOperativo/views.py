@@ -1,5 +1,8 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
+from django.views.generic import View
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 #Views
 from django.views.generic import View
 from apps.users.forms import RegistrarActividad
@@ -14,3 +17,8 @@ def Actividad(request):
     else:
         form = RegistrarActividad()
     return render(request,'users/RegistroActividad.html',{})
+
+class ProgramasOperativos(View):
+    def get(self, request):
+        return render(request,'programasOperativos/list.html')
+
