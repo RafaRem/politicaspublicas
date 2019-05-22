@@ -48,7 +48,7 @@
 <body>
 
 	{% block nav %}
-		<nav class="navbar navbar-expand navbar-dark beige-alto static-top">
+		<nav class="navbar navbar-expand navbar-dark beige-alto static-top animated fadeIn">
 
     <a class="navbar-brand" href="{%url 'index'%}">
       <img class="A-PMD" src="{%static 'images/AAHOME.svg'%}" alt="">
@@ -59,8 +59,11 @@
     </button>
 
     <!-- Navbar Search -->
-    <form class="d-none d-md-inline-block form-inline ml-auto mr-0 mr-md-3 my-2 my-md-0">
-  
+    <form class="d-flex justify-content-center  ml-auto mr-auto">
+      <h3>
+        {%block navTitle%}
+        {%endblock%}
+      </h3>
     </form>
 
     <!-- Navbar -->
@@ -102,10 +105,10 @@
 	 <div id="wrapper">
 
     <!-- Sidebar -->
-    <ul class="sidebar sidebar-blanco navbar-nav">
+    <ul class="sidebar sidebar-blanco navbar-nav animated fadeIn">
       {#Si el usuario es diferente a ENLACE#}
       {% if request.user.profile.tipoUsuario != 'e' %}
-            <li class="nav-item active {% if request.resolver_match.url_name == "my_view_name" %}active{% endif %}">
+          <li class="nav-item active {% if request.resolver_match.url_name == "my_view_name" %}active{% endif %}">
               <a class="nav-link" href="{%url 'calendar'%}">
                 <i class="fas fa-fw fa-tachometer-alt"></i>
                 <span>Calendario</span>
@@ -269,10 +272,7 @@
 
   </div>
 
-  <!-- Scroll to Top Button-->
-  <a class="scroll-to-top rounded" href="#page-top">
-    <i class="fas fa-angle-up"></i>
-  </a>
+  
 {% endblock superContent %}
 
 

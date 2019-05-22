@@ -6,8 +6,12 @@
     <link rel="stylesheet" href="https://raw.githubusercontent.com/twbs/bootstrap-sass/master/assets/stylesheets/bootstrap/_glyphicons.scss">
 {% endblock extracss %}
 
+{%block title%}
+  Inicio
+{%endblock%}
+{%block navTitle%}
 
-
+{%endblock%}
 
 
 {% block content %}
@@ -23,7 +27,7 @@
                 <div class="card-body">
                   <div class="mr-5">
                       <h3>Plan Municipal de Desarrollo</h3>
-                      <div class="label-plan text-dorado">Ahome 2018 - 2021</div>
+                      <div class="mitad-h3">Ahome 2018 - 2021</div>
                   </div>
                 </div>
                 <a class="card-footer text-white clearfix small z-1" href="#">
@@ -35,7 +39,7 @@
               </div>
             </div>
           {% for eje in ejes %}
-          <div class="col-xl-4 col-sm-6 mb-3">
+          <div class="col-xl-4 col-sm-6 mb-3 animated fadeIn">
             <div class="card text-dorado {{eje.clase}} o-hidden h-100">
               <div class="card-body">
                 <div class="mr-5">

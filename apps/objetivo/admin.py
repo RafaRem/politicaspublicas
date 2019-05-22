@@ -7,7 +7,7 @@ class ObjetivoAdmin(admin.ModelAdmin):
     list_display = ['numero', 'nombre', 'tipo']
     ordering = ['numero']
     filter_horizontal = ('dependencia',)
-    search_fields = ('nombre', 'tipo', 'numero')
+    search_fields = ['nombre']
     # actions = [make_published]
 
 

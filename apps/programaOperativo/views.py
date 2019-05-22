@@ -5,6 +5,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.views.generic import View
 from apps.users.forms import RegistrarActividad
+from apps.objetivo.models import Objetivo
 """Modelos"""
 from apps.programaOperativo.models import ProgramaOperativo
 # Create your views here.
@@ -19,8 +20,13 @@ def Actividad(request):
         form = RegistrarActividad()
     return render(request,'users/RegistroActividad.html',{})
 
-class ProgramasOperativos(View):
+class ProgramasOperativosView(View):
     def get(self, request):
-        programas = ProgramaOperativo.objects.filter()
-        return render(request,'programasOperativos/list.html')
+        objetivos = Objetivo.objects.filter(dependencia=request.user.profile.dependencia)
+        programasOperativos = ProgramaOperativo.objects.filter(dependencia=request.user.profile.dependencia)
+        for objetivo in objetivos:
+            x = ProgramaOperativo.objects.filter(objetivo=objetivo)
+        return render(request,'programasOperativos/list.html',{
+            'objetivos':objetivos
+        })
 
