@@ -1,0 +1,24 @@
+{%extends 'base/base.html'%}
+{%load staticfiles%}
+{% load crispy_forms_tags %}
+{%block title%}
+  Programas Operativos
+{%endblock%}
+
+
+
+ {%block navTitle%}
+ Programas Operativos
+ {% endblock %}
+
+
+{% block content %}
+    {% csrf_token %}
+  <form action="" method="post">
+        {{ form|crispy }}
+  </form>
+
+
+{% endblock content %}
+
+

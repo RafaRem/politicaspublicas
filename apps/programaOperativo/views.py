@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.generic import View
 from apps.users.forms import RegistrarActividad
 from apps.objetivo.models import Objetivo
+from apps.programaOperativo.forms import ProgramaOperativoForm
 """Modelos"""
 from apps.programaOperativo.models import ProgramaOperativo
 # Create your views here.
@@ -20,13 +21,17 @@ def Actividad(request):
         form = RegistrarActividad()
     return render(request,'users/RegistroActividad.html',{})
 
+
 class ProgramasOperativosView(View):
-    def get(self, request):
-        objetivos = Objetivo.objects.filter(dependencia=request.user.profile.dependencia)
-        programasOperativos = ProgramaOperativo.objects.filter(dependencia=request.user.profile.dependencia)
-        for objetivo in objetivos:
-            x = ProgramaOperativo.objects.filter(objetivo=objetivo)
-        return render(request,'programasOperativos/list.html',{
-            'objetivos':objetivos
+    def get(self, request, idPo):
+        print(idPo)
+        form = ProgramaOperativoForm()
+        return render(request, 'programasOperativos/poForm.html',{
+            'form':form
         })
+    def post(self,request, idPo):
+        form = ProgramaOperativoForm(request.POST)
+        if form.is_valid():
+            form.save()
+            redirect('updateProgramaOperativo')
 
