@@ -24,7 +24,7 @@ import time
 import json
 from rest_framework.response import Response
 from django.core import serializers
-
+from datetime import datetime
 #Reporte
 from django.utils import timezone
 import os
@@ -104,21 +104,33 @@ class IndexView(View):
 
 
 def CalendarView(request):
+    #Model.objects.filter(fecha__range=(f_inicial, f_cierre) CONSULTA POR RANGO DE FECHAS
+    hour = timezone.localtime(timezone.now())
+    formatedDay  = hour.strftime("%Y/%m/%d")
+    date_object = datetime.strptime(formatedDay, '%Y/%m/%d')
     matchs = Actividad.objects.all()
     if request.method== 'POST':
         srch = request.POST['srh']
         
         if srch:
             match = Actividad.objects.filter(Q(nombre__icontains=srch))
-
+            
+            colores=[]
+            for i in match:
+                if (date_object.date() > i.fecha_in):
+                    colores+= ['red']
+                else:
+                    colores+= ['green']
+        
             contador = match.count()
+            evento =zip(match, colores)
             if match: 
-                return render(request, 'users/calendario.html', {'actividad':match, 'contador': contador })
+                return render(request, 'users/calendario.html', {'actividad':evento, 'contador': contador,'fecha': formatedDay,'color':colores})
             else:
                 messages.error(request,'Resultados no encontrados')    
         else:
             return HttpResponseRedirect('/calendario/')    
-    return render(request, 'users/calendario.html',{'actividad':matchs})
+    return render(request, 'users/calendario.html',{'actividad':matchs,'fecha': formatedDay})
 
 
 class UsuarioView(View):
@@ -182,12 +194,10 @@ class CharData(APIView):
         labels = ['Nombres', 'Apellidos P', 'Apellidos M', 'Edades']
         default_items = [nom,apepat,apemat,ed]
         title= 'Prueba'
-        fecha= '2019-05-10'
         data ={
         "labels": labels,
         "default": default_items,
         "titulo": title,
-        "fecha":fecha,
         }
         return Response(data)
 

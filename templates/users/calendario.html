@@ -22,6 +22,7 @@
            var endpoint = '/data/'
            var title = []
            var date = []
+           
            $.ajax({
                method: "GET",
                url: endpoint,
@@ -29,8 +30,7 @@
                {
                    title = data.titulo
                    date = data.fecha
-                   console.log(date)
-                   console.log(title)
+                   
                    var calendarEl = document.getElementById('calendar');
 
                 var calendar = new FullCalendar.Calendar(calendarEl, {
@@ -42,29 +42,35 @@
                       center: 'title',
                       right: 'dayGridMonth,timeGridWeek,timeGridDay'
                   },
+
                       events: [
-                  {% for i in actividad %}
+                  {% for i,j in actividad %}
                   {
                       title: "{{ i.nombre}}",
                       start: '{{ i.fecha_in|date:"Y-m-d" }}',
-                      end: '{{ i.fecha_fi|date:"Y-m-d" }}',
-
+                      end: '{{i.fecha_fi|date:"Y-m-d" }}',
+                      color: '{{j}}'
+                     
+                      
                   },
+      
                   {% endfor %}
-
-                            ]
+                  
+                            ],
+                                  
                       });
                         calendar.render();
-
+                   
                 },
                error: function(error_data){
                    console.log("error")
                    console.log(error_data)
                }
+               
            
            })
-           
             })
+    
 </script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script src="https://fullcalendar.io/releases/core/4.1.0/main.min.js"></script>
@@ -72,23 +78,26 @@
 <script src='https://fullcalendar.io/releases/daygrid/4.1.0/main.min.js'></script>
 <script src='https://fullcalendar.io/releases/timegrid/4.1.0/main.min.js'></script>
 
-<script>
-      
+{% comment %} <script>
+      $.each(colores, function (ind, elem) { 
+                      'eventColor': elem 
+                    });
 
-    </script>
+    </script> {% endcomment %}
     
            
 {% endblock %}
 
 {% block content %}
 <br>
-<br>
-<br>
 <form id="formulario" method="POST">
                 {%csrf_token%}
                 <h2 align="center">Calendario de Actividades</h2>
                 <br>
                 <br>
+                {% for key,value in color.items %}
+                    {{ value }}
+                {% endfor %}
                 <div class="container col-lg-9 col-md-12"  id="Select1">
                     <label for="exampleSelect1">Dependencia</label>
                     <select name="srh" class="container col-lg-9 col-md-12">
