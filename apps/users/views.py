@@ -17,6 +17,8 @@ from .forms import RegistrarPersona
 from rest_framework.views import APIView
 #Models
 from .models import Persona
+from apps.dependencia.models import Dependencia
+from apps.objetivo.models import Objetivo
 from apps.programaOperativo.models import Actividad
 from django.db.models import  *
 #Create your views here.a
@@ -109,9 +111,19 @@ def CalendarView(request):
     formatedDay  = hour.strftime("%Y/%m/%d")
     date_object = datetime.strptime(formatedDay, '%Y/%m/%d')
     matchs = Actividad.objects.all()
+    depend = Dependencia.objects.all()
+    objetiv = Objetivo.objects.all()
+    colores=[]
+    for i in matchs:
+        if (date_object.date() > i.fecha_in):
+            colores+= ['red']
+        else:
+            colores+= ['green']
+
+    evento =zip(matchs, colores)
+    contador = matchs.count()          
     if request.method== 'POST':
         srch = request.POST['srh']
-        
         if srch:
             match = Actividad.objects.filter(Q(nombre__icontains=srch))
             
@@ -125,12 +137,12 @@ def CalendarView(request):
             contador = match.count()
             evento =zip(match, colores)
             if match: 
-                return render(request, 'users/calendario.html', {'actividad':evento, 'contador': contador,'fecha': formatedDay,'color':colores})
+                return render(request, 'users/calendario.html', {'actividad':evento, 'contador': contador,'fecha': formatedDay,'color':colores,'depende':depend,'objetivo': objetiv})
             else:
                 messages.error(request,'Resultados no encontrados')    
         else:
             return HttpResponseRedirect('/calendario/')    
-    return render(request, 'users/calendario.html',{'actividad':matchs,'fecha': formatedDay})
+    return render(request, 'users/calendario.html',{'actividad':evento,'fecha': formatedDay, 'contador': contador,'depende':depend,'objetivo': objetiv})
 
 
 class UsuarioView(View):
