@@ -16,6 +16,7 @@ class Profile(models.Model):
     )
     dependencia = models.ForeignKey(Dependencia,blank=True, null=True, on_delete=models.CASCADE,verbose_name='Dependencia a la que pertenece')
     telephone = models.CharField(max_length=30, blank=True, verbose_name='Teléfono')
+    tipoUsuario = models.CharField(max_length=30,choices=types, verbose_name='Tipo de usuario')
     #The auto_now_add will set the timezone.now() only when the instance is created, 
     # and auto_now will update the field everytime the save method is called.
     created = models.DateTimeField(auto_now_add=True)

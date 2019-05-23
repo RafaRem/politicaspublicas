@@ -13,15 +13,23 @@ body{
 }
 
 h2,input,label,h1{
-    font-family: 'Arapey', sans-serif;
+    font-family: 'Arapey';
 }
 h2{
-    font-family: 'Arapey', sans-serif;
+    font-family: 'Arapey';
 
 }
 a{
     color: black;
 }
+ul{
+    font-family: 'Montserrat';
+}
+.A-PMD{
+    max-width: 40px;
+    max-height: 30px;
+}
+
 
 .sidebar-blanco{
     background-color: white !important;

@@ -1,17 +1,14 @@
 from django.conf.urls import url
 from apps.users.views import *
-from apps.programaOperativo.views import Actividad
-from .views import vista_registrar, report, CalendarView
 urlpatterns = [
     url(r'^$', IndexView.as_view(), name="index" ),
-    url(r'^login/',LoginView.as_view(), name="login" ),
-    url(r'^registrar/',vista_registrar, name="registrar" ),
-    url(r'^graficas/', GraficaView.as_view() , name="grafica" ),
-    url(r'^data/', CharData.as_view(), name='data'),
-    url(r'^reporte/', report, name='report'),
-    url(r'^calendario/', CalendarView , name="calendar" ),
-    url(r'^RegistroActividad/', Actividad, name="Regactividad" ),
-    url(r'^logout/',logout_view, name="logout" ),
+    url(r'^usuario/login/',LoginView.as_view(), name="login" ),
+    url(r'^usuario/registrar/',vista_registrar, name="registrar" ),
+    url(r'^usuario/graficas/', GraficaView.as_view() , name="grafica" ),
+    url(r'^usuario/data/', CharData.as_view(), name='data'),
+    url(r'^usuario/reporte/', report, name='report'),
+    url(r'^usuario/calendario/', CalendarView.as_view() , name="calendar" ),
+    url(r'^usuario/logout/',logout_view, name="logout" ),
     # url(r'^login/', vista_login, name="login" ),
     # url(r'^usuarios/registrar',vista_registrar , name="registrar" ),
     # url(r'^logout/',vista_logout,name='logout'),

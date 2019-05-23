@@ -1,0 +1,53 @@
+{% extends "base/base.html" %}
+{% load staticfiles %}
+
+{%block title%}
+  Objetivos
+{%endblock%}
+
+
+
+ {%block navTitle%}
+ Objetivos de {{request.user.profile.dependencia}}
+ {% endblock %}
+
+
+{% block content %}
+  
+  <div class="row">
+    {% for objetivo in objetivos %}
+        <div class="col-xl-4 col-sm-6 mb-3 animated fadeIn">
+          <div class="card text-dorado blanquito hidden h-100">
+            <div class="card-body">
+              <div class="mr-5">
+                  <h4>{{objetivo.numero}}.- {{objetivo.nombre}}</h4>
+                  <div class="mitad-h3">
+                    {% if objetivo.tipo == 'e' %}
+                      Objetivo estratégico
+                    {% else %}
+                      Objetivo transversal
+                    {% endif %}
+                  </div>
+              </div>
+            </div>
+            <a class="card-footer text-white clearfix small z-1" 
+            href="{%url 'listPoObjetivo' idObjetivo=objetivo.id%}">
+              <span class="float-left">Progoramas Operativos</span>
+              <span class="float-right">
+                <i class="fas fa-angle-right"></i>
+              </span>
+            </a>
+          </div>
+      </div>
+    {% endfor %}
+
+{% endblock content %}
+
+
+
+{%block extrascripts%}
+    <script src="{%static 'js/jquery.dataTables.min.js'%}"></script>
+
+    <script src="{%static 'js/dataTables.bootstrap4.min.js'%}"></script>
+
+{%endblock%}

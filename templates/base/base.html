@@ -6,7 +6,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-		<link href="https://fonts.googleapis.com/css?family=Arapey&display=swap" rel="stylesheet">
+    <link rel="shortcut icon" type="image/png" href="{%static 'images/Ayuntamiento.jpg'%}"/>
+
+    <link href="https://fonts.googleapis.com/css?family=Arapey&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat&display=swap" rel="stylesheet">
     <!-- CDN's -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
@@ -47,47 +50,30 @@
 	{% block nav %}
 		<nav class="navbar navbar-expand navbar-dark beige-alto static-top">
 
-    <a class="navbar-brand mr-1" href="{%url 'index'%}">Dirección de Planeación E Innovación Gubernamental</a>
+    <a class="navbar-brand" href="{%url 'index'%}">
+      <img class="A-PMD" src="{%static 'images/AAHOME.svg'%}" alt="">
+    </a>
 
     <button class="btn btn-link btn-sm text-white order-1 order-sm-0" id="sidebarToggle" href="#">
       <i class="fas fa-bars"></i>
     </button>
 
     <!-- Navbar Search -->
-    <form class="d-none d-md-inline-block form-inline ml-auto mr-0 mr-md-3 my-2 my-md-0">
-  
+    <form class="d-flex justify-content-center  ml-auto mr-auto">
+      <h3>
+        {%block navTitle%}
+        {%endblock%}
+      </h3>
     </form>
 
     <!-- Navbar -->
     <ul class="navbar-nav ml-auto ml-md-0">
-      <li class="nav-item dropdown no-arrow mx-1">
-        <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          <i class="fas fa-bell fa-fw"></i>
-          <span class="badge badge-danger">9+</span>
-        </a>
-        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="alertsDropdown">
-          <a class="dropdown-item" href="#">Action</a>
-          <a class="dropdown-item" href="#">Another action</a>
-          <div class="dropdown-divider"></div>
-          <a class="dropdown-item" href="#">Something else here</a>
-        </div>
-      </li>
-      <li class="nav-item dropdown no-arrow mx-1">
-        <a class="nav-link dropdown-toggle" href="#" id="messagesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          <i class="fas fa-envelope fa-fw"></i>
-          <span class="badge badge-danger">7</span>
-        </a>
-        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="messagesDropdown">
-          <a class="dropdown-item" href="#">Action</a>
-          <a class="dropdown-item" href="#">Another action</a>
-          <div class="dropdown-divider"></div>
-          <a class="dropdown-item" href="#">Something else here</a>
-        </div>
-      </li>
+   
+ 
       <li class="nav-item dropdown no-arrow">
         <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          <i class="fas fa-user-circle fa-fw"></i>
-        </a>
+          {{request.user.username}}  <i class="fas fa-user-circle fa-fw"></i>
+        </a> 
         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
           <a class="dropdown-item" href="#">Perfil</a>
           <div class="dropdown-divider"></div>
@@ -120,38 +106,44 @@
 
     <!-- Sidebar -->
     <ul class="sidebar sidebar-blanco navbar-nav">
-      <li class="nav-item active">
-        <a class="nav-link" href="{%url 'calendar'%}">
-          <i class="fas fa-fw fa-tachometer-alt"></i>
-          <span>Calendario</span>
-        </a>
-      </li>
-      <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="pagesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          <i class="fas fa-fw fa-folder"></i>
-          <span>Pages</span>
-        </a>
-        <div class="dropdown-menu" aria-labelledby="pagesDropdown">
-          <h6 class="dropdown-header">Login Screens:</h6>
-          <a class="dropdown-item" href="login.html">Login</a>
-          <a class="dropdown-item" href="register.html">Register</a>
-          <a class="dropdown-item" href="forgot-password.html">Forgot Password</a>
-          <div class="dropdown-divider"></div>
-          <h6 class="dropdown-header">Other Pages:</h6>
-          <a class="dropdown-item" href="404.html">404 Page</a>
-          <a class="dropdown-item" href="blank.html">Blank Page</a>
-        </div>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="{%url 'report'%}">
-          <i class="fas fa-fw fa-chart-area"></i>
-          <span>Reporte</span></a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="{%url 'grafica'%}">
-          <i class="fas fa-fw fa-table"></i>
-          <span>Gráficas</span></a>
-      </li>
+      {#Si el usuario es diferente a ENLACE#}
+      {% if request.user.profile.tipoUsuario != 'e' %}
+          <li class="nav-item active {% if request.resolver_match.url_name == "my_view_name" %}active{% endif %}">
+              <a class="nav-link" href="{%url 'calendar'%}">
+                <i class="fas fa-fw fa-tachometer-alt"></i>
+                <span>Calendario</span>
+              </a>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="pagesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <i class="fa fa-plus-square"></i>
+              <span>Actividades</span>
+            </a>
+            <div class="dropdown-menu" aria-labelledby="pagesDropdown">
+              <!-- <h6 class="dropdown-header">Actividades</h6> -->
+              <a class="dropdown-item" href="{%url 'nuevaActividad'%}">Nueva actividad</a>
+              <a class="dropdown-item" href="#">Ver tus Actividades</a>
+              <a class="dropdown-item" href="#">Sigue tus metas</a>
+            </div>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{%url 'report'%}">
+              <i class="fas fa-file"></i>
+              <span>Reporte</span></a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{%url 'grafica'%}">
+              <i class="fas fa-fw fa-chart-area"></i>
+              <span>Gráficas</span></a>
+          </li>
+
+      {% endif %}
+          <li class="nav-item">
+            <a class="nav-link" href="{%url 'listaObjetivos'%}">
+              <i class="fas fa-fw fa-chalkboard-teacher"></i>
+              <span>Nuestros objetivos</span></a>
+          </li>
+  
     </ul>
 
     <div id="content-wrapper">
@@ -277,10 +269,7 @@
 
   </div>
 
-  <!-- Scroll to Top Button-->
-  <a class="scroll-to-top rounded" href="#page-top">
-    <i class="fas fa-angle-up"></i>
-  </a>
+  
 {% endblock superContent %}
 
 

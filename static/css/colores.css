@@ -62,8 +62,8 @@ a.guinda-oscuro{
 }
 
 .blanquito{
-    background-color: #f4f2ef !important;
-    border-color: #f4f2ef !important;
+    background-color: #b16b33 !important;
+    border-color: #b16b33 !important;
 }
 
 .text-dorado{
@@ -73,4 +73,10 @@ a.guinda-oscuro{
 .mitad-h3{
     font-size: 1rem !important;
     color: #f1f3f2 !important;
+}
+
+.label-plan{
+    font-size: 1rem !important;
+    background-color: rgb(96, 2, 12) !important;
+
 }

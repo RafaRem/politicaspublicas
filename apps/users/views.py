@@ -4,7 +4,6 @@ from django.contrib.auth import login,logout,authenticate
 from django.core import serializers
 from django.contrib import messages
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse, HttpResponseBadRequest
-from django.contrib import messages
 # decorators for login
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
@@ -97,7 +96,7 @@ class IndexView(View):
             'nombre':'Combate a la Corrupción y Participación Ciudadana',
             'clase':'eje5'
         }
-]
+        ]
     template_name = 'users/login.html'
     @method_decorator(login_required(login_url='login'))
     def get(self,request, *args, **kwargs):
