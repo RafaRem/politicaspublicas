@@ -1,0 +1,59 @@
+{#PROGRAMAS OPERATIVOS POR OBJETIVO SELECCIONADO#}
+{%extends 'base/base.html'%}
+{%load staticfiles%}
+{% load crispy_forms_tags %}
+
+{%block extracss%}
+
+{%endblock%}
+
+
+
+
+{%block title%}
+  Programas Operativos
+{%endblock%}
+
+
+
+ {%block navTitle%}
+ {{objetivo.numero}}.- {{objetivo.nombre}}
+ {% endblock %}
+
+
+{% block content %}
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Acciones</th>
+                <th>
+                    <div class="d-flex justify-content-center">
+                    Datos llenados
+                    </div>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for programa in programas %}
+            <tr>
+                <td scope="row">{{programa.nombre}}</td>
+                <td>
+                    <a class="btn btn-primary guinda" 
+                    href="{%url 'postPo' idPo=programa.id%}">Editar</a>
+                </td>
+                <td>
+                    <div class="d-flex justify-content-center">
+                        {% if programa.descripcion %}
+                        <span class="badge badge-success"><i class="fa fa-check-circle"></i></span>
+                        {% else %}
+                        <span class="badge badge-danger"><i class="fa fa-times-circle"></i></span>
+                        {% endif %}
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+    
+        </tbody>
+    </table>
+{% endblock content %}

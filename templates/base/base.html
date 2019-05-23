@@ -48,7 +48,7 @@
 <body>
 
 	{% block nav %}
-		<nav class="navbar navbar-expand navbar-dark beige-alto static-top animated fadeIn">
+		<nav class="navbar navbar-expand navbar-dark beige-alto static-top">
 
     <a class="navbar-brand" href="{%url 'index'%}">
       <img class="A-PMD" src="{%static 'images/AAHOME.svg'%}" alt="">
@@ -105,7 +105,7 @@
 	 <div id="wrapper">
 
     <!-- Sidebar -->
-    <ul class="sidebar sidebar-blanco navbar-nav animated fadeIn">
+    <ul class="sidebar sidebar-blanco navbar-nav">
       {#Si el usuario es diferente a ENLACE#}
       {% if request.user.profile.tipoUsuario != 'e' %}
           <li class="nav-item active {% if request.resolver_match.url_name == "my_view_name" %}active{% endif %}">
@@ -132,12 +132,12 @@
           </li>
           <li class="nav-item">
             <a class="nav-link" href="{%url 'report'%}">
-              <i class="fas fa-fw fa-chart-area"></i>
+              <i class="fas fa-file"></i>
               <span>Reporte</span></a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="{%url 'grafica'%}">
-              <i class="fas fa-fw fa-table"></i>
+              <i class="fas fa-fw fa-chart-area"></i>
               <span>Gráficas</span></a>
           </li>
       {% endif %}
