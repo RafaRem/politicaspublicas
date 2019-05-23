@@ -22,9 +22,25 @@
  Programas Operativos
  {% endblock %}
 
+{%block messages%}
+
+{%endblock%}
+
 
 {% block content %}
   <div class="container">
+
+        {% if messages %}
+          <ul class="messages">
+              {% for message in messages %}
+              <li{% if message.tags == "success" %} class="alert alert-success"
+            {%else%}
+            class="alert alert-danger"
+            {% endif %}>
+            {{ message }}</li>
+              {% endfor %}
+          </ul>
+        {% endif %}
       <form action="" method="post">
             {% csrf_token %}
             {{ form|crispy }}

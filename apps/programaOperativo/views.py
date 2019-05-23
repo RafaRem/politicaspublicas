@@ -1,26 +1,18 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, reverse
 from django.contrib import messages
 from django.views.generic import View
-from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.views.generic import View
+"""Forms"""
 from apps.users.forms import RegistrarActividad
-from apps.objetivo.models import Objetivo
-from apps.programaOperativo.forms import ProgramaOperativoForm
+from apps.programaOperativo.forms import ProgramaOperativoForm, ActividadesForm
 """Modelos"""
 from apps.programaOperativo.models import ProgramaOperativo
 from apps.objetivo.models import Objetivo
+from apps.objetivo.models import Objetivo
 # Create your views here.
-def Actividad(request):
-    if request.method=='POST':
-        form = RegistrarActividad(request.POST)
-        if form.is_valid():
-                messages.success(request,"Registro con exito")
-                form.save()
-        return redirect("Regactividad")
-    else:
-        form = RegistrarActividad()
-    return render(request,'users/RegistroActividad.html',{})
+class ActividadFormView(View):
+    def get(request):
+        pass
 
 
 class ProgramasOperativosView(View):
@@ -36,7 +28,8 @@ class ProgramasOperativosView(View):
         if form.is_valid():
             form.save()
             messages.success(request,'Actualizado con éxito')
-            redirect('updateProgramaOperativo')
+            url = reverse('postPo',args=(idPo,))
+            return redirect(url)
 
 class ProgramasOperativosListView(View):
     def get(self,request, idObjetivo = 0):

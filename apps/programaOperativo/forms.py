@@ -15,5 +15,5 @@ class ActividadesForm(forms.ModelForm):
     class Meta:
         model = Actividad
         fields = '__all__'
-        exlude = ('presupuestoEjercido','personasInvolucradas',)
-    
+        exlude = ('presupuestoEjercido','personasInvolucradas','evidencia')
+

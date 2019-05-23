@@ -92,7 +92,7 @@ class IndexView(View):
             'nombre':'Combate a la Corrupción y Participación Ciudadana',
             'clase':'eje5'
         }
-]
+        ]
     template_name = 'users/login.html'
     @method_decorator(login_required(login_url='login'))
     def get(self,request, *args, **kwargs):

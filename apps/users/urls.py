@@ -1,6 +1,5 @@
 from django.conf.urls import url
 from apps.users.views import *
-from apps.programaOperativo.views import Actividad
 urlpatterns = [
     url(r'^$', IndexView.as_view(), name="index" ),
     url(r'^usuario/login/',LoginView.as_view(), name="login" ),
@@ -9,7 +8,6 @@ urlpatterns = [
     url(r'^usuario/data/', CharData.as_view(), name='data'),
     url(r'^usuario/reporte/', report, name='report'),
     url(r'^usuario/calendario/', CalendarView.as_view() , name="calendar" ),
-    url(r'^usuario/RegistroActividad/', Actividad, name="Regactividad" ),
     url(r'^usuario/logout/',logout_view, name="logout" ),
     # url(r'^login/', vista_login, name="login" ),
     # url(r'^usuarios/registrar',vista_registrar , name="registrar" ),
