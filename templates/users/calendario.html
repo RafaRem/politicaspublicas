@@ -2,7 +2,9 @@
 {% load staticfiles %}
 
 
-
+{%block navTitle%}
+ Calendario de Actividades
+ {% endblock %}
 
 {% block extracss %}
 <link rel="stylesheet" href="https://fullcalendar.io/releases/core/4.1.0/main.min.css" >
@@ -16,7 +18,71 @@
 }
 </style>
 {% endblock %}
+
+
+{% block content %}
+<br>
+<form id="formulario" method="POST">
+                {%csrf_token%}
+                <br>
+                <br>
+                <div class="container col-lg-9 col-md-12"  id="Select1">
+                    <label for="exampleSelect1">Dependencia</label>
+                    <select name="srh" class="container col-lg-9 col-md-12">
+                    <option>Todos</option>
+                      {% for i in depende  %}
+                            <option >{{i.nombre}}</option>
+                      {% endfor %}
+                    </select>
+                </div>
+            <button class="btn btn-secondary" id="search-egresados" type="submit">Buscar</button>
+            <br>
+            <br>
+            <h4 class="container col-lg-9 col-md-12">Número de actividades encontradas: {{contador}}</h4>
+            <br>
+   <div class="container col-lg-9 col-md-12" url-endpoint='{% url "calendar" %}' id='calendar'></div>
+
+<!-- Modal -->
+<div class="modal fade" id="ModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalCenterTitle">Actividad</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <label>Nombre:</label>
+        <p>{{ actividad.nombre }}</p>
+        <label>Descripción:</label>
+        <p>{{ actividad.descripcion }}</p>
+        <label>Programa Operativo:</label>
+        <p>{{ actividad.programaoperativo}}</p>
+        <label>Presupuesto Ejercido:</label>
+        <p>{{ actividad.presupuestoProgramado }}</p>
+        <label>Fecha Inicial:</label>
+        <p>{{ actividad.fecha_in }}</p>
+      </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Salir</button>
+        </div>
+      </div>
+  </div>
+</div>
+</form>
+<br>
+<br>
+<br>
+<br>
+
+{% endblock content %}
 {% block extrascripts %}
+<script src="https://fullcalendar.io/releases/core/4.1.0/main.min.js"></script>
+<script src='https://fullcalendar.io/releases/interaction/4.1.0/main.min.js'></script>
+<script src='https://fullcalendar.io/releases/daygrid/4.1.0/main.min.js'></script>
+<script src='https://fullcalendar.io/releases/timegrid/4.1.0/main.min.js'></script>
+
 <script>
         $(document).ready(function(){            
            var endpoint = '/usuario/data/'
@@ -42,23 +108,13 @@
                       center: 'title',
                       right: 'dayGridMonth,timeGridWeek,timeGridDay'
                   },
+                  
                   //Aquí empieza
-                  eventClick: function(info) {
-                        var eventObj = info.event;
-
-                        if (eventObj.url) {
-                            alert(
-                            'Clicked ' + eventObj.title + '.\n' +
-                            'Will open ' + eventObj.url + ' in a new tab'
-                            );
-
-                            window.open(eventObj.url);
-
-                            info.jsEvent.preventDefault(); // prevents browser from following link in current tab.
-                        } else {
-                            alert('Clicked ' + eventObj.title);
-                        }
-                        }, 
+                  eventClick: function(info) 
+                  {
+                        $("#ModalCenter").modal("show");
+                    
+                  }, 
                         //Aquí termina
 
                       events: [
@@ -90,52 +146,5 @@
             })
     
 </script>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-<script src="https://fullcalendar.io/releases/core/4.1.0/main.min.js"></script>
-<script src='https://fullcalendar.io/releases/interaction/4.1.0/main.min.js'></script>
-<script src='https://fullcalendar.io/releases/daygrid/4.1.0/main.min.js'></script>
-<script src='https://fullcalendar.io/releases/timegrid/4.1.0/main.min.js'></script>
 
 {% endblock %}
-
-{% block content %}
-<br>
-<form id="formulario" method="POST">
-                {%csrf_token%}
-                <h2 align="center">Calendario de Actividades</h2>
-                <br>
-                <br>
-                {% for key,value in color.items %}
-                    {{ value }}
-                {% endfor %}
-                <div class="container col-lg-9 col-md-12"  id="Select1">
-                    <label for="exampleSelect1">Dependencia</label>
-                    <select name="srh" class="container col-lg-9 col-md-12">
-					  		<option >evento</option>
-                      {% for i in depende  %}
-                            <option >{{i.nombre}}</option>
-                      {% endfor %}
-                    </select>
-                </div>
-                <div class="container col-lg-9 col-md-12"  id="Select2">
-                    <label for="exampleSelect1">Objetivo Transversal</label>
-                    <select name="srh" class="container col-lg-9 col-md-12">
-                      {% for j in objetivo  %}
-                            <option >{{j.nombre}}</option>
-                      {% endfor %}
-                    </select>
-                </div>
-            <button class="btn btn-secondary" id="search-egresados" type="submit">Buscar</button>
-            <br>
-            <br>
-            <h4 class="container col-lg-9 col-md-12">Número de actividades encontradas: {{contador}}</h4>
-            <br>
-   <div class="container col-lg-9 col-md-12" url-endpoint='{% url "calendar" %}' id='calendar'></div>
-</form>
-<br>
-<br>
-<br>
-<br>
-
-{% endblock content %}
-

@@ -27,7 +27,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
     '127.0.0.1',
-    '192.168.125.52'
+    '192.168.125.52',
+    '192.168.125.65'
 ]
 
 
@@ -88,7 +89,7 @@ WSGI_APPLICATION = 'seguimientometas.wsgi.application'
 DATABASES = {
         'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'politicaspublicas',
+        'NAME': 'prueba1',
         'USER': 'postgres',
         'PASSWORD':'cetis107',
         'HOST':'localhost',
