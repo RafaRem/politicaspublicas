@@ -5,7 +5,7 @@ class ProgramaOperativoForm(forms.ModelForm):
     class Meta:
         model = ProgramaOperativo
         fields = '__all__'
-        exclude = ('nombre','objetivo', 'dependencia',)
+        exclude = ('nombre','objetivo', 'dependencia', 'acciones',)
     def __init__(self, *args, **kwargs):
         super(ProgramaOperativoForm, self).__init__(*args, **kwargs)
         for key in self.fields:
@@ -15,5 +15,14 @@ class ActividadesForm(forms.ModelForm):
     class Meta:
         model = Actividad
         fields = '__all__'
-        exlude = ('presupuestoEjercido','personasInvolucradas','evidencia')
+        exclude = [
+            'acciones',
+            'programaoperativo',
+            'presupuestoEjercido',
+            'personasInvolucradas',
+            'evidencia',
+            'user',
+            'latitud',
+            'longitud',
+        ]
 
