@@ -111,7 +111,6 @@ def CalendarView(request):
     date_object = datetime.strptime(formatedDay, '%Y/%m/%d')
     matchs = Actividad.objects.all()
     depend = Dependencia.objects.all()
-    objetiv = Objetivo.objects.all()
     colores=[]
     for i in matchs:
         if (date_object.date() > i.fecha_in):
@@ -136,12 +135,12 @@ def CalendarView(request):
             contador = match.count()
             evento =zip(match, colores)
             if match: 
-                return render(request, 'users/calendario.html', {'actividad':evento, 'contador': contador,'fecha': formatedDay,'color':colores,'depende':depend,'objetivo': objetiv})
+                return render(request, 'users/calendario.html', {'actividad':evento, 'contador': contador,'fecha': formatedDay,'color':colores,'depende':depend})
             else:
                 messages.error(request,'Resultados no encontrados')    
         else:
             return HttpResponseRedirect('/calendario/')    
-    return render(request, 'users/calendario.html',{'actividad':evento,'fecha': formatedDay, 'contador': contador,'depende':depend,'objetivo': objetiv})
+    return render(request, 'users/calendario.html',{'actividad':evento,'fecha': formatedDay, 'contador': contador,'depende':depend})
 
 
 class UsuarioView(View):
