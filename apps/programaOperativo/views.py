@@ -64,17 +64,9 @@ class ActividadFormView(View):
             po = ProgramaOperativo.objects.get(id=request.POST.get('programaoperativo'))
             datos.programaoperativo = po
             datos.user = request.user
-            print(datos.user)
-            print(datos.programaoperativo)
-            print(datos.nombre)
-            print(datos.descripcion)
-            print(datos.presupuestoProgramado)
-            print(datos.fecha_in)
-            print(datos.fecha_fi)
-            print(datos.accion)
-            if datos.save():
-                messages.success(request, 'Actividad registrada con éxito.')
-
+            save = datos.save()
+            messages.success(request, 'Actividad registrada con éxito.')
+            redirect(request,'nuevaActividad')
         programasOperativos = ProgramaOperativo.objects.filter(
             dependencia=request.user.profile.dependencia.id
             )

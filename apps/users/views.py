@@ -201,7 +201,7 @@ class CharData(APIView):
         apemat = 7
         ed = 2
         #Var
-        labels = ['Nombres', 'Apellidos P', 'Apellidos M', 'Edades']
+        labels = ['IMDA', 'IMAC', 'SEDECO', 'IMJU']
         default_items = [nom,apepat,apemat,ed]
         title= 'Prueba'
         data ={
