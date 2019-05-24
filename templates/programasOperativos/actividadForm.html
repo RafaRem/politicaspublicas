@@ -1,6 +1,8 @@
 {%extends 'base/base.html'%}
+{%load staticfiles%}
 
 {%block extracss%}
+<link rel="stylesheet" href="{%static 'css/jquery-datepicker.scss'%}">
   <style>
     .container{
       background: none !important;
@@ -10,7 +12,6 @@
 
 
 
-{%load staticfiles%}
 {% load crispy_forms_tags %}
 {%block title%}
 Nueva actividad
@@ -80,9 +81,10 @@ Nueva actividad
 
 
 {%block extrascripts%}
+  <script src="{%static 'js/jquery-datepicker.js'%}"></script>
   <script>
   $(document).ready(()=>{
-    document.querySelector('#id_programaoperativo').addEventListener('change',()=>{
+      document.querySelector('#id_programaoperativo').addEventListener('change',()=>{
       /*   Cuando cambie el programa operativo    */
       programaOperativo = document.querySelector('#id_programaoperativo');
       idPo = programaOperativo.options[programaOperativo.selectedIndex].value;
@@ -100,6 +102,8 @@ Nueva actividad
         })
       })
       })
+      $('#id_fecha_in').datepicker();
+
 
 
 

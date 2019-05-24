@@ -4,13 +4,10 @@ from apps.dependencia.models import *
 from django.contrib.auth.models import User
 
 # Create your models here.
-
 class Acciones(models.Model):
     nombre = models.CharField(max_length=500)
     def __str__(self):
         return self.nombre
-    
-
 class ProgramaOperativo(models.Model):
     opcionesTipoPrograma=(
         ('i', 'Institucional'),
@@ -34,9 +31,6 @@ class ProgramaOperativo(models.Model):
     acciones = models.ManyToManyField(Acciones, blank=True)
     def __str__(self):
         return self.nombre
-    
-
-
 class Actividad(models.Model):
     opcionesEstado = (
         ('p','Programada'),
@@ -61,3 +55,11 @@ class Actividad(models.Model):
     verbose_name="Acción a la que corresponde")
     def __str__(self):
         return self.nombre
+
+
+    
+
+
+    
+
+

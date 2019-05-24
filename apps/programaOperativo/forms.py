@@ -16,7 +16,6 @@ class ActividadesForm(forms.ModelForm):
         model = Actividad
         fields = '__all__'
         exclude = [
-            'acciones',
             'programaoperativo',
             'presupuestoEjercido',
             'personasInvolucradas',
@@ -24,5 +23,6 @@ class ActividadesForm(forms.ModelForm):
             'user',
             'latitud',
             'longitud',
+            'accion'
         ]
 

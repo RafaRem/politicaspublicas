@@ -1,13 +1,24 @@
 {% extends "base/base.html" %}
 {% load staticfiles %}
 
+{%block extracss%}
+<link rel="stylesheet" href="{%static 'css/responsiveContainer.css'%}">
+
+<style>
+    img{
+        max-width:150px;
+        max-height:70px;
+        
+    }
+</style>
+{%endblock%}
+
+
 {% block nav %}
 
 {% endblock nav %}
 
-{%block extracss%}
- <link rel="stylesheet" href="{%static 'css/responsiveContainer.css'%}">
-{%endblock%}
+
 
 	{%block messages %}
     {% endblock%}
