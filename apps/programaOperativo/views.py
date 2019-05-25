@@ -8,7 +8,7 @@ from django.http import JsonResponse
 from apps.users.forms import RegistrarActividad
 from apps.programaOperativo.forms import ProgramaOperativoForm, ActividadesForm
 """Modelos"""
-from apps.programaOperativo.models import ProgramaOperativo, Acciones
+from apps.programaOperativo.models import ProgramaOperativo, Acciones, Actividad
 from apps.objetivo.models import Objetivo
 # # Create your views here.
 # class ActividadFormView(View):
@@ -26,6 +26,21 @@ def get_acciones_po_view(request,idPo):
     return JsonResponse(acciones,safe=False)
     pass
 
+
+class ActividadesListView(View):
+    def get(self,request):
+        pos = ProgramaOperativo.objects.filter(dependencia=request.user.profile.dependencia)
+        actividades = []
+        for po in pos:
+            actividadesPo = Actividad.objects.filter(programaoperativo=po)
+            for actividadPo in actividadesPo:
+                actividades.append(actividadPo)
+                pass
+            pass
+        print(actividades)
+        return render(request,'programasOperativos/listActividades.html',{
+            'actividades':actividades
+        })
 
 class ProgramasOperativosView(View):
     def get(self, request, idPo):
@@ -66,7 +81,6 @@ class ActividadFormView(View):
             datos.user = request.user
             save = datos.save()
             messages.success(request, 'Actividad registrada con éxito.')
-            redirect(request,'nuevaActividad')
         programasOperativos = ProgramaOperativo.objects.filter(
             dependencia=request.user.profile.dependencia.id
             )

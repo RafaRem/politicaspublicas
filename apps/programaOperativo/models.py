@@ -41,7 +41,7 @@ class Actividad(models.Model):
     nombre = models.CharField(max_length=100, 
     verbose_name="¿Qué actividad se realiza?")
     descripcion = models.TextField(max_length=300, 
-    verbose_name="Descríbela brevemente")
+    verbose_name="Descripción breve")
     presupuestoProgramado = models.CharField(max_length=300, 
     verbose_name="Presupuesto asignado a esta actividad")
     presupuestoEjercido = models.CharField(max_length=300,blank=True, null=True)

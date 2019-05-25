@@ -1,0 +1,51 @@
+{%extends 'base/base.html'%}
+{%load staticfiles%}
+
+{%block navTitle%}
+Tus actividades
+{%endblock%}
+
+
+{%block content%}
+<table class="table">
+    <thead>
+        <tr>
+            <th>Actividad</th>
+            <th>Acciones</th>
+            <th>
+                <div class="d-flex justify-content-center">
+                Datos llenados
+                </div>
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for actividad in actividades %}
+        <tr>
+            <td scope="row">{{actividad.nombre}}</td>
+            <td>
+                {% if actividad.presupuestoEjercido %}
+                <a class="btn btn-primary btn-sm guinda" 
+                href="#">Ver</a>
+                {%else%}
+                <a class="btn btn-primary btn-sm guinda" 
+                href="#">Finalizar</a>
+                {% endif %}
+                
+            </td>
+            <td>
+                <div class="d-flex justify-content-center">
+                    {% if actividad.presupuestoEjercido %}
+                    <span class="badge badge-success"><i class="fa fa-check-circle"></i></span>
+                    {% else %}
+                    <span class="badge badge-danger"><i class="fa fa-times-circle"></i></span>
+                    {% endif %}
+                </div>
+            </td>
+        </tr>
+        {% endfor %}
+
+    </tbody>
+</table>
+
+{%endblock%}

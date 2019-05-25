@@ -8,4 +8,5 @@ urlpatterns = [
     path('programasOperativos/actividad/nueva', ActividadFormView.as_view() , name="nuevaActividad" ),
     #"""Esta url es solo para obtener acciones por programa operativo, no es api"""
     path('programasOperativos/get/aciones/<int:idPo>', get_acciones_po_view, name="getAccioesPo"),
+    path('programasOperativos/list/actividades', ActividadesListView.as_view(), name='listActividades'),
 ]

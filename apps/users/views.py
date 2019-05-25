@@ -100,7 +100,6 @@ class IndexView(View):
     template_name = 'users/login.html'
     @method_decorator(login_required(login_url='login'))
     def get(self,request, *args, **kwargs):
-        print(self.ejes)
         return render(request,'index.html',{'ejes':self.ejes})
 
 
@@ -267,3 +266,5 @@ def report(request):
     buffer.close()
     response.write(pdf)
     return response
+
+
