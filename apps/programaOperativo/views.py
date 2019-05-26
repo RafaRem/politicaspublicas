@@ -11,21 +11,12 @@ from apps.programaOperativo.forms import ProgramaOperativoForm, ActividadesForm
 from apps.programaOperativo.models import ProgramaOperativo, Acciones, Actividad
 from apps.objetivo.models import Objetivo
 # # Create your views here.
-# class ActividadFormView(View):
-#     def get(request):
-#         # form = ActividadesForm()
-#         # return htt(request,'programasOperativos/actividadForm.html',{
-#         #     'form':form
-#         # })
-#         return HttpResponse('hola mmundo')
-
 def get_acciones_po_view(request,idPo):
     programaOperativo = ProgramaOperativo.objects.get(id=idPo)
     acciones = serializers.serialize('json',programaOperativo.acciones.all())
     print(acciones)
     return JsonResponse(acciones,safe=False)
     pass
-
 
 class ActividadesListView(View):
     def get(self,request):
@@ -38,7 +29,7 @@ class ActividadesListView(View):
                 pass
             pass
         print(actividades)
-        return render(request,'programasOperativos/listActividades.html',{
+        return render(request,'programasOperativos/actividades/listActividades.html',{
             'actividades':actividades
         })
 
@@ -59,14 +50,13 @@ class ProgramasOperativosView(View):
             return redirect(url)
 
 class ActividadFormView(View):
-    """faltaría programa operativo, latitud, longitud, acciones en form"""
     def get(self,request):
         form = ActividadesForm()
         programasOperativos = ProgramaOperativo.objects.filter(
             dependencia=request.user.profile.dependencia.id
             )
         print(programasOperativos)
-        return render(request,'programasOperativos/actividadForm.html',{
+        return render(request,'programasOperativos/actividades/actividadForm.html',{
             'form':form,
             'programasOperativos':programasOperativos
         })
@@ -83,15 +73,47 @@ class ActividadFormView(View):
             datos.longitud = request.POST.get('longitud')
             save = datos.save()
             messages.success(request, 'Actividad registrada con éxito.')
+            return redirect('listActividades')
+        messages.error('Error al cargar, intente de nuevo.')
         programasOperativos = ProgramaOperativo.objects.filter(
             dependencia=request.user.profile.dependencia.id
             )
-        return render(request,'programasOperativos/actividadForm.html',{
+        return render(request,'programasOperativos/actividades/actividadForm.html',{
             'form':form,
             'programasOperativos':programasOperativos
         })
 
-
+class TerminarActividadFormView(View):
+    def get(self,request,idActividad):
+        """validar si ya subió información no pueda acceder"""
+        actividad = Actividad.objects.get(pk=idActividad)
+        form = ActividadesForm()
+        return render(request,'programasOperativos/actividades/terminarActividad.html',{
+            'form':form,
+            'actividad':actividad
+        })
+    def post(self,request,idActividad):
+        form = ActividadesForm(request.POST)
+        if form.is_valid():
+            datos = form.save(commit=False)
+            accion = Acciones.objects.get(id=request.POST.get('accion'))
+            datos.accion = accion
+            po = ProgramaOperativo.objects.get(id=request.POST.get('programaoperativo'))
+            datos.programaoperativo = po
+            datos.user = request.user
+            datos.latitud = request.POST.get('latitud')
+            datos.longitud = request.POST.get('longitud')
+            save = datos.save()
+            messages.success(request, 'Actividad registrada con éxito.')
+            return redirect('terminarActividad')
+        messages.error('Error al cargar, intente de nuevo.')
+        programasOperativos = ProgramaOperativo.objects.filter(
+            dependencia=request.user.profile.dependencia.id
+            )
+        return render(request,'programasOperativos/actividades/actividadForm.html',{
+            'form':form,
+            'programasOperativos':programasOperativos
+        })
 
 class ProgramasOperativosListView(View):
     def get(self,request, idObjetivo = 0):

@@ -26,3 +26,10 @@ class ActividadesForm(forms.ModelForm):
             'accion'
         ]
 
+class TerminarActividadesForm(forms.ModelForm):
+    class Meta:
+        model=Actividad
+        fields = [            
+            'presupuestoEjercido',
+            'personasInvolucradas',
+            ]

@@ -5,6 +5,13 @@
 Tus actividades
 {%endblock%}
 
+{% block extracss %}
+    <style>
+        table.dataTable tbody tr{
+            background: transparent !important;
+        }
+    </style>
+{% endblock %}
 
 {%block content%}
 <table class="table">
@@ -14,7 +21,7 @@ Tus actividades
             <th>Acciones</th>
             <th>
                 <div class="d-flex justify-content-center">
-                Datos llenados
+                Estado
                 </div>
             </th>
         </tr>
@@ -29,16 +36,16 @@ Tus actividades
                 href="#">Ver</a>
                 {%else%}
                 <a class="btn btn-primary btn-sm guinda" 
-                href="#">Finalizar</a>
+                href="{%url 'terminarActividad' idActividad=actividad.id%}">Finalizar</a>
                 {% endif %}
                 
             </td>
             <td>
                 <div class="d-flex justify-content-center">
                     {% if actividad.presupuestoEjercido %}
-                    <span class="badge badge-success"><i class="fa fa-check-circle"></i></span>
+                    <span class="badge badge-success">Subido&nbsp;<i class="fa fa-check-circle"></i></span>
                     {% else %}
-                    <span class="badge badge-danger"><i class="fa fa-times-circle"></i></span>
+                    <span class="badge badge-danger">Por subir&nbsp;<i class="fa fa-times-circle"></i></span>
                     {% endif %}
                 </div>
             </td>
