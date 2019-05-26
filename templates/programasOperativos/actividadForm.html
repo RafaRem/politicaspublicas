@@ -3,6 +3,7 @@
 
 {%block extracss%}
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.43/css/bootstrap-datetimepicker.min.css">
+<link href="https://unpkg.com/gijgo@1.9.13/css/gijgo.min.css" rel="stylesheet" type="text/css" />
   <style>
     .container{
       background: none !important;
@@ -79,7 +80,7 @@ Nueva actividad
             {% csrf_token %}
             {{ form|crispy }}
             <div id="id_contenedorMapa">
-                <input id="pac-input" class="controls col-sm-12" type="text" placeholder="Dirección">
+                <input id="pac-input" class="form-control controls col-sm-12" type="text" placeholder="Dirección">
                 <div id="map"></div>
                 <input type="text" value="0" id="id_longitud" name="longitud" style="display: none"></input>
                 <input type="text" value="0" id="id_latitud" name="latitud" style="display: none"></input>
@@ -91,19 +92,58 @@ Nueva actividad
               </button>
             </div>
       </form>
-      
-  
-
   </div>
 
+ <!-- Modal -->
+<div class="modal fade" id="noMarcador" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title" id="exampleModalLabel">
+            Selecciona el lugar de esta actividad
+          </h4>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <ul>
+            <li>
+                <strong>
+                    En caso de ser una sindicatura, basta con poner su nombre 
+                    en el campo del mapa y presionar enter.
+                </strong>
+            </li>
+            <li>
+                <strong>
+                    En caso de ser en Los Mochis, escribir la colonia y presionar enter.
+                  </strong>
+            </li>
  
+            <li>
+                <strong>
+                    En caso de ser una actividad del Ayuntamiento, 
+                    escribir "H. Ayuntamiento" y presionar enter.
+                  </strong>
+            </li>
+          </ul>
+        
+          
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
 
 {% endblock content %}
 
 
 {%block extrascripts%}
-
+  <script src="https://unpkg.com/gijgo@1.9.13/js/gijgo.min.js" type="text/javascript"></script>
   <script>
   $(document).ready(()=>{
       document.querySelector('#id_programaoperativo').addEventListener('change',()=>{
@@ -125,156 +165,102 @@ Nueva actividad
           })
           })
       $("#id_btn_segunda_parte").click(() =>{
-        $('#id_segunda_parte').modal('show');
+      $('#id_segunda_parte').modal('show');
+      });
+      $('#id_fecha_in').datepicker({
+            uiLibrary: 'bootstrap4'
+        });
+      $('#id_fecha_fi').datepicker({
+          uiLibrary: 'bootstrap4'
+      });
+      $( "#id_form_actividad" ).submit(function( event ) {
+        latitud = document.getElementById('id_latitud');
+        if (latitud.value == "0") {
+          $('#noMarcador').modal('show');
+        }else{
+          this.submit()
+
+        }
+
+        event.preventDefault();
       });
   })
 
   </script>
 <script>
-    
+    $(window).keydown(function(event){
+    if(event.keyCode == 13) {
+      event.preventDefault();
+      return false;
+    }
+  });
     function initAutocomplete() {
         var map = new google.maps.Map(document.getElementById('map'), {
-            fullscreenControl:false,
-            center: {lat: -33.8688, lng: 151.2195},
-            zoom: 13,
-            mapTypeId: 'roadmap'
+          fullscreenControl:false,
+          center: {lat: 25.7904657, lng: -108.985882},
+          zoom: 13,
+          disableDefaultUI: true,
+          mapTypeId: 'roadmap'
         });
-        var infoWindow = new google.maps.InfoWindow({map: map});                                     //geolocalización
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(function(position) {
-                var pos = {
-                    lat: position.coords.latitude,
-                    lng: position.coords.longitude
-                };
-                map.setCenter(pos);
-            });
-        } else {
-            // Browser doesn't support Geolocation
-            handleLocationError(false, infoWindow, map.getCenter());
-        }
-    // Create the search box and link it to the UI element.
-    var input = document.getElementById('pac-input');
-    var searchBox = new google.maps.places.SearchBox(input);
-    map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
-    // Bias the SearchBox results towards current map's viewport.
-    map.addListener('bounds_changed', function() {
-        searchBox.setBounds(map.getBounds());
-    });
-    var markers = [];
-    // Listen for the event fired when the user selects a prediction and retrieve
-    // more details for that place.
-    searchBox.addListener('places_changed', function() {
-        var places = searchBox.getPlaces();
-        if (places.length == 0) {
-        return;
-        }
-        // Clear out the old markers.
-        try {
-        markers.forEach(function(marker) {
-        marker.setMap(null);
+
+        // Create the search box and link it to the UI element.
+        var input = document.getElementById('pac-input');
+        var searchBox = new google.maps.places.SearchBox(input);
+        map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+
+        // Bias the SearchBox results towards current map's viewport.
+        map.addListener('bounds_changed', function() {
+          searchBox.setBounds(map.getBounds());
         });
-        } catch (error) {
-        
-        }
-        markers = [];
-        // For each place, get the icon, name and location.
-        var bounds = new google.maps.LatLngBounds();
-        places.forEach(function(place) {
-        if (!place.geometry) {
-            console.log("Returned place contains no geometry");
+
+        var markers = [];
+        // Listen for the event fired when the user selects a prediction and retrieve
+        // more details for that place.
+        searchBox.addListener('places_changed', function() {
+          var places = searchBox.getPlaces();
+          if (places.length == 0) {
             return;
-        }
-        // Create a marker for each place.
-        if (document.getElementById('id_mostrarMapa').value == "apro") {
-            markers.push(circleMarker(place.geometry.location,map));
-        }
-        else{
-            markers.push(placeMarker(place.geometry.location,map));
-        }
-       
-        if (place.geometry.viewport) {
-            // Only geocodes have viewport.
-            bounds.union(place.geometry.viewport);
-        } else {
-            bounds.extend(place.geometry.location);
-        }
+          }
+          // Clear out the old markers.
+          markers.forEach(function(marker) {
+            marker.setMap(null);
+          });
+          markers = [];
+          // For each place, get the icon, name and location.
+          var bounds = new google.maps.LatLngBounds();
+            if (!places[0].geometry) {
+              console.log("Returned places[0] contains no geometry");
+              return;
+            }
+            var icon = {
+              url: places[0].icon,
+              size: new google.maps.Size(71, 71),
+              origin: new google.maps.Point(0, 0),
+              anchor: new google.maps.Point(17, 34),
+              scaledSize: new google.maps.Size(25, 25)
+            };
+
+            // Create a marker for each place.
+            console.log(markers)
+            markers.push(new google.maps.Marker({
+              map: map,
+              icon: icon,
+              title: places[0].name,
+              position: places[0].geometry.location
+            }));
+            var latitud = document.getElementById('id_latitud');
+            var longitud = document.getElementById('id_longitud');
+            latitud.value = places[0].geometry.location.lat()
+            longitud.value = places[0].geometry.location.lng()
+            if (places[0].geometry.viewport) {
+              // Only geocodes have viewport.
+              bounds.union(places[0].geometry.viewport);
+            } else {
+              bounds.extend(places[0].geometry.location);
+            }
+          map.fitBounds(bounds);
         });
-        map.fitBounds(bounds);
-    });
-    var Marca = null;
-    map.addListener('dblclick', function(e) {
-        placeMarker(e.latLng, map);
-    });
-    var Marca = null;
-    var Circulo = null; 
-    $('#id_mostrarMapa').change(function(){
-        cambiarmarca();
-        document.getElementById('id_latitud').value = "0";
-        document.getElementById('id_longitud').value="0";
-    });
-    function cambiarmarca() {
-        google.maps.event.clearListeners(map, 'dblclick');
-        if (Marca != null) Marca.setMap(null);
-        if (Circulo != null) Circulo.setMap(null);
-        if (document.getElementById('id_mostrarMapa').value ==  "apro"){ 
-            map.addListener('dblclick', function(e) {
-                circleMarker(e.latLng, map);
-            });
-        }
-        else{
-            map.addListener('dblclick', function(e) {
-                placeMarker(e.latLng, map);
-            });
-        }
-    }
-    function placeMarker(latLng, map) {
-        document.getElementById('id_latitud').value = latLng.lat();
-        document.getElementById('id_longitud').value = latLng.lng();
-        if (Marca != null) Marca.setMap(null);
-        Marca = new google.maps.Marker({
-            position: latLng,
-            map: map,
-        });
-    }
-    function RandomBetw(val) {
-        var entero = Math.floor(parseFloat(val));
-        var i = parseFloat(val) + 0.0005-entero;
-        i = i * 1000000;
-        var f = parseFloat(val) - 0.0005-entero;
-        f = f * 1000000;
-        var res = Math.floor(Math.random() * (f-i+1)) + i;
-        res = res / 1000000;
-        res = res + entero;
-        return res;
-    }
-    function circleMarker(latLng, map) {
-        document.getElementById('id_latitud').value = latLng.lat();
-        document.getElementById('id_longitud').value = latLng.lng();
-        if (Circulo != null) Circulo.setMap(null);
-        var centro = {lat: RandomBetw(latLng.lat()), lng: RandomBetw(latLng.lng())};
-        Circulo = new google.maps.Circle({
-            strokeColor: '#000000',
-            strokeOpacity: 0.8,
-            strokeWeight: 2,
-            fillColor: '#a8e4ff',
-            fillOpacity: 0.5,
-            map: map,
-            center: centro,
-            radius: 130,
-        });
-    }
-    /*var myLatLng;                                                                //Cargar marcas
-    myLatLng = {lat: 25.775110, lng: -109.030606};                              //AQUI INICIA CICLO PARA CARGAR MARCAS
-    var marker = new google.maps.Marker({
-        position: myLatLng,
-        map: map,
-        title: 'Casa de Ramón'
-    });*/                                                                         //AQUI TERMINA CICLO PARA CARGAR MARCAS
-    }
-    function handleLocationError(browserHasGeolocation, infoWindow, pos) {                        
-      infoWindow.setPosition(pos);
-      infoWindow.setContent(browserHasGeolocation ? 'Error: The Geolocation service failed.' :'Error: Your browser doesn\'t support geolocation.');
-    }
+      }
 </script>
       <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC8nOd8iaPIzcZXjGySMMpi21cJ00iimxI&libraries=places&callback=initAutocomplete"
          async defer></script>

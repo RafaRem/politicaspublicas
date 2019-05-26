@@ -72,13 +72,15 @@ class ActividadFormView(View):
         })
     def post(self,request):
         form = ActividadesForm(request.POST)
-        if form.is_valid:
+        if form.is_valid():
             datos = form.save(commit=False)
             accion = Acciones.objects.get(id=request.POST.get('accion'))
             datos.accion = accion
             po = ProgramaOperativo.objects.get(id=request.POST.get('programaoperativo'))
             datos.programaoperativo = po
             datos.user = request.user
+            datos.latitud = request.POST.get('latitud')
+            datos.longitud = request.POST.get('longitud')
             save = datos.save()
             messages.success(request, 'Actividad registrada con éxito.')
         programasOperativos = ProgramaOperativo.objects.filter(
