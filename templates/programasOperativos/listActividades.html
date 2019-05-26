@@ -19,7 +19,7 @@ Tus actividades
             </th>
         </tr>
     </thead>
-    <tbody>
+    <tbody class="bg-transparent">
         {% for actividad in actividades %}
         <tr>
             <td scope="row">{{actividad.nombre}}</td>
@@ -49,3 +49,12 @@ Tus actividades
 </table>
 
 {%endblock%}
+
+
+{% block extrascripts %}
+    <script>
+        $(document).ready( function () {
+            $('.table').DataTable();
+        } );
+    </script>
+{% endblock %}

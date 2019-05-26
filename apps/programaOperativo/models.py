@@ -31,6 +31,9 @@ class ProgramaOperativo(models.Model):
     acciones = models.ManyToManyField(Acciones, blank=True)
     def __str__(self):
         return self.nombre
+
+
+
 class Actividad(models.Model):
     opcionesEstado = (
         ('p','Programada'),
