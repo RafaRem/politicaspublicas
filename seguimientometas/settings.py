@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'apps.dependencia',
     'apps.objetivo',
     'apps.programaOperativo',
+    'apps.indicador',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
