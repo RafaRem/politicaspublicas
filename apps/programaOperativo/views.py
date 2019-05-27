@@ -71,10 +71,15 @@ class ActividadFormView(View):
             datos.user = request.user
             datos.latitud = request.POST.get('latitud')
             datos.longitud = request.POST.get('longitud')
+            print(request.POST.get('fecha_fi'))
+            print(request.POST.get('fecha_in'))
+            datos.fecha_in = request.POST.get('fecha_in')
+            datos.fecha_fi = request.POST.get('fecha_fi')
             save = datos.save()
             messages.success(request, 'Actividad registrada con éxito.')
             return redirect('listActividades')
-        messages.error('Error al cargar, intente de nuevo.')
+
+        messages.error(request,form._errors)
         programasOperativos = ProgramaOperativo.objects.filter(
             dependencia=request.user.profile.dependencia.id
             )
@@ -106,7 +111,7 @@ class TerminarActividadFormView(View):
             save = datos.save()
             messages.success(request, 'Actividad registrada con éxito.')
             return redirect('terminarActividad')
-        messages.error('Error al cargar, intente de nuevo.')
+        messages.error(request, form._errors)
         programasOperativos = ProgramaOperativo.objects.filter(
             dependencia=request.user.profile.dependencia.id
             )

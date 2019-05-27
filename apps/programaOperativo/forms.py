@@ -23,7 +23,9 @@ class ActividadesForm(forms.ModelForm):
             'user',
             'latitud',
             'longitud',
-            'accion'
+            'accion',
+            'fecha_in',
+            'fecha_fi'
         ]
 
 class TerminarActividadesForm(forms.ModelForm):

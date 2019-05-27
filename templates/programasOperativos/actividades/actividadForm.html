@@ -79,6 +79,23 @@ Nueva actividad
               </div>
             {% csrf_token %}
             {{ form|crispy }}
+            <div id="div_id_fecha_in" class="form-group"> 
+              <label for="id_fecha_in" class="col-form-label  requiredField">
+                Día en el que se realiza<span class="asteriskField">*</span> 
+              </label> 
+              <div class=""> 
+                <input type="text" name="fecha_in" class="dateinput form-control" required="" id="id_fecha_in"> 
+              </div> 
+            </div>
+
+            <div id="div_id_fecha_fi" class="form-group"> 
+              <label for="id_fecha_fi" class="col-form-label  requiredField">
+                Día en el que se finaliza<span class="asteriskField">*</span> 
+              </label> <div class=""> 
+                <input type="text" name="fecha_fi" class="dateinput form-control" required="" id="id_fecha_fi"> 
+              </div> 
+            </div>
+
             <div id="id_contenedorMapa">
                 <input id="pac-input" class="form-control controls col-sm-12" type="text" placeholder="Dirección">
                 <div id="map"></div>
@@ -168,12 +185,14 @@ Nueva actividad
       $('#id_segunda_parte').modal('show');
       });
       $('#id_fecha_in').datepicker({
-            uiLibrary: 'bootstrap4'
+            uiLibrary: 'bootstrap4',
+            format: 'yyyy-mm-dd'
         });
       $('#id_fecha_in').attr('readonly',true)
       $('#id_fecha_fi').attr('readonly',true)
       $('#id_fecha_fi').datepicker({
-          uiLibrary: 'bootstrap4'
+          uiLibrary: 'bootstrap4',
+            format: 'yyyy-mm-dd'
       });
       $( "#id_form_actividad" ).submit(function( event ) {
         latitud = document.getElementById('id_latitud');
