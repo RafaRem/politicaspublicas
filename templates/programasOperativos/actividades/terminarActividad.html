@@ -2,6 +2,11 @@
 {% extends "base/base.html" %}
 {% load staticfiles %}
 
+{% block navTitle %}
+{{actividad.nombre}}
+{% endblock %}
+
+
 {% block extracss %}
 <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-fileinput/5.0.1/css/fileinput.min.css" media="all" rel="stylesheet" type="text/css" />
 <link rel="stylesheet" href="https://raw.githubusercontent.com/twbs/bootstrap-sass/master/assets/stylesheets/bootstrap/_glyphicons.scss">
@@ -20,9 +25,12 @@
 
 
 {% block content %}
-    <div class="file-loading">
-        <input class="guinda" id="input-42-es" data-show-upload="false" name="archivos" type="file">
-    </div> 
+    <div class="container bg-transparent">
+        <form action="" method="POST" enctype="multipart/form-data"></form>
+            <div class="file-loading">
+                    <input class="guinda" id="input-42-es" data-show-upload="false" name="archivos" type="file">
+                </div> 
+    </div>
 
     
     

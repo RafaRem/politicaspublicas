@@ -2,6 +2,7 @@
 .guinda{
     background-color: rgb(155, 16, 30) !important;
     border-color: rgb(155, 16, 30) !important;
+    color: white !important;
 }
 button.guinda:hover{
     background-color: rgb(176, 129, 134) !important;
