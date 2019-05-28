@@ -31,7 +31,7 @@ Tus actividades
         <tr>
             <td scope="row">{{actividad.nombre}}</td>
             <td>
-                {% if actividad.presupuestoEjercido %}
+                {% if actividad.estado == 'r' or  actividad.estado == 't'%}
                 <a class="btn btn-primary btn-sm guinda" 
                 href="#">Ver</a>
                 {%else%}
@@ -42,10 +42,12 @@ Tus actividades
             </td>
             <td>
                 <div class="d-flex justify-content-center">
-                    {% if actividad.presupuestoEjercido %}
-                    <span class="badge badge-success">Subido&nbsp;<i class="fa fa-check-circle"></i></span>
-                    {% else %}
+                    {% if actividad.estado == 'r' %}
+                    <span class="badge badge-success">Por revisar&nbsp;<i class="fa fa-check-circle"></i></span>
+                    {%elif actividad.estado == 'p' %}
                     <span class="badge badge-danger">Por subir&nbsp;<i class="fa fa-times-circle"></i></span>
+                    {%else%}
+                    <span class="badge badge-warning">En revisión&nbsp;<i class="fa fa-info-circle"></i></span>
                     {% endif %}
                 </div>
             </td>

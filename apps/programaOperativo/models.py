@@ -37,7 +37,9 @@ class ProgramaOperativo(models.Model):
 class Actividad(models.Model):
     opcionesEstado = (
         ('p','Programada'),
-        ('r','Realizada')
+        ('t','Terminada'),
+        ('i','Inactiva'),
+        ('r','Revisada')
     )
     user = models.ForeignKey(User, on_delete= models.PROTECT)
     programaoperativo = models.ForeignKey(ProgramaOperativo, on_delete = models.PROTECT)
@@ -58,6 +60,7 @@ class Actividad(models.Model):
     longitud = models.CharField(max_length=300, blank=True, null=True)
     accion = models.ForeignKey(Acciones, on_delete=models.PROTECT, 
     verbose_name="Acción a la que corresponde")
+    estado = models.CharField(choices=opcionesEstado,max_length=30,default='p')
     def __str__(self):
         return self.nombre
 
