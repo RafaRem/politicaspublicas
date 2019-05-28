@@ -7,7 +7,6 @@ from django.http import HttpResponse, HttpResponseRedirect, JsonResponse, HttpRe
 # decorators for login
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
-from django.utils.decorators import method_decorator
 #forms
 from . import forms
 from .forms import UsuariosForm
@@ -103,7 +102,7 @@ class IndexView(LoginRequiredMixin,View):
     def get(self,request, *args, **kwargs):
         return render(request,'index.html',{'ejes':self.ejes})
 
-@method_decorator(login_required(login_url='login'))
+@login_required(login_url='login')
 def CalendarView(request):
     #Model.objects.filter(fecha__range=(f_inicial, f_cierre) CONSULTA POR RANGO DE FECHAS
     hour = timezone.localtime(timezone.now())
@@ -175,7 +174,7 @@ class LoginView(View):
         pass
 
 
-@method_decorator(login_required(login_url='login'))
+@login_required(login_url='login')
 def vista_registrar(request):
     if request.method=='POST':
         form = RegistrarPersona(request.POST)
@@ -215,12 +214,12 @@ class CharData(LoginRequiredMixin,APIView):
         return Response(data)
 
 
-@method_decorator(login_required(login_url='login'))
+@login_required(login_url='login')
 def logout_view(request):
     logout(request)
     return redirect('login')
 
-@method_decorator(login_required(login_url='login'))
+@login_required(login_url='login')
 def report(request):
     hour = timezone.localtime(timezone.now())
     formatedHour = hour.strftime("%H:%M:%S")

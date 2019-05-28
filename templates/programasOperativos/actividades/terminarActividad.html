@@ -1,6 +1,7 @@
     
 {% extends "base/base.html" %}
 {% load staticfiles %}
+{% load crispy_forms_tags %}
 
 {% block navTitle %}
 {{actividad.nombre}}
@@ -27,6 +28,10 @@
 {% block content %}
     <div class="container bg-transparent">
         <form action="" method="POST" enctype="multipart/form-data"></form>
+            {% csrf_token %}
+            {{ form|crispy }}
+            <label for="input-42-es">Evidencia</label>
+
             <div class="file-loading">
                     <input class="guinda" id="input-42-es" data-show-upload="false" name="archivos" type="file">
                 </div> 

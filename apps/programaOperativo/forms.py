@@ -35,3 +35,13 @@ class TerminarActividadesForm(forms.ModelForm):
             'presupuestoEjercido',
             'personasInvolucradas',
             ]
+        exclude = [
+            'programaoperativo',
+            'evidencia',
+            'user',
+            'latitud',
+            'longitud',
+            'accion',
+            'fecha_in',
+            'fecha_fi'
+        ]

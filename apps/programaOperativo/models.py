@@ -47,8 +47,10 @@ class Actividad(models.Model):
     verbose_name="Descripción breve")
     presupuestoProgramado = models.CharField(max_length=300, 
     verbose_name="Presupuesto asignado a esta actividad")
-    presupuestoEjercido = models.CharField(max_length=300,blank=True, null=True)
-    personasInvolucradas = models.CharField(max_length=10,blank=True, null=True)
+    presupuestoEjercido = models.CharField(max_length=300,blank=True, null=True,
+    verbose_name="Presupuesto ejercido")
+    personasInvolucradas = models.CharField(max_length=10,blank=True, null=True,
+    verbose_name="Personas involucradas")
     evidencia = models.FileField(blank=True, null=True)
     fecha_in = models.DateField(verbose_name="Día en el que se realiza")
     fecha_fi = models.DateField(verbose_name="Día en el que se finaliza")

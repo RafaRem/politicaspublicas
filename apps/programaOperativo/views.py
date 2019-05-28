@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 """Forms"""
 from apps.users.forms import RegistrarActividad
-from apps.programaOperativo.forms import ProgramaOperativoForm, ActividadesForm
+from apps.programaOperativo.forms import ProgramaOperativoForm, ActividadesForm, TerminarActividadesForm
 """Modelos"""
 from apps.programaOperativo.models import ProgramaOperativo, Acciones, Actividad
 from apps.objetivo.models import Objetivo
@@ -92,24 +92,19 @@ class TerminarActividadFormView(View):
     def get(self,request,idActividad):
         """validar si ya subió información no pueda acceder"""
         actividad = Actividad.objects.get(pk=idActividad)
-        form = ActividadesForm()
+        form = TerminarActividadesForm()
         return render(request,'programasOperativos/actividades/terminarActividad.html',{
             'form':form,
             'actividad':actividad
         })
     def post(self,request,idActividad):
-        form = ActividadesForm(request.POST)
+        actividad = Actividad.objects.get(pk=idActividad)
+        form = TerminarActividadesForm(request.POST, instance=actividad)
         if form.is_valid():
             datos = form.save(commit=False)
-            accion = Acciones.objects.get(id=request.POST.get('accion'))
-            datos.accion = accion
-            po = ProgramaOperativo.objects.get(id=request.POST.get('programaoperativo'))
-            datos.programaoperativo = po
-            datos.user = request.user
-            datos.latitud = request.POST.get('latitud')
-            datos.longitud = request.POST.get('longitud')
+            
             save = datos.save()
-            messages.success(request, 'Actividad registrada con éxito.')
+            messages.success(request, 'Actividad actualizada con éxito.')
             return redirect('terminarActividad')
         messages.error(request, form._errors)
         programasOperativos = ProgramaOperativo.objects.filter(
