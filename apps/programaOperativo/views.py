@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect, reverse
 from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core import serializers
 from django.views.generic import View
 from django.contrib.auth.decorators import login_required
@@ -10,7 +11,9 @@ from apps.programaOperativo.forms import ProgramaOperativoForm, ActividadesForm,
 """Modelos"""
 from apps.programaOperativo.models import ProgramaOperativo, Acciones, Actividad
 from apps.objetivo.models import Objetivo
-# # Create your views here.
+# # Crea
+# te your views here.
+#ESTE NO NECESITA PROTECCION
 def get_acciones_po_view(request,idPo):
     programaOperativo = ProgramaOperativo.objects.get(id=idPo)
     acciones = serializers.serialize('json',programaOperativo.acciones.all())
@@ -18,7 +21,8 @@ def get_acciones_po_view(request,idPo):
     return JsonResponse(acciones,safe=False)
     pass
 
-class ActividadesListView(View):
+class ActividadesListView(LoginRequiredMixin,View):
+    login_url = 'login'
     def get(self,request):
         pos = ProgramaOperativo.objects.filter(dependencia=request.user.profile.dependencia)
         actividades = []
@@ -33,7 +37,8 @@ class ActividadesListView(View):
             'actividades':actividades
         })
 
-class ProgramasOperativosView(View):
+class ProgramasOperativosView(LoginRequiredMixin,View):
+    login_url = 'login'
     def get(self, request, idPo):
         programa = ProgramaOperativo.objects.get(id=idPo)
         form = ProgramaOperativoForm(instance=programa)
@@ -49,7 +54,8 @@ class ProgramasOperativosView(View):
             url = reverse('postPo',args=(idPo,))
             return redirect(url)
 
-class ActividadFormView(View):
+class ActividadFormView(LoginRequiredMixin,View):
+    login_url = 'login'
     def get(self,request):
         form = ActividadesForm()
         programasOperativos = ProgramaOperativo.objects.filter(
@@ -90,7 +96,8 @@ class ActividadFormView(View):
             'programasOperativos':programasOperativos
         })
 
-class TerminarActividadFormView(View):
+class TerminarActividadFormView(LoginRequiredMixin,View):
+    login_url = 'login'
     def get(self,request,idActividad):
         """validar si ya subió información no pueda acceder"""
         actividad = Actividad.objects.get(pk=idActividad)
@@ -116,7 +123,8 @@ class TerminarActividadFormView(View):
             'programasOperativos':programasOperativos
         })
 
-class ProgramasOperativosListView(View):
+class ProgramasOperativosListView(LoginRequiredMixin,View):
+    login_url = 'login'
     def get(self,request, idObjetivo = 0):
         objetivo = Objetivo.objects.get(id=idObjetivo)
         if idObjetivo != 0:
