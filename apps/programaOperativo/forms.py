@@ -25,7 +25,8 @@ class ActividadesForm(forms.ModelForm):
             'longitud',
             'accion',
             'fecha_in',
-            'fecha_fi'
+            'fecha_fi',
+            'estado'
         ]
 
 class TerminarActividadesForm(forms.ModelForm):
@@ -45,3 +46,9 @@ class TerminarActividadesForm(forms.ModelForm):
             'fecha_in',
             'fecha_fi'
         ]
+        pass
+    def __init__(self, *args, **kwargs):
+        super(TerminarActividadesForm, self).__init__(*args, **kwargs)
+        for key in self.fields:
+            self.fields[key].required = True 
+    

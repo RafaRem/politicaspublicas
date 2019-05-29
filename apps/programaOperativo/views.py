@@ -76,8 +76,10 @@ class ActividadFormView(View):
             datos.fecha_in = request.POST.get('fecha_in')
             datos.fecha_fi = request.POST.get('fecha_fi')
             save = datos.save()
+            print(save)
             messages.success(request, 'Actividad registrada con éxito.')
             return redirect('listActividades')
+            # return redirect('terminarActividad',args)
 
         messages.error(request,form._errors)
         programasOperativos = ProgramaOperativo.objects.filter(
@@ -102,10 +104,9 @@ class TerminarActividadFormView(View):
         form = TerminarActividadesForm(request.POST, instance=actividad)
         if form.is_valid():
             datos = form.save(commit=False)
-            
-            save = datos.save()
+            # save = datos.save()
             messages.success(request, 'Actividad actualizada con éxito.')
-            return redirect('terminarActividad')
+            return redirect('listActividades')
         messages.error(request, form._errors)
         programasOperativos = ProgramaOperativo.objects.filter(
             dependencia=request.user.profile.dependencia.id

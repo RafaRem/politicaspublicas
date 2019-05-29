@@ -30,14 +30,25 @@
 
 {% block content %}
     <div class="container bg-transparent">
-        <form action="" method="POST" enctype="multipart/form-data"></form>
+        <form id="id_form_actividad" action="" 
+        method="POST" enctype="multipart/form-data">
             {% csrf_token %}
             {{ form|crispy }}
             <label for="input-42-es">Evidencia</label>
 
             <div class="file-loading">
-                    <input class="guinda" id="input-42-es" data-show-upload="false" name="archivos" type="file">
+                    <input required class="guinda" 
+                    id="input-42-es" data-show-upload="false" 
+                    name="archivos" type="file">
                 </div> 
+            <div class="d-flex justify-content-center mt-5">
+                    <button class="btn btn-primary guinda" id="id_btn_segunda_parte" 
+                    type="submit">
+                        Registrar &nbsp;<i class="fas fa-check"></i>
+                    </button>
+                    </div>
+        </form>
+
     </div>
 
     
@@ -69,6 +80,16 @@
             maxFileSize: 10000
         });
         }, 1000);
+        $( "#id_form_actividad" ).submit(function( event ) {
+            console.log($('#input-42-es'));
+            // if ($('#input-42-es') {
+            //     console.log('hooooliii');
+            // }else{
+            // this.submit()
 
+            // }
+
+            event.preventDefault();
+      });
 </script>
 {% endblock %}
