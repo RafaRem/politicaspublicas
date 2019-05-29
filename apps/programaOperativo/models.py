@@ -29,6 +29,7 @@ class ProgramaOperativo(models.Model):
     beneficiarios = models.CharField(max_length=1000, blank=True, null=True, verbose_name='Beneficiarios')
     justificacion = models.CharField(max_length=1000, blank=True, null=True, verbose_name='Justificación')
     problematicaSocial = models.CharField(max_length=1000, blank=True, null=True, verbose_name = 'Problemática social')
+    #BORRAR OBJETIVO AL MANDAR A PRODUCCION
     objetivo = models.ForeignKey(Objetivo, on_delete=models.PROTECT)
     dependencia = models.ForeignKey(Dependencia, on_delete=models.PROTECT)
     acciones = models.ManyToManyField(Acciones, blank=True)
