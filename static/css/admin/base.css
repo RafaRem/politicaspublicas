@@ -53,3 +53,20 @@ caption{
 a:focus, a:hover{
     color: rgb(176, 129, 134) !important;
 }
+
+input.default{
+    background-color: rgb(155, 16, 30) !important;
+    border-color: rgb(155, 16, 30) !important;
+    color: white !important;
+}
+input[name=_addanother],input[name=_continue]{
+    background: rgba(155, 16, 30, 0.7) !important;
+    color: white !important;
+}
+.selector-chosen h2{
+    background: rgba(155, 16, 30, 0.7) !important;
+    color: white !important;
+}
+.submit-row a.deletelink{
+    color: white !important;
+}

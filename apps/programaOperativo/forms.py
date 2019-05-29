@@ -23,6 +23,32 @@ class ActividadesForm(forms.ModelForm):
             'user',
             'latitud',
             'longitud',
-            'accion'
+            'accion',
+            'fecha_in',
+            'fecha_fi',
+            'estado'
         ]
 
+class TerminarActividadesForm(forms.ModelForm):
+    class Meta:
+        model=Actividad
+        fields = [            
+            'presupuestoEjercido',
+            'personasInvolucradas',
+            ]
+        exclude = [
+            'programaoperativo',
+            'evidencia',
+            'user',
+            'latitud',
+            'longitud',
+            'accion',
+            'fecha_in',
+            'fecha_fi'
+        ]
+        pass
+    def __init__(self, *args, **kwargs):
+        super(TerminarActividadesForm, self).__init__(*args, **kwargs)
+        for key in self.fields:
+            self.fields[key].required = True 
+    

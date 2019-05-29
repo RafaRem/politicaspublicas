@@ -1,0 +1,69 @@
+{%extends 'base/base.html'%}
+{%load staticfiles%}
+
+{%block navTitle%}
+Tus actividades
+{%endblock%}
+
+{% block extracss %}
+    <style>
+        table.dataTable tbody tr{
+            background: transparent !important;
+        }
+    </style>
+{% endblock %}
+
+{%block content%}
+<table class="table">
+    <thead>
+        <tr>
+            <th>Actividad</th>
+            <th>Acciones</th>
+            <th>
+                <div class="d-flex justify-content-center">
+                Estado
+                </div>
+            </th>
+        </tr>
+    </thead>
+    <tbody class="bg-transparent">
+        {% for actividad in actividades %}
+        <tr>
+            <td scope="row">{{actividad.nombre}}</td>
+            <td>
+                {% if actividad.estado == 'r' or  actividad.estado == 't'%}
+                <a class="btn btn-primary btn-sm guinda" 
+                href="#">Ver</a>
+                {%else%}
+                <a class="btn btn-primary btn-sm guinda" 
+                href="{%url 'terminarActividad' idActividad=actividad.id%}">Finalizar</a>
+                {% endif %}
+                
+            </td>
+            <td>
+                <div class="d-flex justify-content-center">
+                    {% if actividad.estado == 'r' %}
+                    <span class="badge badge-success">Revisada&nbsp;<i class="fa fa-check-circle"></i></span>
+                    {%elif actividad.estado == 'p' %}
+                    <span class="badge badge-danger">Por subir&nbsp;<i class="fa fa-times-circle"></i></span>
+                    {%else%}
+                    <span class="badge badge-warning">En revisión&nbsp;<i class="fa fa-info-circle"></i></span>
+                    {% endif %}
+                </div>
+            </td>
+        </tr>
+        {% endfor %}
+
+    </tbody>
+</table>
+
+{%endblock%}
+
+
+{% block extrascripts %}
+    <script>
+        $(document).ready( function () {
+            $('.table').DataTable();
+        } );
+    </script>
+{% endblock %}

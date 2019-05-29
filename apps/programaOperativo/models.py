@@ -1,11 +1,14 @@
 from django.db import models
 from apps.objetivo.models import *
+"""Modelos"""
+from apps.objetivo.models import Objetivo
 from apps.dependencia.models import *
 from django.contrib.auth.models import User
 
 # Create your models here.
 class Acciones(models.Model):
-    nombre = models.CharField(max_length=500)
+    nombre = models.CharField(max_length=700)
+    objetivo = models.ForeignKey(Objetivo,on_delete=models.PROTECT)
     def __str__(self):
         return self.nombre
 class ProgramaOperativo(models.Model):
@@ -31,21 +34,28 @@ class ProgramaOperativo(models.Model):
     acciones = models.ManyToManyField(Acciones, blank=True)
     def __str__(self):
         return self.nombre
+
+
+
 class Actividad(models.Model):
     opcionesEstado = (
         ('p','Programada'),
-        ('r','Realizada')
+        ('t','Terminada'),
+        ('i','Inactiva'),
+        ('r','Revisada')
     )
     user = models.ForeignKey(User, on_delete= models.PROTECT)
     programaoperativo = models.ForeignKey(ProgramaOperativo, on_delete = models.PROTECT)
     nombre = models.CharField(max_length=100, 
     verbose_name="¿Qué actividad se realiza?")
     descripcion = models.TextField(max_length=300, 
-    verbose_name="Descríbela brevemente")
+    verbose_name="Descripción breve")
     presupuestoProgramado = models.CharField(max_length=300, 
     verbose_name="Presupuesto asignado a esta actividad")
-    presupuestoEjercido = models.CharField(max_length=300,blank=True, null=True)
-    personasInvolucradas = models.CharField(max_length=10,blank=True, null=True)
+    presupuestoEjercido = models.CharField(max_length=300,blank=True, null=True,
+    verbose_name="Presupuesto ejercido")
+    personasInvolucradas = models.CharField(max_length=10,blank=True, null=True,
+    verbose_name="Personas involucradas")
     evidencia = models.FileField(blank=True, null=True)
     fecha_in = models.DateField(verbose_name="Día en el que se realiza")
     fecha_fi = models.DateField(verbose_name="Día en el que se finaliza")
@@ -53,6 +63,7 @@ class Actividad(models.Model):
     longitud = models.CharField(max_length=300, blank=True, null=True)
     accion = models.ForeignKey(Acciones, on_delete=models.PROTECT, 
     verbose_name="Acción a la que corresponde")
+    estado = models.CharField(choices=opcionesEstado,max_length=30,default='p')
     def __str__(self):
         return self.nombre
 

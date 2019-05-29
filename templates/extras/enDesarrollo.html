@@ -1,0 +1,28 @@
+{% extends "base/base.html" %}
+{%load staticfiles%}
+
+{% block extracss %}
+<style>
+    img{
+        width: 80%;
+        height: 80%;
+    }
+</style>
+{% endblock %}
+
+{% block navTitle %}
+Función en desarrollo
+{% endblock %}
+
+{% block content %}
+    <div class="container bg-transparent">
+        <div class="d-flex justify-content-center">
+            <img src="{%static 'images/Ahome.png'%}" alt="">
+        </div>
+        <h3>
+            Por el momento esta función se encuentra en desarrollo, para más información 
+            comunicarse con la Dirección de Planeación e Innovación Gubernamental
+        </h3>
+        <strong>Correo: jesus.acosta@ahomedigital.gob.mx</strong>
+    </div>
+{% endblock %}

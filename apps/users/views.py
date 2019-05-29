@@ -5,8 +5,8 @@ from django.core import serializers
 from django.contrib import messages
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse, HttpResponseBadRequest
 # decorators for login
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
-from django.utils.decorators import method_decorator
 #forms
 from . import forms
 from .forms import UsuariosForm
@@ -69,7 +69,8 @@ ejes = [
 ]
 
 
-class IndexView(View):
+class IndexView(LoginRequiredMixin,View):
+    login_url = 'login'
     ejes = [
         {
             'numero':'Eje I',
@@ -98,14 +99,10 @@ class IndexView(View):
         }
         ]
     template_name = 'users/login.html'
-    @method_decorator(login_required(login_url='login'))
     def get(self,request, *args, **kwargs):
-        print(self.ejes)
         return render(request,'index.html',{'ejes':self.ejes})
 
-def prueba():
-    return "hola"
-
+@login_required(login_url='login')
 def CalendarView(request):
     #Model.objects.filter(fecha__range=(f_inicial, f_cierre) CONSULTA POR RANGO DE FECHAS
     hour = timezone.localtime(timezone.now())
@@ -151,7 +148,8 @@ def CalendarView(request):
     return render(request, 'users/calendario.html',{'actividad':evento,'fecha': formatedDay, 'contador': contador,'depende':depend,'total':actividades})
 
 
-class UsuarioView(View):
+class UsuarioView(LoginRequiredMixin,View):
+    login_url = 'login'
     def get(self, request):
         return render(request, 'index.html')
 
@@ -182,7 +180,7 @@ class LoginView(View):
         pass
 
 
-
+@login_required(login_url='login')
 def vista_registrar(request):
     if request.method=='POST':
         form = RegistrarPersona(request.POST)
@@ -194,12 +192,14 @@ def vista_registrar(request):
         form = RegistrarPersona()
     return render(request,'users/RegistroPrueba.html',{'form': form})
 
-class GraficaView(View):
+class GraficaView(LoginRequiredMixin,View):
+    login_url = 'login'
     def get(self,request, *args, **kwargs):
         return render(request, 'users/graficas.html', { })
 
 
-class CharData(APIView):
+class CharData(LoginRequiredMixin,APIView):
+    login_url = 'login'
     authentication_classes = []
     permission_classes =[]
 
@@ -214,6 +214,9 @@ class CharData(APIView):
         programa= 'Eventos Culturales'
         preje='$12000'
         fechaini='2019-05-30'
+        labels = ['IMDA', 'IMAC', 'SEDECO', 'IMJU']
+        default_items = [nom,apepat,apemat,ed]
+        title= 'Prueba'
         data ={
         "nombre": nomb,
         "descri": desc,
@@ -225,12 +228,12 @@ class CharData(APIView):
         return Response(data)
 
 
-@login_required
+@login_required(login_url='login')
 def logout_view(request):
     logout(request)
     return redirect('login')
 
-
+@login_required(login_url='login')
 def report(request):
     hour = timezone.localtime(timezone.now())
     formatedHour = hour.strftime("%H:%M:%S")
@@ -280,3 +283,5 @@ def report(request):
     buffer.close()
     response.write(pdf)
     return response
+
+

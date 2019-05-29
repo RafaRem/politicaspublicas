@@ -6,19 +6,11 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 """Forms"""
 from apps.users.forms import RegistrarActividad
-from apps.programaOperativo.forms import ProgramaOperativoForm, ActividadesForm
+from apps.programaOperativo.forms import ProgramaOperativoForm, ActividadesForm, TerminarActividadesForm
 """Modelos"""
-from apps.programaOperativo.models import ProgramaOperativo, Acciones
+from apps.programaOperativo.models import ProgramaOperativo, Acciones, Actividad
 from apps.objetivo.models import Objetivo
 # # Create your views here.
-# class ActividadFormView(View):
-#     def get(request):
-#         # form = ActividadesForm()
-#         # return htt(request,'programasOperativos/actividadForm.html',{
-#         #     'form':form
-#         # })
-#         return HttpResponse('hola mmundo')
-
 def get_acciones_po_view(request,idPo):
     programaOperativo = ProgramaOperativo.objects.get(id=idPo)
     acciones = serializers.serialize('json',programaOperativo.acciones.all())
@@ -26,6 +18,20 @@ def get_acciones_po_view(request,idPo):
     return JsonResponse(acciones,safe=False)
     pass
 
+class ActividadesListView(View):
+    def get(self,request):
+        pos = ProgramaOperativo.objects.filter(dependencia=request.user.profile.dependencia)
+        actividades = []
+        for po in pos:
+            actividadesPo = Actividad.objects.filter(programaoperativo=po)
+            for actividadPo in actividadesPo:
+                actividades.append(actividadPo)
+                pass
+            pass
+        print(actividades)
+        return render(request,'programasOperativos/actividades/listActividades.html',{
+            'actividades':actividades
+        })
 
 class ProgramasOperativosView(View):
     def get(self, request, idPo):
@@ -44,46 +50,71 @@ class ProgramasOperativosView(View):
             return redirect(url)
 
 class ActividadFormView(View):
-    """faltaría programa operativo, latitud, longitud, acciones en form"""
     def get(self,request):
         form = ActividadesForm()
         programasOperativos = ProgramaOperativo.objects.filter(
             dependencia=request.user.profile.dependencia.id
             )
         print(programasOperativos)
-        return render(request,'programasOperativos/actividadForm.html',{
+        return render(request,'programasOperativos/actividades/actividadForm.html',{
             'form':form,
             'programasOperativos':programasOperativos
         })
     def post(self,request):
         form = ActividadesForm(request.POST)
-        if form.is_valid:
+        if form.is_valid():
             datos = form.save(commit=False)
             accion = Acciones.objects.get(id=request.POST.get('accion'))
             datos.accion = accion
             po = ProgramaOperativo.objects.get(id=request.POST.get('programaoperativo'))
             datos.programaoperativo = po
             datos.user = request.user
-            print(datos.user)
-            print(datos.programaoperativo)
-            print(datos.nombre)
-            print(datos.descripcion)
-            print(datos.presupuestoProgramado)
-            print(datos.fecha_in)
-            print(datos.fecha_fi)
-            print(datos.accion)
-            if datos.save():
-                messages.success(request, 'Actividad registrada con éxito.')
+            datos.latitud = request.POST.get('latitud')
+            datos.longitud = request.POST.get('longitud')
+            print(request.POST.get('fecha_fi'))
+            print(request.POST.get('fecha_in'))
+            datos.fecha_in = request.POST.get('fecha_in')
+            datos.fecha_fi = request.POST.get('fecha_fi')
+            save = datos.save()
+            print(save)
+            messages.success(request, 'Actividad registrada con éxito.')
+            return redirect('listActividades')
+            # return redirect('terminarActividad',args)
 
+        messages.error(request,form._errors)
         programasOperativos = ProgramaOperativo.objects.filter(
             dependencia=request.user.profile.dependencia.id
             )
-        return render(request,'programasOperativos/actividadForm.html',{
+        return render(request,'programasOperativos/actividades/actividadForm.html',{
             'form':form,
             'programasOperativos':programasOperativos
         })
 
-
+class TerminarActividadFormView(View):
+    def get(self,request,idActividad):
+        """validar si ya subió información no pueda acceder"""
+        actividad = Actividad.objects.get(pk=idActividad)
+        form = TerminarActividadesForm()
+        return render(request,'programasOperativos/actividades/terminarActividad.html',{
+            'form':form,
+            'actividad':actividad
+        })
+    def post(self,request,idActividad):
+        actividad = Actividad.objects.get(pk=idActividad)
+        form = TerminarActividadesForm(request.POST, instance=actividad)
+        if form.is_valid():
+            datos = form.save(commit=False)
+            # save = datos.save()
+            messages.success(request, 'Actividad actualizada con éxito.')
+            return redirect('listActividades')
+        messages.error(request, form._errors)
+        programasOperativos = ProgramaOperativo.objects.filter(
+            dependencia=request.user.profile.dependencia.id
+            )
+        return render(request,'programasOperativos/actividades/actividadForm.html',{
+            'form':form,
+            'programasOperativos':programasOperativos
+        })
 
 class ProgramasOperativosListView(View):
     def get(self,request, idObjetivo = 0):
