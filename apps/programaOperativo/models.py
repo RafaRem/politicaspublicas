@@ -7,7 +7,7 @@ from django.contrib.auth.models import User
 
 # Create your models here.
 class Acciones(models.Model):
-    nombre = models.CharField(max_length=500)
+    nombre = models.CharField(max_length=700)
     objetivo = models.ForeignKey(Objetivo,on_delete=models.PROTECT)
     def __str__(self):
         return self.nombre
