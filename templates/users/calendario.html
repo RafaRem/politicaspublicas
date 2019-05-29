@@ -29,9 +29,8 @@
                 <div class="container col-lg-9 col-md-12"  id="Select1">
                     <label for="exampleSelect1">Dependencia</label>
                     <select name="srh" class="container col-lg-9 col-md-12">
-                    <option>Todos</option>
                       {% for i in depende  %}
-                            <option >{{i.nombre}}</option>
+                            <option value="{{i.id}}" >{{i.nombre}}</option>
                       {% endfor %}
                     </select>
                 </div>
@@ -52,17 +51,17 @@
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <div class="modal-body">
+      <div id="contenido" class="modal-body">
         <label>Nombre:</label>
-        <p>{{ actividad.nombre }}</p>
+        <p id="nom"></p>
         <label>Descripción:</label>
-        <p>{{ actividad.descripcion }}</p>
+        <p id="desc"></p>
         <label>Programa Operativo:</label>
-        <p>{{ actividad.programaoperativo}}</p>
+        <p id="promo"> </p>
         <label>Presupuesto Ejercido:</label>
-        <p>{{ actividad.presupuestoProgramado }}</p>
+        <p id="preje"></p>
         <label>Fecha Inicial:</label>
-        <p>{{ actividad.fecha_in }}</p>
+        <p id="fei"></p> 
       </div>
         <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Salir</button>
@@ -86,8 +85,8 @@
 <script>
         $(document).ready(function(){            
            var endpoint = '/usuario/data/'
-           var title = []
-           var date = []
+           var title
+           var date
            
            $.ajax({
                method: "GET",
@@ -106,13 +105,27 @@
                       header: {
                       left: 'prev,next today',
                       center: 'title',
-                      right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                      right: 'dayGridMonth,timeGridWeek,timeGridDay',
+                      default: false
                   },
-                  
+                      //Aqui se renderiza con nuevos parametros
+                        eventRender: function(event,element,info) {
+                             var tooltip = new Tooltip(info.el, {
+                            title: info.event.extendedProps.description,
+                            placement: 'top',
+                            trigger: 'hover',
+                            container: 'body'
+                            });
+                        } //Aqui termina la renderizacion eventual 
                   //Aquí empieza
-                  eventClick: function(info) 
+                  eventClick: function(info, events) 
                   {
+
                         $("#ModalCenter").modal("show");
+                        $("#nom").text();
+                        
+                        
+                        
                     
                   }, 
                         //Aquí termina
@@ -123,7 +136,9 @@
                       title: "{{ i.nombre}}",
                       start: '{{ i.fecha_in|date:"Y-m-d" }}',
                       end: '{{i.fecha_fi|date:"Y-m-d" }}',
-                      color: '{{j}}'
+                      description: 'This is a cool event',
+                      color: '{{j}}',
+                      textColor: 'white' // an option!
                      
                       
                   },
@@ -131,7 +146,7 @@
                   {% endfor %}
                   
                             ],
-                                  
+                                
                       });
                         calendar.render();
                    

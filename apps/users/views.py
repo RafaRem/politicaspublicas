@@ -18,7 +18,7 @@ from rest_framework.views import APIView
 from .models import Persona
 from apps.dependencia.models import Dependencia
 from apps.objetivo.models import Objetivo
-from apps.programaOperativo.models import Actividad
+from apps.programaOperativo.models import Actividad, ProgramaOperativo
 from django.db.models import  *
 #Create your views here.a
 import time
@@ -103,6 +103,8 @@ class IndexView(View):
         print(self.ejes)
         return render(request,'index.html',{'ejes':self.ejes})
 
+def prueba():
+    return "hola"
 
 def CalendarView(request):
     #Model.objects.filter(fecha__range=(f_inicial, f_cierre) CONSULTA POR RANGO DE FECHAS
@@ -112,6 +114,7 @@ def CalendarView(request):
     matchs = Actividad.objects.all()
     depend = Dependencia.objects.all()
     colores=[]
+    actividades=[]
     for i in matchs:
         if (date_object.date() > i.fecha_in):
             colores+= ['red']
@@ -122,25 +125,30 @@ def CalendarView(request):
     contador = matchs.count()          
     if request.method== 'POST':
         srch = request.POST['srh']
+        
         if srch:
-            match = Actividad.objects.filter(Q(nombre__icontains=srch))
-            
+            dep = Dependencia.objects.get(pk=srch)
+            proper = ProgramaOperativo.objects.filter(dependencia=dep)
+            for i in proper:
+                actividades+=[i.actividad]
+
+
             colores=[]
-            for i in match:
+            for i in actividades:
                 if (date_object.date() > i.fecha_in):
                     colores+= ['red']
                 else:
                     colores+= ['green']
         
-            contador = match.count()
-            evento =zip(match, colores)
-            if match: 
-                return render(request, 'users/calendario.html', {'actividad':evento, 'contador': contador,'fecha': formatedDay,'color':colores,'depende':depend})
+            contador = actividades.count()
+            evento =zip(actividades, colores)
+            if actividades: 
+                return render(request, 'users/calendario.html', {'actividad':evento, 'contador': contador,'fecha': formatedDay,'color':colores,'depende':depend,'total':actividades})
             else:
                 messages.error(request,'Resultados no encontrados')    
         else:
             return HttpResponseRedirect('/calendario/')    
-    return render(request, 'users/calendario.html',{'actividad':evento,'fecha': formatedDay, 'contador': contador,'depende':depend})
+    return render(request, 'users/calendario.html',{'actividad':evento,'fecha': formatedDay, 'contador': contador,'depende':depend,'total':actividades})
 
 
 class UsuarioView(View):
@@ -201,13 +209,18 @@ class CharData(APIView):
         apemat = 7
         ed = 2
         #Var
-        labels = ['Nombres', 'Apellidos P', 'Apellidos M', 'Edades']
-        default_items = [nom,apepat,apemat,ed]
-        title= 'Prueba'
+        nomb = 'Danza del Venado'
+        desc = 'Evento artistico'
+        programa= 'Eventos Culturales'
+        preje='$12000'
+        fechaini='2019-05-30'
         data ={
-        "labels": labels,
-        "default": default_items,
-        "titulo": title,
+        "nombre": nomb,
+        "descri": desc,
+        "programa": programa,
+        "pres": preje,
+        "fecha":fechaini
+        
         }
         return Response(data)
 
