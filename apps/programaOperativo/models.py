@@ -1,11 +1,14 @@
 from django.db import models
 from apps.objetivo.models import *
+"""Modelos"""
+from apps.objetivo.models import Objetivo
 from apps.dependencia.models import *
 from django.contrib.auth.models import User
 
 # Create your models here.
 class Acciones(models.Model):
     nombre = models.CharField(max_length=500)
+    objetivo = models.ForeignKey(Objetivo,on_delete=models.PROTECT)
     def __str__(self):
         return self.nombre
 class ProgramaOperativo(models.Model):
