@@ -12,4 +12,5 @@ urlpatterns = [
     path('programasOperativos/actividad/lista', ActividadesListView.as_view(), name='listActividades'),
     path('programasOperativos/actividad/terminar/<str:idActividad>', 
     TerminarActividadFormView.as_view(), name='terminarActividad'),
+    path('programasOperativos/actividad/ver/<str:idActividad>', ver_actividad, name='verActividad'),
 ]

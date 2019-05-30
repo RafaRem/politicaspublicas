@@ -45,7 +45,7 @@ Tus actividades
             <td>
                 {% if actividad.estado == 'r' or  actividad.estado == 't'%}
                 <a class="btn btn-primary btn-sm guinda" 
-                href="#">Ver</a>
+                href="{%url 'verActividad' idActividad=actividad.id%}">Ver</a>
                 {%else%}
                 <a class="btn btn-primary btn-sm guinda" 
                 href="{%url 'terminarActividad' idActividad=actividad.id%}">Finalizar</a>
