@@ -111,6 +111,7 @@ class TerminarActividadFormView(LoginRequiredMixin,View):
         form = TerminarActividadesForm(request.POST, instance=actividad)
         if form.is_valid():
             datos = form.save(commit=False)
+            print(datos)
             # save = datos.save()
             messages.success(request, 'Actividad actualizada con éxito.')
             return redirect('listActividades')

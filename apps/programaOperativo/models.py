@@ -4,11 +4,13 @@ from apps.objetivo.models import *
 from apps.objetivo.models import Objetivo
 from apps.dependencia.models import *
 from django.contrib.auth.models import User
+from apps.indicador.models import PoblacionObjetivo
 
 # Create your models here.
 class Acciones(models.Model):
     nombre = models.CharField(max_length=700)
     objetivo = models.ForeignKey(Objetivo,on_delete=models.PROTECT)
+    poblacionObjetivo = models.ForeignKey(PoblacionObjetivo,on_delete=models.PROTECT)
     def __str__(self):
         return self.nombre
 class ProgramaOperativo(models.Model):
@@ -19,6 +21,10 @@ class ProgramaOperativo(models.Model):
         ('p', 'Piloto'),
         ('f', 'Foro'),
         ('c', 'Campaña')
+    )
+    opcionesEstado = (
+        ('a','Activo'),
+        ('i','Inactivo')
     )
     nombre = models.CharField(max_length=100)
     descripcion = models.CharField(max_length=1000, blank=True, null=True, verbose_name='Descripción')
@@ -33,6 +39,7 @@ class ProgramaOperativo(models.Model):
     objetivo = models.ForeignKey(Objetivo, on_delete=models.PROTECT)
     dependencia = models.ForeignKey(Dependencia, on_delete=models.PROTECT)
     acciones = models.ManyToManyField(Acciones, blank=True)
+    estado = models.CharField(choices=opcionesEstado,max_length=30,default='a')
     def __str__(self):
         return self.nombre
 

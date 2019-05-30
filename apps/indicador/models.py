@@ -19,3 +19,6 @@ class PoblacionObjetivo(models.Model):
     sexo = models.CharField(max_length=30,choices=opcionesSexo, verbose_name="Sexo")
     edadDesde = models.CharField(max_length=30, verbose_name="Edad desde")
     edadHasta = models.CharField(max_length=30, verbose_name="Edad hasta")
+    def __str__(self):
+        return self.nombre
+    
