@@ -10,5 +10,6 @@ urlpatterns = [
     #De aquí en adelante on las actividades
     path('programasOperativos/actividad/nueva', ActividadFormView.as_view() , name="nuevaActividad" ),
     path('programasOperativos/actividad/lista', ActividadesListView.as_view(), name='listActividades'),
-    path('programasOperativos/actividad/terminar/<str:idActividad>', TerminarActividadFormView.as_view(), name='terminarActividad'),
+    path('programasOperativos/actividad/terminar/<str:idActividad>', 
+    TerminarActividadFormView.as_view(), name='terminarActividad'),
 ]

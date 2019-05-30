@@ -17,7 +17,6 @@ from apps.objetivo.models import Objetivo
 def get_acciones_po_view(request,idPo):
     programaOperativo = ProgramaOperativo.objects.get(id=idPo)
     acciones = serializers.serialize('json',programaOperativo.acciones.all())
-    print(acciones)
     return JsonResponse(acciones,safe=False)
     pass
 
@@ -32,7 +31,6 @@ class ActividadesListView(LoginRequiredMixin,View):
                 actividades.append(actividadPo)
                 pass
             pass
-        print(actividades)
         return render(request,'programasOperativos/actividades/listActividades.html',{
             'actividades':actividades
         })
@@ -61,7 +59,6 @@ class ActividadFormView(LoginRequiredMixin,View):
         programasOperativos = ProgramaOperativo.objects.filter(
             dependencia=request.user.profile.dependencia.id
             )
-        print(programasOperativos)
         return render(request,'programasOperativos/actividades/actividadForm.html',{
             'form':form,
             'programasOperativos':programasOperativos
@@ -77,14 +74,14 @@ class ActividadFormView(LoginRequiredMixin,View):
             datos.user = request.user
             datos.latitud = request.POST.get('latitud')
             datos.longitud = request.POST.get('longitud')
-            print(request.POST.get('fecha_fi'))
-            print(request.POST.get('fecha_in'))
             datos.fecha_in = request.POST.get('fecha_in')
             datos.fecha_fi = request.POST.get('fecha_fi')
             save = datos.save()
-            print(save)
+            actividad = Actividad.objects.latest('created')
+            idActividad = actividad.id
             messages.success(request, 'Actividad registrada con éxito.')
-            return redirect('listActividades')
+            url = reverse('terminarActividad',args=(idActividad,))
+            return redirect(url)
             # return redirect('terminarActividad',args)
 
         messages.error(request,form._errors)
@@ -111,8 +108,11 @@ class TerminarActividadFormView(LoginRequiredMixin,View):
         form = TerminarActividadesForm(request.POST, instance=actividad)
         if form.is_valid():
             datos = form.save(commit=False)
-            print(datos)
-            # save = datos.save()
+            archivo = request.FILES['archivos']
+            datos.evidencia = archivo
+            #'t' significa terminada
+            datos.estado = 't'
+            save = datos.save()
             messages.success(request, 'Actividad actualizada con éxito.')
             return redirect('listActividades')
         messages.error(request, form._errors)
