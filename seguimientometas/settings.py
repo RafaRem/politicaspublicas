@@ -20,7 +20,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '3!p0)f(@a$^c*2k!mxoczfn)3gvec2n2@lg%!dav+)d6_ruxxx'
+SECRET_KEY = os.getenv('PoliticasSecretKey')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -86,13 +86,12 @@ WSGI_APPLICATION = 'seguimientometas.wsgi.application'
 # Database
 # http
 # s://docs.djangoproject.com/en/2.2/ref/settings/#databases
-
 DATABASES = {
         'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'politicaspublicas',
-        'USER': 'postgres',
-        'PASSWORD':'wi8h51u1',
+        'NAME': os.getenv('PoliticasDb'),
+        'USER': os.getenv('PoliticasDbUser'),
+        'PASSWORD':os.getenv('PoliticasPass'),
         'HOST':'localhost',
         'PORT':'',
     }
