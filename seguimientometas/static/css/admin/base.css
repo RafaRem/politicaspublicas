@@ -1,0 +1,72 @@
+html{
+    font-family: 'Montserrat' !important;
+}
+body{
+    font-family: 'Montserrat' !important;
+}
+
+#header{
+    background: rgb(178, 171, 154) !important;
+    color: white !important;
+}
+#branding h1, #branding h1 a:link, #branding h1 a:visited{
+    color: white;
+}
+
+tbody{
+    color:  rgb(96, 2, 12) !important;
+}
+
+a.section{
+    color: white !important;
+}
+
+td{
+    color: initial;
+}
+li{
+    color: white;
+}
+
+
+.object-tools a:link, .object-tools a:visited{
+    background-color: rgb(178, 171, 154) !important;
+}
+
+a{
+    color: inherit !important;
+}
+
+.breadcrumbs{
+    background: rgb(178, 171, 154) !important;
+    color: rgba(96, 2, 12, 0.8) !important;
+}
+
+caption{
+    background: rgba(155, 16, 30, 0.8) !important;
+}
+#user-tools a:focus, #user-tools a:hover{
+    color:  rgb(96, 2, 12) !important;
+    text-decoration:none;
+    border-bottom-color: rgb(96, 2, 12) !important;
+}
+a:focus, a:hover{
+    color: rgb(176, 129, 134) !important;
+}
+
+input.default{
+    background-color: rgb(155, 16, 30) !important;
+    border-color: rgb(155, 16, 30) !important;
+    color: white !important;
+}
+input[name=_addanother],input[name=_continue]{
+    background: rgba(155, 16, 30, 0.7) !important;
+    color: white !important;
+}
+.selector-chosen h2{
+    background: rgba(155, 16, 30, 0.7) !important;
+    color: white !important;
+}
+.submit-row a.deletelink{
+    color: white !important;
+}
