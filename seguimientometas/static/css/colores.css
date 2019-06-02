@@ -1,0 +1,83 @@
+/* En el caso de los :hover solo se aplicará si son botones o links */
+.guinda{
+    background-color: rgb(155, 16, 30) !important;
+    border-color: rgb(155, 16, 30) !important;
+    color: white !important;
+}
+button.guinda:hover{
+    background-color: rgb(176, 129, 134) !important;
+    border-color: rgb(176, 129, 134) !important;
+    color: white !important;
+}
+a.guinda:hover{
+    background-color: rgb(176, 129, 134) !important;
+    border-color: rgb(176, 129, 134) !important;
+    color: white !important;
+}
+.guinda-oscuro{
+    background-color: rgb(96, 2, 12) !important;
+    border-color: rgb(96, 2, 12) !important;
+}
+.beige-alto{
+    background-color: rgb(178, 171, 154) !important;
+    border-color: rgb(178, 171, 154) !important;
+    color:black;
+}
+button.guinda-oscuro:hover{
+    background-color: rgb(176, 129, 134) !important;
+    border-color: rgb(176, 129, 134) !important;
+}
+a.guinda-oscuro{
+    background-color: rgb(176, 129, 134) !important;
+    border-color: rgb(176, 129, 134) !important;
+}
+.dorado{
+    background-color: rgb(224, 187, 117) !important;
+    border-color: rgb(224, 187, 117) !important;
+}
+.dorado-alto{
+    background-color: #716439 !important;
+    border-color: #716439 !important;
+}
+
+.eje1{
+    background-color: rgb(60, 91, 80) !important;
+    border-color: rgb(60, 91, 80) !important;
+}
+.eje2{
+    background-color: rgb(133, 42, 71) !important;
+    border-color: rgb(133, 42, 71) !important;
+}
+.eje3{
+    background-color: rgb(87, 32, 52) !important;
+    border-color: rgb(87, 32, 52) !important;
+}
+.eje4{
+    background-color: rgb(175, 147, 96) !important;
+    border-color: rgb(175, 147, 96) !important;
+}
+
+.eje5{
+    background-color: rgb(81, 47, 44) !important;
+    border-color: rgb(81, 47, 44) !important;
+}
+
+.blanquito{
+    background-color: #b16b33 !important;
+    border-color: #b16b33 !important;
+}
+
+.text-dorado{
+    color: #b5ac8a !important;
+}
+
+.mitad-h3{
+    font-size: 1rem !important;
+    color: #f1f3f2 !important;
+}
+
+.label-plan{
+    font-size: 1rem !important;
+    background-color: rgb(96, 2, 12) !important;
+
+}
