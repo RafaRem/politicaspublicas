@@ -146,6 +146,7 @@ class ProgramasOperativosListView(LoginRequiredMixin,View):
 
 def ver_actividad(request,idActividad):
     actividad = Actividad.objects.get(pk=idActividad)
+    print(actividad)
     return render(request,'programasOperativos/actividades/verActividad.html',{
         'actividad':actividad
     })

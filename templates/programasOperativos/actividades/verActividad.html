@@ -6,5 +6,24 @@
 {% endblock %}
 
 {% block content %}
-
+<div class="container bg-transparent">
+    <hr>
+    <h5 class="bg-transparent text-center">
+        Subido por <strong>{{actividad.user.username}}, {{actividad.user.profile.dependencia.nombre}}</strong> 
+    </h5>
+    <hr>
+    <h5 class="text-center">
+        <strong>Programa operativo:</strong> {{actividad.programaoperativo.nombre}}
+    </h5>
+    <br>
+    <h5 class="text-center">
+        {{actividad.descripcion}}
+    </h5>
+    <h5 class="text-center"><strong>Presupuesto programado:</strong> {{actividad.presupuestoProgramado}} </h5>
+    <h5 class="text-center"><strong>Presupuesto ejercido:</strong> {{actividad.presupuestoEjercido}} </h5>
+    <h5 class="text-center"><strong>Personas involucradas en la actividad:</strong> 
+        {{actividad.personasInvolucradas}} </h5>
+    {{actividad.evidencia}}
+    
+</div>
 {% endblock %}
