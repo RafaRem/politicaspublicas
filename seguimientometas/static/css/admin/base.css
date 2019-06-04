@@ -70,3 +70,13 @@ input[name=_addanother],input[name=_continue]{
 .submit-row a.deletelink{
     color: white !important;
 }
+h2{
+    background: rgba(155, 16, 30, 0.7) !important;
+    color: white !important;
+}
+.selector .selector-available h2{
+    color: white !important;
+}
+.submit-row a.deletelink{
+    background: rgb(96, 2, 12) !important;
+}
