@@ -21,12 +21,17 @@ class Dependencia(models.Model):
         ('d','Dependencia'),
         ('p','Paramunicipal')
     )
+    opcionesEstado = (
+        ('a', 'Acticho'),
+        ('i', 'Inactivo')
+    )
     nombre = models.CharField(max_length=100, blank=True)
     director = models.CharField(max_length=100, blank=True)
     direccion = models.CharField(max_length=100, blank=True)
     telefono = models.CharField(max_length=100, blank=True)
     tipo = models.CharField(max_length=30, choices=opcionesTipo, blank=True)
     adscrita = models.ForeignKey(Raiz,blank=True, null=True, on_delete=models.PROTECT)
+    estado = models.CharField(max_length=30,choices=opcionesEstado,default='a')
     def __str__(self):
         return self.nombre
     
