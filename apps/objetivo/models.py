@@ -27,5 +27,7 @@ class Objetivo(models.Model):
     ejeTransversal = models.CharField(max_length=300,choices=opcionesEjesTransversales)
     dependencia = models.ManyToManyField(Dependencia,blank=True)
     estado = models.CharField(max_length=3,default='a',choices=opcionesEstado)
+    class Meta:
+        verbose_name = 'Objetivos transversales/estratégicos'
     def __str__(self):
         return self.numero + ',' + self.nombre

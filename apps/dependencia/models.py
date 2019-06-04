@@ -13,6 +13,8 @@ class Raiz(models.Model):
     telefono = models.CharField(max_length=100, blank=True)
     direccion = models.CharField(max_length=100, blank=True)
     estado = models.CharField(max_length=5,default='A')
+    class Meta:
+        verbose_name = 'Secretarías/Direcciones Generales'
     def __str__(self):
         return self.nombre
     
@@ -32,6 +34,8 @@ class Dependencia(models.Model):
     tipo = models.CharField(max_length=30, choices=opcionesTipo, blank=True)
     adscrita = models.ForeignKey(Raiz,blank=True, null=True, on_delete=models.PROTECT)
     estado = models.CharField(max_length=30,choices=opcionesEstado,default='a')
+    class Meta:
+        verbose_name = 'Dependencias'
     def __str__(self):
         return self.nombre
     
@@ -39,6 +43,8 @@ class Departamento(models.Model):
     nombre = models.CharField(max_length=100)
     dependencia = models.ForeignKey(Dependencia,on_delete=models.PROTECT)
     encargado = models.CharField(max_length=100)
+    class Meta:
+        verbose_name = 'Departamentos'
     def __str__(self):
         return self.dependencia.nombre + ', ' + self.nombre
 

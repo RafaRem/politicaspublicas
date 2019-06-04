@@ -11,6 +11,8 @@ class Acciones(models.Model):
     nombre = models.CharField(max_length=700)
     objetivo = models.ForeignKey(Objetivo,on_delete=models.PROTECT)
     poblacionObjetivo = models.ForeignKey(PoblacionObjetivo,on_delete=models.PROTECT)
+    class Meta:
+        verbose_name = 'Acciones de programas operativos'
     def __str__(self):
         return self.nombre
 class ProgramaOperativo(models.Model):
@@ -40,6 +42,8 @@ class ProgramaOperativo(models.Model):
     dependencia = models.ForeignKey(Dependencia, on_delete=models.PROTECT)
     acciones = models.ManyToManyField(Acciones, blank=True)
     estado = models.CharField(choices=opcionesEstado,max_length=30,default='a')
+    class Meta:
+        verbose_name = 'Programas operativos'
     def __str__(self):
         return self.nombre
 
@@ -74,6 +78,8 @@ class Actividad(models.Model):
     verbose_name="Acción a la que corresponde")
     created = models.DateTimeField(auto_now_add=True)    
     estado = models.CharField(choices=opcionesEstado,max_length=30,default='p')
+    class Meta:
+        verbose_name = 'Actividades'
     def __str__(self):
         return self.nombre
 
