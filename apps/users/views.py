@@ -157,7 +157,7 @@ class UsuarioView(LoginRequiredMixin,View):
 
 class LoginView(View):
     def post(self,request):
-        username = str(request.POST['usuario']).lower()
+        username = str(request.POST['usuario'])
         password = str(request.POST['pass'])
         if username:
             user = authenticate(username=username,password=password)
