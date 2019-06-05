@@ -7,23 +7,121 @@
 
 {% block content %}
 <div class="container bg-transparent">
-    <hr>
-    <h5 class="bg-transparent text-center">
-        Subido por <strong>{{actividad.user.username}}, {{actividad.user.profile.dependencia.nombre}}</strong> 
-    </h5>
-    <hr>
-    <h5 class="text-center">
-        <strong>Programa operativo:</strong> {{actividad.programaoperativo.nombre}}
-    </h5>
-    <br>
-    <h5 class="text-center">
-        {{actividad.descripcion}}
-    </h5>
-    <h5 class="text-center"><strong>Presupuesto programado:</strong> {{actividad.presupuestoProgramado}} </h5>
-    <h5 class="text-center"><strong>Presupuesto ejercido:</strong> {{actividad.presupuestoEjercido}} </h5>
-    <h5 class="text-center"><strong>Personas involucradas en la actividad:</strong> 
-        {{actividad.personasInvolucradas}} </h5>
-    <a target="_blank" rel="noopener noreferrer" href="/media/{{actividad.evidencia}}">Evidencia</a>
+        <table class="table">
+                <tbody>
+                  <tr>
+                    <th scope="row">
+                        <h5 class="text-center">
+                            <strong>Subido por
+                            </strong>
+                        </h5>
+                    </th>
+                    <td>
+                        <h5 class="text-center">
+                                {{actividad.user.username}}, {{actividad.user.profile.dependencia.nombre}}
+                        </h5>
+                    </td>
+                  </tr>
+                  <tr>
+                    <th scope="row">
+                            <h5 class="text-center">
+                                    <strong>Programa operativo:</strong>
+                                </h5>
+                    </th>
+                    <td>
+                        <h5 class="text-center">
+                        {{actividad.programaoperativo.nombre}}
+                        </h5>
+                    </td>
+                  </tr>
+                  <tr>
+                    <th scope="row">
+                        <h5 class="text-center"><strong>Acción:</strong> </h5>
+                    </th>
+                    <td>
+                        <h5 class="text-center">
+                            {{actividad.accion.nombre}}
+                        </h5>
+                    </td>
+                  </tr>
+                  <tr>
+                        <th scope="row">
+                            <h5 class="text-center">
+                                <strong>Descripción</strong>
+                            </h5>
+                        </th>
+                        <td>
+                            <h5 class="text-center">
+                                {{actividad.descripcion}}
+                            </h5>
+                        </td>
+                      </tr>
+                    <tr>
+                        <th scope="row">
+                            <h5 class="text-center">
+                                <strong>Presupuesto programado:</strong>
+                            </h5>
+                        </th>
+                        <td>
+                            <h5 class="text-center">
+                                {{actividad.presupuestoProgramado}}
+                            </h5>
+                        </td>
+                        </tr>
+                    <tr>
+                        <th scope="row">
+                            <h5 class="text-center">
+                                <strong>Presupuesto ejercido:</strong>
+                            </h5>
+                        </th>
+                        <td>
+                            <h5 class="text-center">
+                                {{actividad.presupuestoEjercido}}
+                            </h5>
+                        </td>
+                        </tr>
+                    <tr>
+                        <th scope="row">
+                            <h5 class="text-center">
+                                <strong>Personas involucradas en la actividad:</strong>
+                            </h5>
+                        </th>
+                        <td>
+                            <h5 class="text-center">
+                                {{actividad.personasInvolucradas}}
+                            </h5>
+                        </td>
+                        </tr>
+                    <tr>
+                        <th scope="row">
+                            <h5 class="text-center">
+                                <strong>Actividad desde:</strong>
+                            </h5>
+                        </th>
+                        <td>
+                            <h5 class="text-center">
+                                {{actividad.fecha_in}}
+                            </h5>
+                        </td>
+                        </tr>
+                    <tr>
+                        <th scope="row">
+                            <h5 class="text-center">
+                                <strong>Hasta:</strong>
+                            </h5>
+                        </th>
+                        <td>
+                            <h5 class="text-center">
+                                {{actividad.fecha_fi}}
+                            </h5>
+                        </td>
+                        </tr>
+                </tbody>
+              </table>
+
+    <div class="d-flex justify-content-center">
+        <embed src="/media/{{actividad.evidencia}}" width="600" height="500" alt="pdf" pluginspage="http://www.adobe.com/products/acrobat/readstep2.html">
+    </div>
     
 </div>
 {% endblock %}
