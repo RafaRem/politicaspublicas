@@ -192,6 +192,11 @@ def vista_registrar(request):
         form = RegistrarPersona()
     return render(request,'users/RegistroPrueba.html',{'form': form})
 
+def vista_contrasena_olvidada(request):
+    if request.user.is_authenticated:
+        return redirect('index')
+    return render(request, 'users/contrasenaolvidada.html')
+
 class GraficaView(LoginRequiredMixin,View):
     login_url = 'login'
     def get(self,request, *args, **kwargs):

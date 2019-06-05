@@ -9,4 +9,5 @@ urlpatterns = [
     url(r'^usuario/reporte/', report, name='report'),
     url(r'^usuario/calendario/', CalendarView , name="calendar" ),
     url(r'^usuario/logout/',logout_view, name="logout" ),
+    url(r'^usuario/forgottenpass/', vista_contrasena_olvidada, name="contraOlvidada" ),
 ]
