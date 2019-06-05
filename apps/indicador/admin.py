@@ -14,3 +14,15 @@ class PoblacionObjetivoAdmin(admin.ModelAdmin):
     ordering = ['nombre']
     search_fields = ['nombre']
 
+@admin.register(ClasificacionGasto)
+class ClasificacionGastoAdmin(admin.ModelAdmin):
+    list_display = ['nombre']
+    ordering = ['nombre']
+    search_fields = ['nombre']
+
+@admin.register(ConceptoGasto)
+class ConceptoGastoAdmin(admin.ModelAdmin):
+    list_display = ['nombre', 'clasificacion']
+    ordering = ['nombre']
+    search_fields = ['nombre']
+

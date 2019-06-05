@@ -4,7 +4,7 @@ from apps.objetivo.models import *
 from apps.objetivo.models import Objetivo
 from apps.dependencia.models import *
 from django.contrib.auth.models import User
-from apps.indicador.models import PoblacionObjetivo
+from apps.indicador.models import PoblacionObjetivo, ConceptoGasto
 
 # Create your models here.
 class Acciones(models.Model):
@@ -64,7 +64,7 @@ class Actividad(models.Model):
     descripcion = models.TextField(max_length=300, 
     verbose_name="Descripción breve")
     presupuestoProgramado = models.CharField(max_length=300, 
-    verbose_name="Presupuesto asignado a esta actividad")
+    verbose_name="Presupuesto comprometido en esta actividad")
     presupuestoEjercido = models.CharField(max_length=300,blank=True, null=True,
     verbose_name="Presupuesto ejercido")
     personasInvolucradas = models.CharField(max_length=10,blank=True, null=True,
@@ -78,15 +78,18 @@ class Actividad(models.Model):
     verbose_name="Acción a la que corresponde")
     created = models.DateTimeField(auto_now_add=True)    
     estado = models.CharField(choices=opcionesEstado,max_length=30,default='p')
+    fechaRegistrada = models.DateTimeField(auto_now_add=True)
+    fechaActualizada = models.DateTimeField(auto_now=True)
     class Meta:
         verbose_name = 'Actividades'
     def __str__(self):
         return self.nombre
 
-
-    
-
-
-    
-
-
+class DetallesGasto(models.Model):
+    cantidad = models.CharField(max_length=100)
+    actividad = models.ForeignKey(Actividad, on_delete=models.PROTECT)
+    gasto = models.ForeignKey(ConceptoGasto,on_delete=models.PROTECT)
+    class Meta:
+        verbose_name = 'Detalles de gasto por actividades'
+    def __str__(self):
+        return self.actividad + ', ' + self.gasto

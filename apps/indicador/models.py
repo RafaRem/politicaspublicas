@@ -26,8 +26,17 @@ class PoblacionObjetivo(models.Model):
     def __str__(self):
         return self.nombre
 
+class ClasificacionGasto(models.Model):
+    nombre = models.CharField(max_length=300)
+    class Meta:
+        verbose_name = 'Clasificadores de gastos'
+    def __str__(self):
+        return self.nombre
+
 class ConceptoGasto(models.Model):
     nombre = models.CharField(max_length=300,verbose_name="Nombre de gasto")
+    clasificacion = models.ForeignKey(ClasificacionGasto, on_delete=models.PROTECT,
+    verbose_name = 'Clasificación del gasto')
     class Meta:
         verbose_name = 'Conceptos por gasto'
-    
+
