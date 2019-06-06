@@ -30,5 +30,9 @@ class ActividadAdmin(admin.ModelAdmin):
     get_accion.short_description = 'Acción'
     get_accion.admin_order_field = 'accion__nombre'
 
-
+@admin.register(DetallesGasto)
+class DetallesGastoAdmin(admin.ModelAdmin):
+    list_display = ['actividad','gasto','cantidad']
+    ordering = ['actividad']
+    search_fields = ['actividad', 'gastos']
 

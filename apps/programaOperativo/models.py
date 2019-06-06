@@ -91,5 +91,6 @@ class DetallesGasto(models.Model):
     gasto = models.ForeignKey(ConceptoGasto,on_delete=models.PROTECT)
     class Meta:
         verbose_name = 'Detalles de gasto por actividades'
+        unique_together = ['actividad','gasto']
     def __str__(self):
         return self.actividad + ', ' + self.gasto

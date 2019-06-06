@@ -11,6 +11,7 @@ from apps.programaOperativo.forms import ProgramaOperativoForm, ActividadesForm,
 """Modelos"""
 from apps.programaOperativo.models import ProgramaOperativo, Acciones, Actividad
 from apps.objetivo.models import Objetivo
+from apps.indicador.models import ConceptoGasto
 # # Crea
 # te your views here.
 #ESTE NO NECESITA PROTECCION
@@ -99,9 +100,11 @@ class TerminarActividadFormView(LoginRequiredMixin,View):
         """validar si ya subió información no pueda acceder"""
         actividad = Actividad.objects.get(pk=idActividad)
         form = TerminarActividadesForm()
+        conceptosGasto = ConceptoGasto.objects.all()
         return render(request,'programasOperativos/actividades/terminarActividad.html',{
             'form':form,
-            'actividad':actividad
+            'actividad':actividad,
+            'conceptosGasto':conceptosGasto
         })
     def post(self,request,idActividad):
         actividad = Actividad.objects.get(pk=idActividad)
