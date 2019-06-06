@@ -2,18 +2,6 @@ from django.contrib import admin
 from apps.indicador.models import *
 # Register your models here.
 
-@admin.register(CategoriaPoblacionObjetivo)
-class CategoriaPoblacionObjetivoAdmin(admin.ModelAdmin):
-    list_display = ['nombre']
-    ordering = ['nombre']
-    search_fields = ['nombre']
-
-@admin.register(PoblacionObjetivo)
-class PoblacionObjetivoAdmin(admin.ModelAdmin):
-    list_display = ['nombre','categoria','sexo']
-    ordering = ['nombre']
-    search_fields = ['nombre']
-
 @admin.register(ClasificacionGasto)
 class ClasificacionGastoAdmin(admin.ModelAdmin):
     list_display = ['nombre']
@@ -26,3 +14,22 @@ class ConceptoGastoAdmin(admin.ModelAdmin):
     ordering = ['nombre']
     search_fields = ['nombre']
 
+@admin.register(Escolaridad)
+class EscolaridadAdmin(admin.ModelAdmin):
+    list_display = ['nombre']
+
+@admin.register(GruposVulnerables)
+class GruposVulnerablesAdmin(admin.ModelAdmin):
+    list_display = ['nombre']
+
+@admin.register(SectorSocial)
+class SectorSocialAdmin(admin.ModelAdmin):
+    list_display = ['nombre']
+
+@admin.register(Ubicacion)
+class UbicacionAdmin(admin.ModelAdmin):
+    list_display = ['nombre']
+
+@admin.register(CategoriaPoblacion)
+class CategoriaPoblacionAdmin(admin.ModelAdmin):
+    list_display = ['nombre', 'edadDesde', 'edadHasta']

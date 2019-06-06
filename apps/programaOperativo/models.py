@@ -3,14 +3,19 @@ from apps.objetivo.models import *
 """Modelos"""
 from apps.objetivo.models import Objetivo
 from apps.dependencia.models import *
+from apps.indicador.models import *
 from django.contrib.auth.models import User
-from apps.indicador.models import PoblacionObjetivo, ConceptoGasto
+from apps.indicador.models import ConceptoGasto
 
 # Create your models here.
 class Acciones(models.Model):
     nombre = models.CharField(max_length=700)
     objetivo = models.ForeignKey(Objetivo,on_delete=models.PROTECT)
-    poblacionObjetivo = models.ForeignKey(PoblacionObjetivo,on_delete=models.PROTECT)
+    escolaridad = models.ManyToManyField(Escolaridad, blank=True)
+    gruposVulnerables = models.ManyToManyField(GruposVulnerables, blank=True)
+    sectorSocial = models.ManyToManyField(SectorSocial, blank=True)
+    ubicacion = models.ManyToManyField(Ubicacion, blank=True)
+    categoriaPoblacion = models.ManyToManyField(CategoriaPoblacion, blank=True)
     class Meta:
         verbose_name = 'Acciones de programas operativos'
     def __str__(self):
