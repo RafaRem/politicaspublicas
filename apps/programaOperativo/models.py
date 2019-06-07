@@ -72,8 +72,6 @@ class Actividad(models.Model):
     verbose_name="Descripción breve")
     presupuestoProgramado = models.CharField(max_length=300, 
     verbose_name="Presupuesto comprometido en esta actividad")
-    presupuestoEjercido = models.CharField(max_length=300,blank=True, null=True,
-    verbose_name="Presupuesto ejercido")
     personasInvolucradas = models.CharField(max_length=10,blank=True, null=True,
     verbose_name="Personas involucradas")
     evidencia = models.FileField(blank=True, null=True)
