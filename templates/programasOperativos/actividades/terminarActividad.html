@@ -34,6 +34,33 @@
         method="POST" enctype="multipart/form-data">
             {% csrf_token %}
             {{ form|crispy }}
+            <label for="id_tabla_presupuesto">Presupuesto ejercido*</label>
+            <div class="table-responsive">
+                <table class="table" id="id_tabla_presupuesto">
+                  <thead>
+                    <tr>
+                      <th scope="col">#</th>
+                      <th scope="col">Nombre</th>
+                      <th scope="col">Cantidad</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <th scope="row">1</th>
+                      <td>Cell</td>
+                      <td>Cell</td>
+                    </tr>
+                  </tbody>
+                </table>
+
+              </div>
+              <div class="d-flex justify-content-center mt-5">
+                  <button class="btn btn-primary guinda" id="id_btn_gastos" 
+                  type="button">
+                      Agregar presupuesto ejercido &nbsp;<i class="fas fa-plus-circle"></i>
+                  </button>
+                  </div>
+            <hr>
             <label for="input-42-es">Evidencia*</label>
             <div class="file-loading">
                     <input required class="guinda" 
@@ -49,39 +76,40 @@
         </form>
 
     </div>
-    <div class="modal fade" id="id_detalles_gasto" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal fade" id="id_detalles_gasto" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
               <div class="modal-content">
                 <div class="modal-header">
                   <h4 class="modal-title" id="exampleModalLabel">
-                    Selecciona el lugar de esta actividad
+                    Selecciona concepto de presupuesto
                   </h4>
                   <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                   </button>
                 </div>
                 <div class="modal-body">
-                  <ul>
-                    <li>
-                        <strong>
-                            En caso de ser una sindicatura, basta con poner su nombre 
-                            en el campo del mapa y presionar enter.
-                        </strong>
-                    </li>
-                    <li>
-                        <strong>
-                            En caso de ser en Los Mochis, escribir la colonia y presionar enter.
-                          </strong>
-                    </li>
-         
-                    <li>
-                        <strong>
-                            En caso de ser una actividad del Ayuntamiento, 
-                            escribir "H. Ayuntamiento" y presionar enter.
-                          </strong>
-                    </li>
-                  </ul>
-                
+
+                            <div class="table-responsive">
+                <table class="table" id="id_tabla_presupuesto">
+                  <thead>
+                    <tr>
+                      <th scope="col">#</th>
+                      <th scope="col">Concepto de gasto</th>
+                      <th scope="col">Categoría</th>
+                      <th scope="col">Acción</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <th scope="row">1</th>
+                      <td>Cell</td>
+                      <td>Cell</td>
+                      <td>Cell</td>
+                    </tr>
+                  </tbody>
+                </table>
+
+              </div>
                   
         
                 </div>
@@ -121,7 +149,7 @@
             maxFileSize: 10000
         });
         }, 1000);
-        $( "#id_form_actividad" ).submit(function( event ) {
+    $( "#id_form_actividad" ).submit(function( event ) {
             console.log($('#input-42-es'));
             // if ($('#input-42-es') {
             //     console.log('hooooliii');
@@ -132,5 +160,8 @@
 
             event.preventDefault();
       });
-</script>
+    $("#id_btn_gastos").click(()=>{
+      console.log('holaaaaa');
+    })
+    </script>
 {% endblock %}
