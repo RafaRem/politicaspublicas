@@ -4,8 +4,8 @@ from apps.programaOperativo.models import *
 
 
 @admin.register(ProgramaOperativo)
-class ObjetivoAdmin(admin.ModelAdmin):
-    list_display = ['nombre', 'dependencia', 'objetivo']
+class ProgramaOperativoAdmin(admin.ModelAdmin):
+    list_display = ['nombre', 'dependencia']
     ordering = ['nombre']
     search_fields = ('nombre','dependencia__nombre',)
     filter_horizontal = ('acciones',)
