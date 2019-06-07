@@ -14,8 +14,10 @@ class Acciones(models.Model):
     escolaridad = models.ManyToManyField(Escolaridad, blank=True)
     gruposVulnerables = models.ManyToManyField(GruposVulnerables, blank=True)
     sectorSocial = models.ManyToManyField(SectorSocial, blank=True)
+    sectorEconomico = models.ManyToManyField(SectorEconomico, blank=True)
     ubicacion = models.ManyToManyField(Ubicacion, blank=True)
     categoriaPoblacion = models.ManyToManyField(CategoriaPoblacion, blank=True)
+    
     class Meta:
         verbose_name = 'Acciones de programas operativos'
     def __str__(self):

@@ -48,6 +48,13 @@ class Ubicacion(models.Model):
     def __str__(self):
         return self.nombre
 
+class SectorEconomico(models.Model):
+    nombre = models.CharField(max_length=200, verbose_name='Nombre')
+    class Meta:
+        verbose_name = 'Sectores económicos'
+    def __str__(self):
+        return self.nombre
+
 class CategoriaPoblacion(models.Model):
     opcionesSexo = (
         ('h','Hombre'),

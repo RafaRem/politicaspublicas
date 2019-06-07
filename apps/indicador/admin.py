@@ -33,3 +33,7 @@ class UbicacionAdmin(admin.ModelAdmin):
 @admin.register(CategoriaPoblacion)
 class CategoriaPoblacionAdmin(admin.ModelAdmin):
     list_display = ['nombre', 'edadDesde', 'edadHasta']
+
+@admin.register(SectorEconomico)
+class SectorEconomicoAdmin(admin.ModelAdmin):
+    list_display = ['nombre']
