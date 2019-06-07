@@ -36,15 +36,6 @@ class ProgramaOperativo(models.Model):
         ('i','Inactivo')
     )
     nombre = models.CharField(max_length=100)
-    descripcion = models.CharField(max_length=1000, blank=True, null=True, verbose_name='Descripción')
-    tipoPrograma = models.CharField(max_length=30,choices=opcionesTipoPrograma, blank=True, null=True, 
-    verbose_name='Tipo de programa')
-    objetivos = models.CharField(max_length=1000,blank=True, null=True, verbose_name='Objetivos')
-    estrategias = models.CharField(max_length=1000, blank=True, null=True, verbose_name='Estrategias')
-    beneficiarios = models.CharField(max_length=1000, blank=True, null=True, verbose_name='Beneficiarios')
-    justificacion = models.CharField(max_length=1000, blank=True, null=True, verbose_name='Justificación')
-    problematicaSocial = models.CharField(max_length=1000, blank=True, null=True, verbose_name = 'Problemática social')
-    #BORRAR OBJETIVO AL MANDAR A PRODUCCION
     objetivo = models.ForeignKey(Objetivo, on_delete=models.PROTECT)
     dependencia = models.ForeignKey(Dependencia, on_delete=models.PROTECT)
     acciones = models.ManyToManyField(Acciones, blank=True)
@@ -72,8 +63,6 @@ class Actividad(models.Model):
     verbose_name="Descripción breve")
     presupuestoProgramado = models.CharField(max_length=300, 
     verbose_name="Presupuesto comprometido en esta actividad")
-    presupuestoEjercido = models.CharField(max_length=300,blank=True, null=True,
-    verbose_name="Presupuesto ejercido")
     personasInvolucradas = models.CharField(max_length=10,blank=True, null=True,
     verbose_name="Personas involucradas")
     evidencia = models.FileField(blank=True, null=True)

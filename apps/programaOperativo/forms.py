@@ -17,7 +17,6 @@ class ActividadesForm(forms.ModelForm):
         fields = '__all__'
         exclude = [
             'programaoperativo',
-            'presupuestoEjercido',
             'personasInvolucradas',
             'evidencia',
             'user',
@@ -33,7 +32,6 @@ class TerminarActividadesForm(forms.ModelForm):
     class Meta:
         model=Actividad
         fields = [            
-            'presupuestoEjercido',
             'personasInvolucradas',
             ]
         exclude = [
