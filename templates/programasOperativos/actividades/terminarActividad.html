@@ -24,6 +24,12 @@
     label{
         font-weight: bold;
     }
+    .input-pago{
+      min-width: 100px;
+    }
+    table.dataTable tbody tr{
+        background: transparent !important;
+    }
 </style>
 {% endblock extracss %}
 
@@ -33,34 +39,24 @@
         <form id="id_form_actividad" action="" 
         method="POST" enctype="multipart/form-data">
             {% csrf_token %}
-            {{ form|crispy }}
             <label for="id_tabla_presupuesto">Presupuesto ejercido*</label>
             <div class="table-responsive">
-                <table class="table" id="id_tabla_presupuesto">
-                  <thead>
-                    <tr>
-                      <th scope="col">#</th>
-                      <th scope="col">Nombre</th>
-                      <th scope="col">Cantidad</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <th scope="row">1</th>
-                      <td>Cell</td>
-                      <td>Cell</td>
-                    </tr>
-                  </tbody>
-                </table>
-
-              </div>
-              <div class="d-flex justify-content-center mt-5">
-                  <button class="btn btn-primary guinda" id="id_btn_gastos" 
-                  type="button">
-                      Agregar presupuesto ejercido &nbsp;<i class="fas fa-plus-circle"></i>
-                  </button>
-                  </div>
+              <table class="table" id="id_tabla_presupuesto">
+                <thead>
+                  <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Concepto de gasto</th>
+                    <th scope="col">Categoría</th>
+                    <th scope="col">Cantidad</th>
+                  </tr>
+                </thead>
+                <tbody>
+                </tbody>
+              </table>
+  
+            </div>
             <hr>
+            {{ form|crispy }}
             <label for="input-42-es">Evidencia*</label>
             <div class="file-loading">
                     <input required class="guinda" 
@@ -76,49 +72,6 @@
         </form>
 
     </div>
-        <div class="modal fade" id="id_detalles_gasto" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h4 class="modal-title" id="exampleModalLabel">
-                    Selecciona concepto de presupuesto
-                  </h4>
-                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                  </button>
-                </div>
-                <div class="modal-body">
-
-                            <div class="table-responsive">
-                <table class="table" id="id_tabla_presupuesto">
-                  <thead>
-                    <tr>
-                      <th scope="col">#</th>
-                      <th scope="col">Concepto de gasto</th>
-                      <th scope="col">Categoría</th>
-                      <th scope="col">Acción</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <th scope="row">1</th>
-                      <td>Cell</td>
-                      <td>Cell</td>
-                      <td>Cell</td>
-                    </tr>
-                  </tbody>
-                </table>
-
-              </div>
-                  
-        
-                </div>
-                <div class="modal-footer">
-                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                </div>
-              </div>
-            </div>
-        </div>
 
     
     
@@ -160,8 +113,48 @@
 
             event.preventDefault();
       });
-    $("#id_btn_gastos").click(()=>{
-      console.log('holaaaaa');
+    $(document).ready(()=>{
+      var conceptosGasto = "{{conceptosGasto|escapejs}}"
+      conceptosGasto = JSON.parse(conceptosGasto)
+      console.log(conceptosGasto)
+      for (let i = 0; i < conceptosGasto.length; i++) {
+        const element = conceptosGasto[i];
+
+        $('#id_tabla_presupuesto').find('tbody')
+        .append(`
+        <tr>
+            <th scope="row">${i}</th>
+            <td>${element.fields.nombre}</td>
+            <td>${element.fields.clasificacion}</td>
+            <td>
+              <div class="input-group mb-3  input-pago">
+                <div class="input-group-prepend">
+                  <div class="input-group-text">  
+                    <input type="checkbox" id="checkbox-gastos-${i}"
+                    aria-label="Checkbox for following text input">
+                  </div>
+                </div>
+                <input readonly="true" id="input-gastos-${i}"
+                type="text" class="form-control" aria-label="Text input with checkbox">
+              </div>
+            </td>
+          </tr>
+        `);
+        $(`#checkbox-gastos-${i}`).on('click',()=>{
+          let checkbox = document.querySelector(`#checkbox-gastos-${i}`);
+          if(checkbox.checked){
+            $(`#input-gastos-${i}`).attr('readonly', false);
+          }else{
+            $(`#input-gastos-${i}`).attr('readonly', true);
+          }
+        })
+      }
+   
+     
+      $('#id_tabla_presupuesto').DataTable();
+      $("#id_btn_gastos").click(()=>{
+        $('#id_detalles_gasto').modal('show');
+      })
     })
     </script>
 {% endblock %}

@@ -9,6 +9,8 @@ class ClasificacionGasto(models.Model):
         verbose_name = 'Clasificadores de gastos'
     def __str__(self):
         return self.nombre
+    def natural_key(self):
+        return (self.nombre)
 
 class ConceptoGasto(models.Model):
     nombre = models.CharField(max_length=300,verbose_name="Nombre de gasto")

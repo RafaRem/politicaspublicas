@@ -11,7 +11,7 @@ from apps.programaOperativo.forms import ProgramaOperativoForm, ActividadesForm,
 """Modelos"""
 from apps.programaOperativo.models import ProgramaOperativo, Acciones, Actividad
 from apps.objetivo.models import Objetivo
-from apps.indicador.models import ConceptoGasto
+from apps.indicador.models import ConceptoGasto, ClasificacionGasto
 # # Crea
 # te your views here.
 #ESTE NO NECESITA PROTECCION
@@ -101,6 +101,7 @@ class TerminarActividadFormView(LoginRequiredMixin,View):
         actividad = Actividad.objects.get(pk=idActividad)
         form = TerminarActividadesForm()
         conceptosGasto = ConceptoGasto.objects.all()
+        conceptosGasto = serializers.serialize('json',conceptosGasto, use_natural_foreign_keys=True)
         return render(request,'programasOperativos/actividades/terminarActividad.html',{
             'form':form,
             'actividad':actividad,
