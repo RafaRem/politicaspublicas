@@ -134,8 +134,8 @@
                     aria-label="Checkbox for following text input">
                   </div>
                 </div>
-                <input readonly="true" id="input-gastos-${i}"
-                type="text" class="form-control" aria-label="Text input with checkbox">
+                <input readonly="true" id="input-gastos-${i}" name="gastos[]"
+                type="text" class="form-control input-gastos" aria-label="Text input with checkbox">
               </div>
             </td>
           </tr>
@@ -144,8 +144,10 @@
           let checkbox = document.querySelector(`#checkbox-gastos-${i}`);
           if(checkbox.checked){
             $(`#input-gastos-${i}`).attr('readonly', false);
+            $(`#input-gastos-${i}`).attr('required', true);
           }else{
             $(`#input-gastos-${i}`).attr('readonly', true);
+            $(`#input-gastos-${i}`).attr('required', false);
           }
         })
       }
@@ -155,6 +157,10 @@
       $("#id_btn_gastos").click(()=>{
         $('#id_detalles_gasto').modal('show');
       })
+      //Validaciones
+      $('.input-gastos').mask('00000000.00', {reverse: true});
+      $('#id_personasInvolucradas').mask('00000000');
+      //*********************
     })
     </script>
 {% endblock %}
