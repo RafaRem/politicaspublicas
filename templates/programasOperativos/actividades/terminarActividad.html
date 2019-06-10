@@ -37,9 +37,23 @@
 </style>
 {% endblock extracss %}
 
+{%block messages %}
+{%endblock%}
+
 
 {% block content %}
     <div class="container bg-transparent">
+        {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+            <li{% if message.tags == "success" %} class="alert alert-success"
+          {%else%}
+          class="alert alert-danger"
+          {% endif %}>
+          {{ message }}</li>
+            {% endfor %}
+        </ul>
+      {% endif %}
         <form id="id_form_actividad" action="" 
         method="POST" enctype="multipart/form-data">
             {% csrf_token %}
