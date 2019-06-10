@@ -9,7 +9,7 @@ from django.http import JsonResponse
 from apps.users.forms import RegistrarActividad
 from apps.programaOperativo.forms import ProgramaOperativoForm, ActividadesForm, TerminarActividadesForm
 """Modelos"""
-from apps.programaOperativo.models import ProgramaOperativo, Acciones, Actividad
+from apps.programaOperativo.models import ProgramaOperativo, Acciones, Actividad, DetallesGasto
 from apps.objetivo.models import Objetivo
 from apps.indicador.models import ConceptoGasto, ClasificacionGasto
 # # Crea
@@ -116,16 +116,29 @@ class TerminarActividadFormView(LoginRequiredMixin,View):
             datos.evidencia = archivo
             #'t' significa terminada
             datos.estado = 't'
+            gastosActividad = request.POST.getlist('gastos[]')
+
+            for gasto in gastosActividad:
+                gasto = gasto.split('|')
+                conceptoGasto = ConceptoGasto.objects.get(pk=gasto[1])
+                DetallesGasto.objects.create(
+                    cantidad=gasto[0],
+                    actividad=actividad,
+                    gasto=conceptoGasto
+                )
             save = datos.save()
             messages.success(request, 'Actividad actualizada con éxito.')
             return redirect('listActividades')
         messages.error(request, form._errors)
-        programasOperativos = ProgramaOperativo.objects.filter(
-            dependencia=request.user.profile.dependencia.id
-            )
-        return render(request,'programasOperativos/actividades/actividadForm.html',{
+        #Si hay algún error inesperado recarga la página
+        actividad = Actividad.objects.get(pk=idActividad)
+        form = TerminarActividadesForm()
+        conceptosGasto = ConceptoGasto.objects.all()
+        conceptosGasto = serializers.serialize('json',conceptosGasto, use_natural_foreign_keys=True)
+        return render(request,'programasOperativos/actividades/terminarActividad.html',{
             'form':form,
-            'programasOperativos':programasOperativos
+            'actividad':actividad,
+            'conceptosGasto':conceptosGasto
         })
 
 class ProgramasOperativosListView(LoginRequiredMixin,View):

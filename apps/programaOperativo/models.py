@@ -35,7 +35,7 @@ class ProgramaOperativo(models.Model):
         ('a','Activo'),
         ('i','Inactivo')
     )
-    nombre = models.CharField(max_length=100)
+    nombre = models.CharField(max_length=300)
     dependencia = models.ForeignKey(Dependencia, on_delete=models.PROTECT)
     acciones = models.ManyToManyField(Acciones, blank=True)
     estado = models.CharField(choices=opcionesEstado,max_length=30,default='a')

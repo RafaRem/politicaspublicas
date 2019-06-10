@@ -155,7 +155,10 @@
       //usability price is fucking high...
       var arregloGastos = [];
       for (let i = 0; i < conceptosGasto.length; i++) {
-        arregloGastos.push('');        
+        arregloGastos.push({
+          valor:"",
+          pk:""
+        });        
       }
 
 
@@ -176,7 +179,7 @@
                     aria-label="Checkbox for following text input">
                   </div>
                 </div>
-                <input readonly="true" id="input-gastos-${i}"
+                <input readonly="true" id="input-gastos-${i}" pk="${element.pk}"
                 type="text" class="form-control input-gastos" aria-label="Text input with checkbox">
               </div>
             </td>
@@ -191,13 +194,14 @@
             $(`#input-gastos-${i}`).attr('readonly', true);
             $(`#input-gastos-${i}`).attr('required', false);
             //le quitamos el valor en el arreglo y en el input
-            arregloGastos[i] = "";
+            arregloGastos[i].valor = "";
+            arregloGastos[i].pk = "";
             document.querySelector(`#input-gastos-${i}`).value = "";
           }
         })
         $(`#input-gastos-${i}`).on('keyup',()=>{
-          console.log(document.getElementById(`input-gastos-${i}`).value)
-          arregloGastos[i] = document.getElementById(`input-gastos-${i}`).value;
+          arregloGastos[i].valor = document.getElementById(`input-gastos-${i}`).value;
+          arregloGastos[i].pk = document.getElementById(`input-gastos-${i}`).getAttribute('pk');
         })
       }
    
@@ -215,12 +219,13 @@
         let gastoIngresado = false;
           for (let i = 0; i < arregloGastos.length; i++) {
             const element = arregloGastos[i];
-            if(element != ""){
+            if(element.valor != ""){
               gastoIngresado = true
+              valorString = element.valor + '|' + element.pk
               $(`#id_gastos`).append(`
                       <input readonly="true" id="input-gastos-${i}" name="gastos[]"
                       type="text" class="form-control input-gastos"
-                      hidden value=${element}> 
+                      hidden value=${valorString}> 
               `);
             }
             
