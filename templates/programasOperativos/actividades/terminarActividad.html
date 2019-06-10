@@ -77,6 +77,29 @@
                     </button>
                     </div>
         </form>
+        <div class="modal fade" id="noGasto" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h4 class="modal-title" id="exampleModalLabel">
+                  Seleccione al menos un gasto en esta actividad
+                </h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <ul>
+                  <li>En caso de que la actividad no haya llevado ningún gasto, elegir uno y escribir 0.</li>
+                </ul>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      
 
     </div>
 
@@ -120,7 +143,6 @@
       for (let i = 0; i < conceptosGasto.length; i++) {
         arregloGastos.push('');        
       }
-      console.log(arregloGastos);
 
 
 
@@ -191,6 +213,8 @@
           }
           if(gastoIngresado){
             alert('asd');
+          }else{
+            $('#noGasto').modal('show');
           }
 
       });
