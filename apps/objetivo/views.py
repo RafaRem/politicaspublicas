@@ -13,10 +13,16 @@ from apps.programaOperativo.models import ProgramaOperativo
 class ObjetivosView(LoginRequiredMixin,View):
     login_url = 'login'
     def get(self, request):
-        objetivos = Objetivo.objects.filter(dependencia=request.user.profile.dependencia)
+        acciones = []
+        objetivos = []
         programasOperativos = ProgramaOperativo.objects.filter(dependencia=request.user.profile.dependencia)
-        for objetivo in objetivos:
-            x = ProgramaOperativo.objects.filter(objetivo=objetivo)
+        #itero todas las acciones de los programas y apilo su objetivo en una lista
+        for programaOperativo in programasOperativos:
+            accionesManyToMany = programaOperativo.acciones.all()
+            for accion in accionesManyToMany:
+                objetivos.append(accion.objetivo)
+        #Quitas los objetivos repetidos
+        objetivos = list(set(objetivos))
         return render(request,'objetivos/listObjetivos.html',{
             'objetivos':objetivos
         })

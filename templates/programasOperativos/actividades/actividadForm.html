@@ -117,50 +117,6 @@ Nueva actividad
       </form>
   </div>
 
- <!-- Modal -->
-<div class="modal fade" id="noMarcador" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h4 class="modal-title" id="exampleModalLabel">
-            Selecciona el lugar de esta actividad
-          </h4>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <ul>
-            <li>
-                <strong>
-                    En caso de ser una sindicatura, basta con poner su nombre 
-                    en el campo del mapa y presionar enter.
-                </strong>
-            </li>
-            <li>
-                <strong>
-                    En caso de ser en Los Mochis, escribir la colonia y presionar enter.
-                  </strong>
-            </li>
- 
-            <li>
-                <strong>
-                    En caso de ser una actividad del Ayuntamiento, 
-                    escribir "H. Ayuntamiento" y presionar enter.
-                  </strong>
-            </li>
-          </ul>
-        
-          
-
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
 
 {% endblock content %}
 
@@ -189,9 +145,6 @@ Nueva actividad
             })
           })
           })
-      $("#id_btn_segunda_parte").click(() =>{
-      $('#id_segunda_parte').modal('show');
-      })
       $('#id_fecha_in').datepicker({
             uiLibrary: 'bootstrap4',
             format: 'yyyy-mm-dd'
@@ -205,7 +158,38 @@ Nueva actividad
       $( "#id_form_actividad" ).submit(function( event ) {
         latitud = document.getElementById('id_latitud');
         if (latitud.value == "0") {
-          $('#noMarcador').modal('show');
+          Swal.fire({
+            title: `<h4 class="modal-title" id="exampleModalLabel">
+                <strong>Selecciona el lugar de esta actividad</strong>
+              </h4>`,
+            type:'warning',
+            customClass:{
+              confirmButton: 'guinda',
+              cancelButton: 'guinda',
+            },
+            html:`
+            <ul>
+                <li>
+                    <strong>
+                        En caso de ser una sindicatura, basta con poner su nombre 
+                        en el campo del mapa y presionar enter.
+                    </strong>
+                </li>
+                <li>
+                    <strong>
+                        En caso de ser en Los Mochis, escribir la colonia y presionar enter.
+                      </strong>
+                </li>
+     
+                <li>
+                    <strong>
+                        En caso de ser una actividad del Ayuntamiento, 
+                        escribir "H. Ayuntamiento" y presionar enter.
+                      </strong>
+                </li>
+              </ul>
+            `
+            })
         }else{
           this.submit()
 

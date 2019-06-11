@@ -91,28 +91,6 @@
                     </button>
                     </div>
         </form>
-        <div class="modal fade" id="noGasto" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-          <div class="modal-dialog" role="document">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h4 class="modal-title" id="exampleModalLabel">
-                  Seleccione al menos un gasto en esta actividad
-                </h4>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                  <span aria-hidden="true">&times;</span>
-                </button>
-              </div>
-              <div class="modal-body">
-                <ul>
-                  <li>En caso de que la actividad no haya llevado ningún gasto, elegir uno y escribir 0.</li>
-                </ul>
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-              </div>
-            </div>
-          </div>
-        </div>
       
 
     </div>
@@ -207,9 +185,6 @@
    
      
       $('#id_tabla_presupuesto').DataTable();
-      $("#id_btn_gastos").click(()=>{
-        $('#id_detalles_gasto').modal('show');
-      })
       //Validaciones
       $('.input-gastos').mask('00000000.00', {reverse: true});
       $('#id_personasInvolucradas').mask('00000000');
@@ -233,7 +208,21 @@
           if(gastoIngresado){
             this.submit()
           }else{
-            $('#noGasto').modal('show');
+            Swal.fire({
+              title: `<h4 class="modal-title" id="exampleModalLabel">
+                  <strong>Selecciona el lugar de esta actividad</strong>
+                </h4>`,
+              type:'warning',
+              customClass:{
+                confirmButton: 'guinda',
+                cancelButton: 'guinda',
+              },
+              html:`
+              <ul>
+                  <li>En caso de que la actividad no haya llevado ningún gasto, elegir uno y escribir 0.</li>
+                </ul>
+                `
+              })
           }
 
       });
