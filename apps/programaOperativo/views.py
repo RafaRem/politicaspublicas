@@ -147,8 +147,7 @@ class ProgramasOperativosListView(LoginRequiredMixin,View):
         objetivo = Objetivo.objects.get(id=idObjetivo)
         if idObjetivo != 0:
             programas = ProgramaOperativo.objects.filter(
-                dependencia=request.user.profile.dependencia,
-                objetivo=idObjetivo
+                dependencia=request.user.profile.dependencia
             )
             return render(request,'programasOperativos/listPoObjetivo.html',{
             'programas':programas,

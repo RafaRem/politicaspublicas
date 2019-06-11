@@ -27,11 +27,6 @@
             <tr>
                 <th>Nombre</th>
                 <th>Acciones</th>
-                <th>
-                    <div class="d-flex justify-content-center">
-                    Datos llenados
-                    </div>
-                </th>
             </tr>
         </thead>
         <tbody>
@@ -42,15 +37,7 @@
                     <a class="btn btn-primary btn-sm guinda" 
                     href="{%url 'postPo' idPo=programa.id%}">Ver</a>
                 </td>
-                <td>
-                    <div class="d-flex justify-content-center">
-                        {% if programa.descripcion %}
-                        <span class="badge badge-success"><i class="fa fa-check-circle"></i></span>
-                        {% else %}
-                        <span class="badge badge-danger"><i class="fa fa-times-circle"></i></span>
-                        {% endif %}
-                    </div>
-                </td>
+ 
             </tr>
             {% endfor %}
     

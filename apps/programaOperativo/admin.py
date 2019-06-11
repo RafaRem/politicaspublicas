@@ -19,7 +19,7 @@ class AccionesAdmin(admin.ModelAdmin):
 # admin.site.register(ProgramaOperativo)
 @admin.register(Actividad)
 class ActividadAdmin(admin.ModelAdmin):
-    list_display = ['nombre', 'get_dependencia','get_accion', 'estado']
+    list_display = ['nombre', 'get_dependencia','get_accion', 'estado', 'fechaRegistrada', 'fechaActualizada']
     ordering = ['nombre']
     search_fields = ['nombre','accion__nombre']
     def get_dependencia(self,obj):
