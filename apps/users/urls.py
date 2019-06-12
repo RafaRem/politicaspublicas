@@ -10,4 +10,6 @@ urlpatterns = [
     url(r'^usuario/calendario/', CalendarView , name="calendar" ),
     url(r'^usuario/logout/',logout_view, name="logout" ),
     url(r'^usuario/forgottenpass/', vista_contrasena_olvidada, name="contraOlvidada" ),
+    url(r'^usuario/perfil/', perfil_view, name="perfil" ),
+
 ]

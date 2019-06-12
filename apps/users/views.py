@@ -289,4 +289,7 @@ def report(request):
     response.write(pdf)
     return response
 
+@login_required(login_url='login')
+def perfil_view(request):
+    return render(request,'users/perfil.html')
 

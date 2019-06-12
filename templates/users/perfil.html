@@ -1,0 +1,59 @@
+{% extends "base/base.html" %}
+{% load staticfiles %}
+
+{%block extracss%}
+<link rel="stylesheet" href="{%static 'css/responsiveContainer.css'%}">
+
+<style>
+    img{
+        max-width:200px;
+        max-height:100px;
+        
+    }
+    .min-w-100{
+        min-width: 100px;
+      }
+    #btn-iniciar{
+        width: 100%;
+    }
+</style>
+{%endblock%}
+
+
+
+{%block messages %}
+{% endblock%}
+
+
+
+{% block superContent %}
+    <div class="container">
+            <div class="d-flex justify-content-center">
+                    <img src="{%static 'images/ahome.png'%}" alt="">
+                </div>
+        <div class="row mt-2">
+            <div class="col-4 col-xs-12"></div>
+            <div class="col-8 col-xs-12">
+                    <h5><strong>Usuario:</strong></h5>
+                    <h5>{{request.user.username}}</h5>
+                    <h5><strong>Dependencia:</strong></h5>
+                    <h5>{{request.user.profile.dependencia.nombre}}</h5>
+                    <h5><strong>Teléfono:</strong></h5>
+                    <h5>{{request.user.profile.telephone}}</h5>
+                    <h5><strong>Tipo de usuario:</strong></h5>
+                    {% if request.user.profile.tipoUsuario == 's' %}
+                        <h5>Super usuario</h5>      
+                    {%elif request.user.profile.tipoUsuario == 'a'%}
+                        <h5>Administrador</h5>      
+                    {%elif request.user.profile.tipoUsuario == 'e'%}              
+                        <h5>Enlace</h5>      
+                    {% endif %}
+                    <h5><strong>Email:</strong></h5>
+                    <h5>{{request.user.email}}</h5>
+                    
+            </div>
+        </div>
+
+
+    </div>
+{% endblock %}
