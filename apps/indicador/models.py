@@ -13,9 +13,15 @@ class ClasificacionGasto(models.Model):
         return (self.nombre)
 
 class ConceptoGasto(models.Model):
+    opcionesTipo = (
+        ('d','Dependencia'),
+        ('p','Paramunicipal')
+    )
     nombre = models.CharField(max_length=300,verbose_name="Nombre de gasto")
     clasificacion = models.ForeignKey(ClasificacionGasto, on_delete=models.PROTECT,
     verbose_name = 'Clasificación del gasto')
+    tipoDependencia = models.CharField(max_length=30, choices=opcionesTipo, default='d')
+    dependencia = models.ForeignKey(Dependencia,blank=True, null=True, on_delete=models.CASCADE,verbose_name='Dependencia a la que pertenece') 
     class Meta:
         verbose_name = 'Conceptos por gasto'
     def __str__(self):

@@ -30,6 +30,7 @@ urlpatterns = [
     url(r'^',include(posUrls)),
     url(r'^',include(objetivosUrls)),
     path('enDesarrollo', RenderView.as_view(template_name='extras/enDesarrollo.html'),name='enDesarrollo'),
+    path('recursos', RenderView.as_view(template_name='extras/recursos.html'),name='recursos')
     #url(r'^',include(ProgramUrls)),
     # url(r'^',include('apps.inmueble.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
