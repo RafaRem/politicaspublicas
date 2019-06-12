@@ -1,5 +1,5 @@
 from django.db import models
-
+from apps.dependencia.models import Dependencia
 # Create your models here.
 
 
@@ -20,6 +20,8 @@ class ConceptoGasto(models.Model):
     nombre = models.CharField(max_length=300,verbose_name="Nombre de gasto")
     clasificacion = models.ForeignKey(ClasificacionGasto, on_delete=models.PROTECT,
     verbose_name = 'Clasificación del gasto')
+    #CUANDO EL TIPO ES DEPENDENCIA, SE USARÁN TODOS LOS CONCEPTOS CON TIPO DEPENDENCIA
+    #CUANDO SEA PARAMUNICIPAL, SE CARGARÁN SOLO LOS DE ESA PARAMUNICIPAL
     tipoDependencia = models.CharField(max_length=30, choices=opcionesTipo, default='d')
     dependencia = models.ForeignKey(Dependencia,blank=True, null=True, on_delete=models.CASCADE,verbose_name='Dependencia a la que pertenece') 
     class Meta:

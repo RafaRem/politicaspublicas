@@ -100,7 +100,10 @@ class TerminarActividadFormView(LoginRequiredMixin,View):
         """validar si ya subió información no pueda acceder"""
         actividad = Actividad.objects.get(pk=idActividad)
         form = TerminarActividadesForm()
-        conceptosGasto = ConceptoGasto.objects.all()
+        if request.user.profile.dependencia.tipo == 'd':
+            conceptosGasto = ConceptoGasto.objects.filter(tipoDependencia='d')
+        else:
+            conceptosGasto = ConceptoGasto.objects.filter(tipoDependencia='p',dependencia=request.user.profile.dependencia)
         conceptosGasto = serializers.serialize('json',conceptosGasto, use_natural_foreign_keys=True)
         return render(request,'programasOperativos/actividades/terminarActividad.html',{
             'form':form,
