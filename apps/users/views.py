@@ -20,6 +20,7 @@ from apps.dependencia.models import Dependencia
 from apps.objetivo.models import Objetivo
 from apps.programaOperativo.models import Actividad, ProgramaOperativo
 from django.db.models import  *
+from django.contrib.auth.models import User
 #Create your views here.a
 import time
 import json
@@ -293,3 +294,17 @@ def report(request):
 def perfil_view(request):
     return render(request,'users/perfil.html')
 
+class CambiarPassview(LoginRequiredMixin,View):
+    login_url = 'login'
+    def get(self,request):
+        return render(request,'users/cambiarPass.html')
+    def post(self,request):
+        user = User.objects.get(pk=request.user.id)
+        autenticar = authenticate(username=user.username,password=request.POST.get("passActual"))
+        if autenticar:
+            user.set_password(request.POST.get("nuevaPass"))
+            user.save()
+            messages.success(request,"Contraseña actualizada con éxito")
+        else:
+            messages.error(request,"Contraseña incorrecta")
+        return render(request,'users/cambiarPass.html')
