@@ -42,7 +42,8 @@ class ProgramasOperativosView(LoginRequiredMixin,View):
         programa = ProgramaOperativo.objects.get(id=idPo)
         form = ProgramaOperativoForm(instance=programa)
         return render(request, 'programasOperativos/poForm.html',{
-            'form':form
+            'form':form,
+            'acciones': programa.acciones.all()
         })
     def post(self,request, idPo):
         programa = ProgramaOperativo.objects.get(id=idPo)
@@ -147,13 +148,22 @@ class TerminarActividadFormView(LoginRequiredMixin,View):
 class ProgramasOperativosListView(LoginRequiredMixin,View):
     login_url = 'login'
     def get(self,request, idObjetivo = 0):
+        #SI EL OBJETIVO DE LA ACCION PERTENECE A ESTE ID, SE ALMACENARÁ ACÁ
+        programasOperativos = []
         objetivo = Objetivo.objects.get(id=idObjetivo)
         if idObjetivo != 0:
             programas = ProgramaOperativo.objects.filter(
                 dependencia=request.user.profile.dependencia
             )
+            for programa in programas:
+                acciones = programa.acciones.all()
+                for accion in acciones:
+                    if idObjetivo == accion.objetivo.id:
+                        programasOperativos.append(programa)
+            print(programasOperativos)
+            programasOperativos = list(set(programasOperativos))
             return render(request,'programasOperativos/listPoObjetivo.html',{
-            'programas':programas,
+            'programas':programasOperativos,
             'objetivo':objetivo
             })
 

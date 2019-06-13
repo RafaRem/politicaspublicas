@@ -5,11 +5,12 @@ class ProgramaOperativoForm(forms.ModelForm):
     class Meta:
         model = ProgramaOperativo
         fields = '__all__'
-        exclude = ('nombre','objetivo', 'dependencia', 'acciones',)
+        exclude = ['acciones','estado',]
     def __init__(self, *args, **kwargs):
         super(ProgramaOperativoForm, self).__init__(*args, **kwargs)
         for key in self.fields:
-            self.fields[key].required = True 
+            self.fields[key].widget.attrs['readonly'] = True 
+            self.fields[key].widget.attrs['disabled'] = True 
 
 class ActividadesForm(forms.ModelForm):
     class Meta:

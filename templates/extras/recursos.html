@@ -3,7 +3,7 @@
 
 {% block extracss %}
 <style>
-    img{
+    img#logo{
         width: 40%;
         height: 40%;
     }
@@ -17,8 +17,32 @@ Recursos del sistema
 {% block content %}
     <div class="container bg-transparent">
         <div class="d-flex justify-content-center">
-            <img src="{%static 'images/Ahome.png'%}" alt="">
+            <img id="logo" src="{%static 'images/Ahome.png'%}" alt="">
         </div>
+        <table class="table">
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Enlace</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td scope="row">Formato de evidencia documental</td>
+                        <td>
+                            <a class="btn btn-primary btn-sm guinda" 
+                            href="{%static 'documentos/Formato-de-evidencia-documental.docx'%}">Descargar</a>
+                        </td>
+                    </tr>
+                    <tr>
+                            <td scope="row">Formato de evidencia fotográfica</td>
+                            <td>
+                                <a class="btn btn-primary btn-sm guinda" 
+                                href="{%static 'documentos/Formato-de-evidencia-forografica.docx'%}">Descargar</a>
+                            </td>
+                        </tr>
+                </tbody>
+            </table>
        
     </div>
 {% endblock %}

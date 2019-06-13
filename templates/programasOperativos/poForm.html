@@ -5,6 +5,9 @@
     .container{
       background: none !important;
     }
+    label{
+      font-weight: bold;
+    }
   </style>
 {%endblock%}
 
@@ -44,11 +47,22 @@
       <form action="" method="post">
             {% csrf_token %}
             {{ form|crispy }}
-            <div class="d-flex justify-content-center">
-              <button class="btn btn-primary guinda" type="submit">
-                Actualizar &nbsp;<i class="fas fa-check"></i>
-              </button>
-            </div>
+            <h4 class="text-center">Acciones</h4>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for accion in acciones %}
+                    <tr>
+                        <td scope="row">{{accion.nombre}}</td>
+                    </tr>
+                    {% endfor %}
+            
+                </tbody>
+            </table>
       </form>
   </div>
  
