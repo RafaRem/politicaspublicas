@@ -4,7 +4,7 @@ from apps.indicador.models import *
 
 @admin.register(ClasificacionGasto)
 class ClasificacionGastoAdmin(admin.ModelAdmin):
-    list_display = ['nombre']
+    list_display = ['id','nombre']
     ordering = ['nombre']
     search_fields = ['nombre']
 
