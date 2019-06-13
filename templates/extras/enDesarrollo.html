@@ -3,7 +3,7 @@
 
 {% block extracss %}
 <style>
-    img{
+    img#logo{
         width: 60%;
         height: 60%;
     }
@@ -17,7 +17,7 @@ Función en desarrollo
 {% block content %}
     <div class="container bg-transparent">
         <div class="d-flex justify-content-center">
-            <img src="{%static 'images/Ahome.png'%}" alt="">
+            <img id="logo" src="{%static 'images/Ahome.png'%}" alt="">
         </div>
         <h3>
             Por el momento esta función se encuentra en desarrollo, para más información 
