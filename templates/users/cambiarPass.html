@@ -42,6 +42,17 @@
 
 {% block superContent %}
     <div class="container">
+            {% if messages %}
+                <ul class="messages">
+                    {% for message in messages %}
+                    <li{% if message.tags == "success" %} class="alert alert-success"
+                {%else%}
+                class="alert alert-danger"
+                {% endif %}>
+                {{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
             <div class="d-flex justify-content-center">
                     <img src="{%static 'images/ahome.png'%}" alt="">
                 </div>
@@ -49,16 +60,26 @@
                 {%csrf_token%}
                 <label>Contraseña actual</label>
                 <div class="form-group pass_show"> 
-                    <input type="password" value="faisalkhan@123" class="form-control" placeholder="Current Password"> 
+                    <input type="password" required id="id_passActual"
+                    name="passActual"
+                    class="form-control" placeholder="Contraseña actual"> 
                 </div> 
                    <label>Nueva contraseña</label>
                 <div class="form-group pass_show"> 
-                    <input type="password" value="faisal.khan@123" class="form-control" placeholder="New Password"> 
+                    <input type="password" required id="id_nuevaPass"
+                    name="nuevaPass"
+                    class="form-control" placeholder="Nueva contraseña"> 
                 </div> 
-                   <label>Cambiar contraseña</label>
+                   <label>Confirma tu nueva contraseña</label>
                 <div class="form-group pass_show"> 
-                    <input type="password" value="faisal.khan@123" class="form-control" placeholder="Confirm Password"> 
-                </div> 
+                    <input type="password" required id="id_confirmarPass"
+                     class="form-control" placeholder="Confirma tu nueva contraseña"> 
+                </div>
+                <div class="d-flex justify-content-center mb-2">
+                    <button type="submit" class="btn btn-primary guinda">
+                        Cambiar&nbsp;<i class="fa fa-check-circle" aria-hidden="true"></i>
+                    </button>
+                </div>
             </form>
 
         </div>
@@ -69,16 +90,48 @@
 {% block extrascripts %}
 <script>    
         $(document).ready(function(){
-            $('.pass_show').append('<span class="ptxt">Mostrar</span>');  
+            $('.pass_show').append('<span class="ptxt">Mostrar</span>'); 
+            $('#frm-cambiarContrasena').submit((e)=>{
+                nuevaPass = document.getElementById('id_nuevaPass');
+                confirmarPass = document.getElementById('id_confirmarPass');
+                if(nuevaPass.value == confirmarPass.value){
+                    if(nuevaPass.value.match(/^(?=.*\d)(?=.*[a-z])[0-9a-zA-Z]{8,}$/)){
+                        this.submit();
+                    }else{
+                        Swal.fire({
+                            type: 'error',
+                            customClass:{
+                                confirmButton: 'guinda',
+                                cancelButton: 'guinda',
+                              },
+                            title: `Recuerda que tu contraseña debe ser de almenos
+                            8 caracteres y contener al menos un número y una letra.`,
+                          })
+                    }
+                }else{
+                    Swal.fire({
+                        type: 'error',
+                        customClass:{
+                            confirmButton: 'guinda',
+                            cancelButton: 'guinda',
+                          },
+                        title: 'Las contraseñas no coinciden',
+                        text: `Recuerda que tu contraseña debe ser de almenos
+                        8 caracteres y contener al menos un número y una letra.`,
+                      })
+                }
+            
+                    
+                e.preventDefault();
+            })
+            
+
+
             });
-              
-            
             $(document).on('click','.pass_show .ptxt', function(){ 
-            
             $(this).text($(this).text() == "Mostrar" ? "Ocultar" : "Mostrar"); 
-            
             $(this).prev().attr('type', function(index, attr){return attr == 'password' ? 'text' : 'password'; }); 
+            });
             
-            });  
 </script>
 {% endblock %}
