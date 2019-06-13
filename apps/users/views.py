@@ -293,3 +293,15 @@ def report(request):
 def perfil_view(request):
     return render(request,'users/perfil.html')
 
+class CambiarPassview(LoginRequiredMixin,View):
+    login_url = 'login'
+    def get(self,request):
+        return render(request,'users/cambiarPass.html')
+    def post(self,request):
+        user = User.objects.get(pk=request.user.id)
+        user.set_password(request.POST.get("contrasenaNueva"))
+        user.save()
+        user = authenticate(username=user.username,password=request.POST.get("contrasenaNueva"))
+        login(request,user)
+        messages.success(request,"Contraseña actualizada con éxito")
+        return redirect("actualizarPerfil")

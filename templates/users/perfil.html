@@ -28,12 +28,18 @@
 
 {% block superContent %}
     <div class="container">
-            <div class="d-flex justify-content-center">
-                    <img src="{%static 'images/ahome.png'%}" alt="">
-                </div>
+
         <div class="row mt-2">
-            <div class="col-4 col-xs-12"></div>
-            <div class="col-8 col-xs-12">
+            <!-- <div class="col-md-4 col-xs-12 p-2 m-2">
+   
+            </div>
+            <div class="col-md-8 col-xs-12">
+
+            </div> -->
+            <div class="container-fluid mt-1">
+                    <div class="d-flex justify-content-center mt-1">
+                            <img src="{%static 'images/ahome.png'%}" alt="">
+                        </div>
                     <h5><strong>Usuario:</strong></h5>
                     <h5>{{request.user.username}}</h5>
                     <h5><strong>Dependencia:</strong></h5>
@@ -50,9 +56,11 @@
                     {% endif %}
                     <h5><strong>Email:</strong></h5>
                     <h5>{{request.user.email}}</h5>
-                    
             </div>
         </div>
+            <div class="d-flex justify-content-center mb-2">
+                <a href="{%url 'cambiarPass'%}" class="btn btn-primary guinda">Cambiar contraseña</a>
+            </div>
 
 
     </div>

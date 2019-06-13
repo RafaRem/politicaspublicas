@@ -57,7 +57,7 @@ class Actividad(models.Model):
     user = models.ForeignKey(User, on_delete= models.PROTECT)
     programaoperativo = models.ForeignKey(ProgramaOperativo, on_delete = models.PROTECT)
     nombre = models.CharField(max_length=100, 
-    verbose_name="¿Qué actividad se realiza?")
+    verbose_name="Actividad")
     descripcion = models.TextField(max_length=300, 
     verbose_name="Descripción breve")
     presupuestoProgramado = models.CharField(max_length=300, 

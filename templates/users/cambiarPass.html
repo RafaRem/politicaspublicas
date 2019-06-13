@@ -1,0 +1,84 @@
+{% extends "base/base.html" %}
+{% load staticfiles %}
+
+{%block extracss%}
+<link rel="stylesheet" href="{%static 'css/responsiveContainer.css'%}">
+
+<style>
+    img{
+        max-width:200px;
+        max-height:100px;
+        
+    }
+    .min-w-100{
+        min-width: 100px;
+      }
+    #btn-iniciar{
+        width: 100%;
+    }
+    .pass_show{position: relative} 
+
+    .pass_show .ptxt { 
+        position: absolute; 
+        top: 50%; 
+        right: 10px; 
+        z-index: 1; 
+        color: rgb(96, 2, 12) !important;
+        margin-top: -10px; 
+        cursor: pointer; 
+        transition: .3s ease all; 
+    } 
+
+    .pass_show .ptxt:hover{color: #333333;} 
+</style>
+{%endblock%}
+
+
+
+{%block messages %}
+{% endblock%}
+
+
+
+{% block superContent %}
+    <div class="container">
+            <div class="d-flex justify-content-center">
+                    <img src="{%static 'images/ahome.png'%}" alt="">
+                </div>
+            <form id="frm-cambiarContrasena" method="POST" enctype="multipart/form-data">
+                {%csrf_token%}
+                <label>Contraseña actual</label>
+                <div class="form-group pass_show"> 
+                    <input type="password" value="faisalkhan@123" class="form-control" placeholder="Current Password"> 
+                </div> 
+                   <label>Nueva contraseña</label>
+                <div class="form-group pass_show"> 
+                    <input type="password" value="faisal.khan@123" class="form-control" placeholder="New Password"> 
+                </div> 
+                   <label>Cambiar contraseña</label>
+                <div class="form-group pass_show"> 
+                    <input type="password" value="faisal.khan@123" class="form-control" placeholder="Confirm Password"> 
+                </div> 
+            </form>
+
+        </div>
+
+    </div>
+{% endblock %}
+
+{% block extrascripts %}
+<script>    
+        $(document).ready(function(){
+            $('.pass_show').append('<span class="ptxt">Mostrar</span>');  
+            });
+              
+            
+            $(document).on('click','.pass_show .ptxt', function(){ 
+            
+            $(this).text($(this).text() == "Mostrar" ? "Ocultar" : "Mostrar"); 
+            
+            $(this).prev().attr('type', function(index, attr){return attr == 'password' ? 'text' : 'password'; }); 
+            
+            });  
+</script>
+{% endblock %}
