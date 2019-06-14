@@ -125,7 +125,6 @@ def CalendarView(request):
     contador = matchs.count()          
     if request.method== 'POST':
         srch = request.POST['srh']
-        
         if srch:
             dep = Dependencia.objects.get(pk=srch)
             proper = ProgramaOperativo.objects.filter(dependencia=dep)
