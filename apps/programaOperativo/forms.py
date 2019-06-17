@@ -19,6 +19,7 @@ class ActividadesForm(forms.ModelForm):
         exclude = [
             'programaoperativo',
             'personasInvolucradas',
+            'beneficiarios',
             'evidencia',
             'user',
             'latitud',
@@ -34,6 +35,7 @@ class TerminarActividadesForm(forms.ModelForm):
         model=Actividad
         fields = [            
             'personasInvolucradas',
+            'beneficiarios'
             ]
         exclude = [
             'programaoperativo',

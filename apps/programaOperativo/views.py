@@ -121,7 +121,6 @@ class TerminarActividadFormView(LoginRequiredMixin,View):
             #'t' significa terminada
             datos.estado = 't'
             gastosActividad = request.POST.getlist('gastos[]')
-
             for gasto in gastosActividad:
                 gasto = gasto.split('|')
                 conceptoGasto = ConceptoGasto.objects.get(pk=gasto[1])
