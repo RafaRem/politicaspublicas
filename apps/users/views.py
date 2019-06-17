@@ -170,11 +170,9 @@ class LoginView(View):
                 return redirect('login')
                 
             
-        print(request.POST['usuario'])
         return render(request,"users/login.html")
         pass
     def get(self,request):
-        # print(request.user.is_authenticated)
         if request.user.is_authenticated:
             return redirect('index')
         return render(request,"users/login.html")
