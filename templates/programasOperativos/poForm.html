@@ -48,21 +48,19 @@
             {% csrf_token %}
             {{ form|crispy }}
             <h4 class="text-center">Acciones</h4>
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Nombre</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for accion in acciones %}
-                    <tr>
-                        <td scope="row">{{accion.nombre}}</td>
-                    </tr>
-                    {% endfor %}
-            
-                </tbody>
-            </table>
+            <div class="row">
+              {% for accion in acciones %}
+              <div class="col-xl-4 col-sm-6 mb-3 animated fadeIn">
+                  <div class="card text-dorado eje3 o-hidden h-100">
+                    <div class="card-body">
+                      <div class="mr-5">
+                       <h6>{{ forloop.counter }}.-&nbsp;{{accion.nombre}}</h6>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                {% endfor %}
+            </div>
       </form>
   </div>
  

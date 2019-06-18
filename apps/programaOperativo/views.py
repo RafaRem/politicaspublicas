@@ -159,7 +159,6 @@ class ProgramasOperativosListView(LoginRequiredMixin,View):
                 for accion in acciones:
                     if idObjetivo == accion.objetivo.id:
                         programasOperativos.append(programa)
-            print(programasOperativos)
             programasOperativos = list(set(programasOperativos))
             return render(request,'programasOperativos/listPoObjetivo.html',{
             'programas':programasOperativos,
@@ -174,7 +173,6 @@ class ProgramasOperativosListView(LoginRequiredMixin,View):
 
 def ver_actividad(request,idActividad):
     actividad = Actividad.objects.get(pk=idActividad)
-    print(actividad)
     return render(request,'programasOperativos/actividades/verActividad.html',{
         'actividad':actividad
     })
