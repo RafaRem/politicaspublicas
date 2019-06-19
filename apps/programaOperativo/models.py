@@ -75,6 +75,7 @@ class Actividad(models.Model):
     verbose_name="Acción a la que corresponde")
     created = models.DateTimeField(auto_now_add=True)    
     estado = models.CharField(choices=opcionesEstado,max_length=30,default='p')
+    observaciones = models.CharField(max_length=800,blank=True, null=True)
     fechaRegistrada = models.DateTimeField(auto_now_add=True)
     fechaActualizada = models.DateTimeField(auto_now=True)
     class Meta:
