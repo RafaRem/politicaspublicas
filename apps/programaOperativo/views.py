@@ -113,6 +113,10 @@ class TerminarActividadFormView(LoginRequiredMixin,View):
         })
     def post(self,request,idActividad):
         actividad = Actividad.objects.get(pk=idActividad)
+        #SI NO ES VÁLIDA LA ACTIVIDAD ELIMINA SUS DETALLES DE GASTO PARA VOLVER A CAPTURARSE
+        if actividad.estado == 'n':
+            gastosActividad = DetallesGasto.objects.filter(actividad=actividad)
+            gastosActividad.delete()
         form = TerminarActividadesForm(request.POST, instance=actividad)
         if form.is_valid():
             datos = form.save(commit=False)
@@ -173,6 +177,12 @@ class ProgramasOperativosListView(LoginRequiredMixin,View):
 
 def ver_actividad(request,idActividad):
     actividad = Actividad.objects.get(pk=idActividad)
+    gastosActividad = DetallesGasto.objects.filter(actividad=actividad)
+    total = 0
+    for gasto in gastosActividad:
+        total += float(gasto.cantidad)
     return render(request,'programasOperativos/actividades/verActividad.html',{
-        'actividad':actividad
+        'actividad':actividad,
+        'gastos': gastosActividad,
+        'total':total
     })

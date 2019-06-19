@@ -17,9 +17,9 @@ class Acciones(models.Model):
     sectorEconomico = models.ManyToManyField(SectorEconomico, blank=True)
     ubicacion = models.ManyToManyField(Ubicacion, blank=True)
     categoriaPoblacion = models.ManyToManyField(CategoriaPoblacion, blank=True)
-    
     class Meta:
-        verbose_name = 'Acciones de programas operativos'
+        verbose_name = 'Acción de programa operativo'
+        verbose_name_plural = 'Acciones de programas operativos'
     def __str__(self):
         return self.nombre
 class ProgramaOperativo(models.Model):
@@ -40,7 +40,8 @@ class ProgramaOperativo(models.Model):
     acciones = models.ManyToManyField(Acciones, blank=True)
     estado = models.CharField(choices=opcionesEstado,max_length=30,default='a')
     class Meta:
-        verbose_name = 'Programas operativos'
+        verbose_name = 'Programa operativo'
+        verbose_name_plural = 'Programas operativos'
     def __str__(self):
         return self.nombre
 
@@ -75,10 +76,13 @@ class Actividad(models.Model):
     verbose_name="Acción a la que corresponde")
     created = models.DateTimeField(auto_now_add=True)    
     estado = models.CharField(choices=opcionesEstado,max_length=30,default='p')
+    observaciones = models.CharField(max_length=800,blank=True, null=True)
     fechaRegistrada = models.DateTimeField(auto_now_add=True)
     fechaActualizada = models.DateTimeField(auto_now=True)
     class Meta:
-        verbose_name = 'Actividades'
+        verbose_name = 'Actividad'
+        verbose_name_plural = 'Actividades'
+
     def __str__(self):
         return self.nombre
 
@@ -87,7 +91,8 @@ class DetallesGasto(models.Model):
     actividad = models.ForeignKey(Actividad, on_delete=models.PROTECT)
     gasto = models.ForeignKey(ConceptoGasto,on_delete=models.PROTECT)
     class Meta:
-        verbose_name = 'Detalles de gasto por actividades'
+        verbose_name = 'Detalle de gasto por actividad'
+        verbose_name_plural = 'Detalles de gasto por actividades'
         unique_together = ['actividad','gasto']
     def __str__(self):
         return (self.actividad.nombre + ', ' + self.gasto.nombre)
