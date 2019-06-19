@@ -112,6 +112,7 @@ class TerminarActividadFormView(LoginRequiredMixin,View):
             'conceptosGasto':conceptosGasto
         })
     def post(self,request,idActividad):
+        request.encoding = 'utf-8'
         actividad = Actividad.objects.get(pk=idActividad)
         #SI NO ES VÁLIDA LA ACTIVIDAD ELIMINA SUS DETALLES DE GASTO PARA VOLVER A CAPTURARSE
         if actividad.estado == 'n':
