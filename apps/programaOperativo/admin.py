@@ -12,10 +12,10 @@ class ProgramaOperativoAdmin(admin.ModelAdmin):
 
 @admin.register(Acciones)
 class AccionesAdmin(admin.ModelAdmin):
-    list_display = ['nombre', 'objetivo']
+    list_display = ['id','nombre', 'objetivo']
     ordering = ['nombre',]
     filter_horizontal = ['escolaridad','gruposVulnerables', 'sectorSocial','sectorEconomico','ubicacion','categoriaPoblacion']
-    search_fields = ['nombre']
+    search_fields = ['id', 'nombre']
 # admin.site.register(ProgramaOperativo)
 @admin.register(Actividad)
 class ActividadAdmin(admin.ModelAdmin):
