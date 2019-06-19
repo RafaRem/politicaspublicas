@@ -7,6 +7,7 @@ class ClasificacionGasto(models.Model):
     nombre = models.CharField(max_length=300)
     class Meta:
         verbose_name = 'Clasificadores de gastos'
+        verbose_name_plural = 'Clasificadores de gastos'
     def __str__(self):
         return self.nombre
     def natural_key(self):
@@ -25,7 +26,8 @@ class ConceptoGasto(models.Model):
     tipoDependencia = models.CharField(max_length=30, choices=opcionesTipo, default='d')
     dependencia = models.ForeignKey(Dependencia,blank=True, null=True, on_delete=models.CASCADE,verbose_name='Dependencia a la que pertenece') 
     class Meta:
-        verbose_name = 'Conceptos por gasto'
+        verbose_name = 'Concepto por gasto'
+        verbose_name_plural = 'Conceptos por gasto'
     def __str__(self):
         return self.nombre
     
@@ -34,20 +36,25 @@ class Escolaridad(models.Model):
     nombre = models.CharField(max_length=200, verbose_name='Nombre')
     class Meta:
         verbose_name = "Escolaridad"
+        verbose_name_plural = "Escolaridades"
+
     def __str__(self):
         return self.nombre
 
 class GruposVulnerables(models.Model):
     nombre = models.CharField(max_length=200, verbose_name='Nombre')
     class Meta:
-        verbose_name = 'Grupos vulnerables'
+        verbose_name = 'Grupo vulnerable'
+        verbose_name_plural = 'Grupos vulnerables'
+
     def __str__(self):
         return self.nombre
 
 class SectorSocial(models.Model):
     nombre = models.CharField(max_length=200, verbose_name='Nombre')
     class Meta:
-        verbose_name = 'Sectores sociales'
+        verbose_name = 'Sector social'
+        verbose_name_plural = 'Sectores sociales'
     def __str__(self):
         return self.nombre
 
@@ -55,13 +62,17 @@ class Ubicacion(models.Model):
     nombre = models.CharField(max_length=200, verbose_name='Nombre')
     class Meta:
         verbose_name = 'Ubicación'
+        verbose_name_plural = 'Ubicaciones'
+
     def __str__(self):
         return self.nombre
 
 class SectorEconomico(models.Model):
     nombre = models.CharField(max_length=200, verbose_name='Nombre')
     class Meta:
-        verbose_name = 'Sectores económicos'
+        verbose_name = 'Sector económico'
+        verbose_name_plural = 'Sectores económicos'
+
     def __str__(self):
         return self.nombre
 
@@ -77,5 +88,6 @@ class CategoriaPoblacion(models.Model):
     edadHasta = models.CharField(max_length=20,verbose_name='Edad hasta')
     class Meta:
         verbose_name = 'Categoría de población'
+        verbose_name_plural = 'Categorías de población'
     def __str__(self):
         return self.nombre

@@ -28,6 +28,7 @@ class Objetivo(models.Model):
     dependencia = models.ManyToManyField(Dependencia,blank=True)
     estado = models.CharField(max_length=3,default='a',choices=opcionesEstado)
     class Meta:
-        verbose_name = 'Objetivos transversales/estratégicos'
+        verbose_name = 'Objetivo transversal/estratégico'
+        verbose_name_plural = 'Objetivos transversales/estratégicos'
     def __str__(self):
         return self.numero + ',' + self.nombre
