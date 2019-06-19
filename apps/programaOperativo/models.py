@@ -21,7 +21,7 @@ class Acciones(models.Model):
         verbose_name = 'Acción de programa operativo'
         verbose_name_plural = 'Acciones de programas operativos'
     def __str__(self):
-        return self.nombre
+        return str(self.id)+ ',' + self.nombre
 class ProgramaOperativo(models.Model):
     opcionesTipoPrograma=(
         ('i', 'Institucional'),
