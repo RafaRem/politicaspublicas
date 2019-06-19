@@ -12,7 +12,7 @@ class ProgramaOperativoAdmin(admin.ModelAdmin):
 
 @admin.register(Acciones)
 class AccionesAdmin(admin.ModelAdmin):
-    list_display = ['nombre',]
+    list_display = ['nombre', 'objetivo']
     ordering = ['nombre',]
     filter_horizontal = ['escolaridad','gruposVulnerables', 'sectorSocial','sectorEconomico','ubicacion','categoriaPoblacion']
     search_fields = ['nombre']

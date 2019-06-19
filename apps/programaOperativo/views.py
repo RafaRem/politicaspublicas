@@ -112,7 +112,6 @@ class TerminarActividadFormView(LoginRequiredMixin,View):
             'conceptosGasto':conceptosGasto
         })
     def post(self,request,idActividad):
-        request.encoding = 'utf-8'
         actividad = Actividad.objects.get(pk=idActividad)
         #SI NO ES VÁLIDA LA ACTIVIDAD ELIMINA SUS DETALLES DE GASTO PARA VOLVER A CAPTURARSE
         if actividad.estado == 'n':
@@ -122,6 +121,11 @@ class TerminarActividadFormView(LoginRequiredMixin,View):
         if form.is_valid():
             datos = form.save(commit=False)
             archivo = request.FILES['archivos']
+            archivo.name = (
+                request.user.profile.dependencia.nombre + 
+                '-evidencia'
+                )
+            print(archivo.name)
             datos.evidencia = archivo
             #'t' significa terminada
             datos.estado = 't'
