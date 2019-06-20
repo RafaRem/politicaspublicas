@@ -101,22 +101,21 @@ class TerminarActividadFormView(LoginRequiredMixin,View):
         """validar si ya subió información no pueda acceder"""
         actividad = Actividad.objects.get(pk=idActividad)
         form = TerminarActividadesForm()
-        if request.user.profile.dependencia.tipo == 'd':
-            conceptosGasto = ConceptoGasto.objects.filter(tipoDependencia='d')
-        else:
-            conceptosGasto = ConceptoGasto.objects.filter(tipoDependencia='p',dependencia=request.user.profile.dependencia)
-        conceptosGasto = serializers.serialize('json',conceptosGasto, use_natural_foreign_keys=True)
+        # if request.user.profile.dependencia.tipo == 'd':
+        #     conceptosGasto = ConceptoGasto.objects.filter(tipoDependencia='d')
+        # else:
+        #     conceptosGasto = ConceptoGasto.objects.filter(tipoDependencia='p',dependencia=request.user.profile.dependencia)
+        # conceptosGasto = serializers.serialize('json',conceptosGasto, use_natural_foreign_keys=True)
         return render(request,'programasOperativos/actividades/terminarActividad.html',{
             'form':form,
-            'actividad':actividad,
-            'conceptosGasto':conceptosGasto
+            'actividad':actividad
         })
     def post(self,request,idActividad):
         actividad = Actividad.objects.get(pk=idActividad)
         #SI NO ES VÁLIDA LA ACTIVIDAD ELIMINA SUS DETALLES DE GASTO PARA VOLVER A CAPTURARSE
-        if actividad.estado == 'n':
-            gastosActividad = DetallesGasto.objects.filter(actividad=actividad)
-            gastosActividad.delete()
+        # if actividad.estado == 'n':
+        #     gastosActividad = DetallesGasto.objects.filter(actividad=actividad)
+        #     gastosActividad.delete()
         form = TerminarActividadesForm(request.POST, instance=actividad)
         if form.is_valid():
             datos = form.save(commit=False)
@@ -128,15 +127,15 @@ class TerminarActividadFormView(LoginRequiredMixin,View):
             datos.evidencia = archivo
             #'t' significa terminada
             datos.estado = 't'
-            gastosActividad = request.POST.getlist('gastos[]')
-            for gasto in gastosActividad:
-                gasto = gasto.split('|')
-                conceptoGasto = ConceptoGasto.objects.get(pk=gasto[1])
-                DetallesGasto.objects.create(
-                    cantidad=gasto[0],
-                    actividad=actividad,
-                    gasto=conceptoGasto
-                )
+            # gastosActividad = request.POST.getlist('gastos[]')
+            # for gasto in gastosActividad:
+            #     gasto = gasto.split('|')
+            #     conceptoGasto = ConceptoGasto.objects.get(pk=gasto[1])
+            #     DetallesGasto.objects.create(
+            #         cantidad=gasto[0],
+            #         actividad=actividad,
+            #         gasto=conceptoGasto
+            #     )
             save = datos.save()
             messages.success(request, 'Actividad actualizada con éxito.')
             return redirect('listActividades')
@@ -181,12 +180,10 @@ class ProgramasOperativosListView(LoginRequiredMixin,View):
 
 def ver_actividad(request,idActividad):
     actividad = Actividad.objects.get(pk=idActividad)
-    gastosActividad = DetallesGasto.objects.filter(actividad=actividad)
-    total = 0
-    for gasto in gastosActividad:
-        total += float(gasto.cantidad)
+    # gastosActividad = DetallesGasto.objects.filter(actividad=actividad)
+    # total = 0
+    # for gasto in gastosActividad:
+    #     total += float(gasto.cantidad)
     return render(request,'programasOperativos/actividades/verActividad.html',{
-        'actividad':actividad,
-        'gastos': gastosActividad,
-        'total':total
+        'actividad':actividad
     })
