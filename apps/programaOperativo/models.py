@@ -22,6 +22,7 @@ class Acciones(models.Model):
         verbose_name_plural = 'Acciones de programas operativos'
     def __str__(self):
         return str(self.id)+ ',' + self.nombre
+
 class ProgramaOperativo(models.Model):
     opcionesTipoPrograma=(
         ('i', 'Institucional'),
@@ -45,8 +46,6 @@ class ProgramaOperativo(models.Model):
     def __str__(self):
         return self.nombre
 
-
-
 class Actividad(models.Model):
     opcionesEstado = (
         ('p','Programada'),
@@ -61,8 +60,6 @@ class Actividad(models.Model):
     verbose_name="Actividad")
     descripcion = models.TextField(max_length=300, 
     verbose_name="Descripción breve")
-    presupuestoProgramado = models.CharField(max_length=300, 
-    verbose_name="Presupuesto comprometido en esta actividad")
     personasInvolucradas = models.CharField(max_length=10,blank=True, null=True,
     verbose_name="Personal involucrado")
     beneficiarios = models.CharField(max_length=10,blank=True, null=True,
@@ -87,11 +84,11 @@ class Actividad(models.Model):
 
 class DetallesGasto(models.Model):
     cantidad = models.CharField(max_length=100)
-    actividad = models.ForeignKey(Actividad, on_delete=models.PROTECT)
+    accion = models.ForeignKey(Acciones,on_delete=models.PROTECT)
     gasto = models.ForeignKey(ConceptoGasto,on_delete=models.PROTECT)
     class Meta:
-        verbose_name = 'Detalle de gasto por actividad'
-        verbose_name_plural = 'Detalles de gasto por actividades'
-        unique_together = ['actividad','gasto']
+        verbose_name = 'Detalle de gasto por acción'
+        verbose_name_plural = 'Detalles de gasto por acción'
+        unique_together = ['accion','gasto']
     def __str__(self):
         return (self.actividad.nombre + ', ' + self.gasto.nombre)

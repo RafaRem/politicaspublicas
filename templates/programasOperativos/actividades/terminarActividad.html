@@ -57,7 +57,7 @@
         <form id="id_form_actividad" action="" 
         method="POST" enctype="multipart/form-data">
             {% csrf_token %}
-            <label for="id_tabla_presupuesto">Presupuesto ejercido*</label>
+            <!-- <label for="id_tabla_presupuesto">Presupuesto ejercido*</label>
             <div class="table-responsive">
               <table class="table" id="id_tabla_presupuesto">
                 <thead>
@@ -72,7 +72,7 @@
                 </tbody>
               </table>
   
-            </div>
+            </div> -->
             <hr>
             {{ form|crispy }}
             <label for="input-42-es">Evidencia*</label>
@@ -126,21 +126,18 @@
         }, 1000);
  
     $(document).ready(()=>{
-      var conceptosGasto = "{{conceptosGasto|escapejs}}"
-      conceptosGasto = JSON.parse(conceptosGasto)
+      //var conceptosGasto = "{{conceptosGasto|escapejs}}"
+      //conceptosGasto = JSON.parse(conceptosGasto)
       //este arreglo se usa para cuando hay cambios en los componentes, se registra su
       //valor en el ya que al cambiar en paginación se destruyen los inputs
       //usability price is fucking high...
-      var arregloGastos = [];
+      /*var arregloGastos = [];
       for (let i = 0; i < conceptosGasto.length; i++) {
         arregloGastos.push({
           valor:"",
           pk:""
         });        
       }
-
-
-
       for (let i = 0; i < conceptosGasto.length; i++) {
         const element = conceptosGasto[i];
         $('#id_tabla_presupuesto').find('tbody')
@@ -182,16 +179,18 @@
           arregloGastos[i].pk = document.getElementById(`input-gastos-${i}`).getAttribute('pk');
         })
       }
-   
+      */
      
-      $('#id_tabla_presupuesto').DataTable();
+      //$('#id_tabla_presupuesto').DataTable();
       //Validaciones
-      $('.input-gastos').mask('00000000.00', {reverse: true});
+      //$('.input-gastos').mask('00000000.00', {reverse: true});
       $('#id_personasInvolucradas').mask('00000000');
       $('#id_beneficiarios').mask('00000000');
       //*********************
       $( "#id_form_actividad" ).submit(function( event ) {
         event.preventDefault();
+        //ESTE CODIGO INCRUSTA INPUTS PARA ENVIARLOS AL FORMULARIO POR MÉTODO POST
+        /*
         let gastoIngresado = false;
           for (let i = 0; i < arregloGastos.length; i++) {
             const element = arregloGastos[i];
@@ -206,31 +205,30 @@
             }
             
           }
-          if(gastoIngresado){
-            let timerInterval
-            Swal.fire({
-              title: 'Subiendo',
-              timer: 30000,
-              onBeforeOpen: () => {
-                Swal.showLoading()
-              },
-              onClose: () => {
-                clearInterval(timerInterval)
-              }
-            }).then((result) => {
-              if (
-                // Read more about handling dismissals
-                result.dismiss === Swal.DismissReason.timer
-              ) {
-                console.log('I was closed by the timer')
-              }
-            })
-            string = $('#input-42-es')[0].files[0].name;
-            string  = string.replace(/[^a-zA-Z0-9 ]/g, "")
-            $('#input-42-es')[0].files[0].name = string  + '_evidencia.pdf'
-            this.submit()
-          }else{
-            Swal.fire({
+          */
+          let timerInterval
+          Swal.fire({
+            title: 'Subiendo',
+            timer: 30000,
+            onBeforeOpen: () => {
+              Swal.showLoading()
+            },
+            onClose: () => {
+              clearInterval(timerInterval)
+            }
+          }).then((result) => {
+            if (
+              // Read more about handling dismissals
+              result.dismiss === Swal.DismissReason.timer
+            ) {
+              console.log('I was closed by the timer')
+            }
+          })
+          string = $('#input-42-es')[0].files[0].name;
+          string  = string.replace(/[^a-zA-Z0-9 ]/g, "")
+          $('#input-42-es')[0].files[0].name = string  + '_evidencia.pdf'
+          this.submit()
+            /*Swal.fire({
               title: `<h4 class="modal-title" id="exampleModalLabel">
                   <strong>Selecciona el lugar de esta actividad</strong>
                 </h4>`,
@@ -244,8 +242,7 @@
                   <li>En caso de que la actividad no haya llevado ningún gasto, elegir uno y escribir 0.</li>
                 </ul>
                 `
-              })
-          }
+              })*/
 
       });
     })

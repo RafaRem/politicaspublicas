@@ -35,12 +35,7 @@ class ActividadAdmin(admin.ModelAdmin):
 
 @admin.register(DetallesGasto)
 class DetallesGastoAdmin(admin.ModelAdmin):
-    list_display = ['actividad','gasto','get_dependencia','cantidad']
-    ordering = ['actividad']
-    search_fields = ['actividad__nombre', 'gasto__nombre']
-    list_filter = ['actividad__programaoperativo__dependencia__nombre']
-    def get_dependencia(self,obj):
-        return obj.actividad.programaoperativo.dependencia.nombre
-    get_dependencia.short_description = 'Dependencia'
-    get_dependencia.admin_order_field = 'actividad__programaoperativo__dependencia__nombre'
+    list_display = ['gasto','accion','cantidad']
+    ordering = ['accion']
+    search_fields = ['accion__nombre', 'gasto__nombre']
 
