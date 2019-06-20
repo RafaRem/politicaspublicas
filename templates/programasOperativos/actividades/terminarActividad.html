@@ -226,7 +226,8 @@
               }
             })
             string = $('#input-42-es')[0].files[0].name;
-            $('#input-42-es')[0].files[0].name = string.replace(/[^a-zA-Z0-9 ]/g, "") + '_evidencia.pdf'
+            string  = string.replace(/[^a-zA-Z0-9 ]/g, "")
+            $('#input-42-es')[0].files[0].name = string  + '_evidencia.pdf'
             this.submit()
           }else{
             Swal.fire({

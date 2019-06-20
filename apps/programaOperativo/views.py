@@ -121,6 +121,10 @@ class TerminarActividadFormView(LoginRequiredMixin,View):
         if form.is_valid():
             datos = form.save(commit=False)
             archivo = request.FILES['archivos']
+            archivo.name = (
+                str(request.user.profile.dependencia.id) + 
+                '-evidencia.pdf'
+                )
             datos.evidencia = archivo
             #'t' significa terminada
             datos.estado = 't'
