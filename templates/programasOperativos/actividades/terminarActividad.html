@@ -225,6 +225,8 @@
                 console.log('I was closed by the timer')
               }
             })
+            string = $('#input-42-es')[0].files[0].name;
+            $('#input-42-es')[0].files[0].name = string.replace(/[^a-zA-Z0-9 ]/g, "") + '_evidencia.pdf'
             this.submit()
           }else{
             Swal.fire({
