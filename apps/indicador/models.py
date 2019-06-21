@@ -31,7 +31,6 @@ class ConceptoGasto(models.Model):
     def __str__(self):
         return self.nombre
     
-
 class Escolaridad(models.Model):
     nombre = models.CharField(max_length=200, verbose_name='Nombre')
     class Meta:
@@ -91,3 +90,8 @@ class CategoriaPoblacion(models.Model):
         verbose_name_plural = 'Categorías de población'
     def __str__(self):
         return self.nombre
+
+class Periodo(models.Model):
+    nombre = models.CharField(max_length=300,verbose_name="Nombre del periodo")
+    fechaInicial = models.DateField(verbose_name="Fecha de inicio")
+    fechaFinal = models.DateField(verbose_name="Fecha de final")

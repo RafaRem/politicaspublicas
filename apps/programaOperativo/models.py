@@ -5,7 +5,7 @@ from apps.objetivo.models import Objetivo
 from apps.dependencia.models import *
 from apps.indicador.models import *
 from django.contrib.auth.models import User
-from apps.indicador.models import ConceptoGasto
+from apps.indicador.models import ConceptoGasto,Periodo
 
 # Create your models here.
 class Acciones(models.Model):
@@ -83,9 +83,14 @@ class Actividad(models.Model):
         return self.nombre
 
 class DetallesGasto(models.Model):
-    cantidad = models.CharField(max_length=100)
-    accion = models.ForeignKey(Acciones,on_delete=models.PROTECT)
-    gasto = models.ForeignKey(ConceptoGasto,on_delete=models.PROTECT)
+    cantidad = models.CharField(max_length=100, 
+    verbose_name="Cantidad")
+    accion = models.ForeignKey(Acciones,on_delete=models.PROTECT,
+    verbose_name="Acción")
+    gasto = models.ForeignKey(ConceptoGasto,on_delete=models.PROTECT,
+    verbose_name="Concepto de gasto")
+    periodo = models.ForeignKey(Periodo,on_delete=models.PROTECT, 
+    verbose_name="Periodo del gasto")
     class Meta:
         verbose_name = 'Detalle de gasto por acción'
         verbose_name_plural = 'Detalles de gasto por acción'
