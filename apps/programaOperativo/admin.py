@@ -5,9 +5,10 @@ from apps.programaOperativo.models import *
 
 @admin.register(ProgramaOperativo)
 class ProgramaOperativoAdmin(admin.ModelAdmin):
-    list_display = ['nombre', 'dependencia']
+    list_display = ['id', 'nombre', 'dependencia']
+    list_display_links = ['id','nombre']
     ordering = ['nombre']
-    search_fields = ('nombre','dependencia__nombre',)
+    search_fields = ('id', 'nombre','dependencia__nombre',)
     filter_horizontal = ('acciones',)
 
 @admin.register(Acciones)
@@ -35,7 +36,7 @@ class ActividadAdmin(admin.ModelAdmin):
 
 @admin.register(DetallesGasto)
 class DetallesGastoAdmin(admin.ModelAdmin):
-    list_display = ['gasto','accion','cantidad']
+    list_display = ['id','gasto','accion','cantidad']
     ordering = ['accion']
-    search_fields = ['accion__nombre', 'gasto__nombre']
+    search_fields = ['id','accion__nombre', 'gasto__nombre']
 
