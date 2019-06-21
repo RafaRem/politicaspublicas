@@ -178,6 +178,7 @@ class ProgramasOperativosListView(LoginRequiredMixin,View):
             'objetivo':objetivo
         })
 
+@login_required(login_url='login')
 def ver_actividad(request,idActividad):
     actividad = Actividad.objects.get(pk=idActividad)
     # gastosActividad = DetallesGasto.objects.filter(actividad=actividad)
@@ -187,3 +188,9 @@ def ver_actividad(request,idActividad):
     return render(request,'programasOperativos/actividades/verActividad.html',{
         'actividad':actividad
     })
+
+@login_required(login_url='login')
+def ver_accion(request,idAccion):
+    accion = Acciones.objects.get(pk=idAccion)
+    detallesGasto = DetallesGasto.objects.filter(accion=accion)
+    
