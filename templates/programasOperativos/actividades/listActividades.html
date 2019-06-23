@@ -8,8 +8,17 @@ Tus actividades
 {% endblock%}
 {% block extracss %}
     <style>
+        a.btn{
+            min-width: 100px;
+        }
         table.dataTable tbody tr{
             background: transparent !important;
+        }
+        span.badge{
+            min-width: 100px;
+        }
+        .badge-naranja{
+            background: #f26631;
         }
     </style>
 {% endblock %}
@@ -50,7 +59,7 @@ Tus actividades
                 {%elif actividad.estado == 'n'%}
                 <a class="btn btn-primary btn-sm guinda" 
                 href="{%url 'verActividad' idActividad=actividad.id%}">Ver</a>
-                <a class="btn btn-primary btn-sm guinda" 
+                <a class="btn btn-primary btn-sm guinda m-2" 
                 href="{%url 'terminarActividad' idActividad=actividad.id%}">Volver a subir</a>
                 {%else%}
                 <a class="btn btn-primary btn-sm guinda" 
@@ -61,13 +70,13 @@ Tus actividades
             <td>
                 <div class="d-flex justify-content-center">
                     {% if actividad.estado == 'r' %}
-                    <span class="badge badge-success">Revisada&nbsp;<i class="fa fa-check-circle"></i></span>
+                    <span class="badge badge-success">Válida&nbsp;<i class="fa fa-check-circle"></i></span>
                     {%elif actividad.estado == 'p' %}
-                    <span class="badge badge-danger">Falta evidencia&nbsp;<i class="fa fa-times-circle"></i></span>
+                    <span class="badge badge-naranja">Pendiente&nbsp;<i class="fas fa-exclamation-circle"></i></span>
                     {%elif actividad.estado == 'n' %}
                     <span class="badge badge-danger">No válido&nbsp;<i class="fa fa-times-circle"></i></span>
                     {%else%}
-                    <span class="badge badge-warning">En revisión&nbsp;<i class="fa fa-info-circle"></i></span>
+                    <span class="badge badge-warning">En revisión&nbsp;<i class="fas fa-clock"></i></span>
                     {% endif %}
                 </div>
             </td>

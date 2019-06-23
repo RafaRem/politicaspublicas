@@ -193,4 +193,8 @@ def ver_actividad(request,idActividad):
 def ver_accion(request,idAccion):
     accion = Acciones.objects.get(pk=idAccion)
     detallesGasto = DetallesGasto.objects.filter(accion=accion)
+    return render(request,'programasOperativos/accion.html',{
+        'accion':accion,
+        'detallesGasto':detallesGasto
+    })
     
