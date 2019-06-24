@@ -155,27 +155,37 @@ Acción
               </div>
         </div>
         <h4 class="text-center font-weight-bold">Gastos por periodos</h4>
-        {% for periodo in periodos %}
-        <div class="col-xl-4 col-sm-6 mb-3 animated fadeIn">
-            <div class="card text-dorado eje5 o-hidden h-100">
-              <div class="card-body">
-                <div class="mr-5">
-                  <h5>{{periodo.nombre}}</h5>
-                  <div class="mitad-h3">
-                    Desde {{periodo.fechaInicial}} hasta {{periodo.fechaFinal}}
+        <div class="row">
+            {% for periodo in periodos %}
+            <div class="col-xl-4 col-sm-6 mb-3 animated fadeIn">
+                <div class="card text-dorado eje5 o-hidden h-100">
+                  <div class="card-body">
+                    <div class="mr-5">
+                      <h5>{{periodo.nombre}}</h5>
+                      <div class="mitad-h3">
+                        Desde {{periodo.fechaInicial}} hasta {{periodo.fechaFinal}}
+                      </div>
+                    </div>
                   </div>
+                  <a class="card-footer text-white clearfix small z-1" 
+                  href="{%url 'capturarGastos' idAccion=accion.id idPeriodo=periodo.id%}">
+                      <span class="float-left">Capturar gastos...</span>
+                      <span class="float-right">
+                        <i class="fas fa-angle-right"></i>
+                      </span>
+                    </a>
+                  <a class="card-footer text-white clearfix small z-1" 
+                  href="{%url 'capturarGastos' idAccion=accion.id idPeriodo=periodo.id%}">
+                      <span class="float-left">Ver gastos...</span>
+                      <span class="float-right">
+                        <i class="fas fa-angle-right"></i>
+                      </span>
+                    </a>
                 </div>
               </div>
-              <a class="card-footer text-white clearfix small z-1" 
-              href="{%url 'capturarGastos' idAccion=accion.id idPeriodo=periodo.id%}">
-                  <span class="float-left">Capturar gastos...</span>
-                  <span class="float-right">
-                    <i class="fas fa-angle-right"></i>
-                  </span>
-                </a>
-            </div>
-          </div>
-        {% endfor %}
+            {% endfor %}
+        </div>
+
 
 
 

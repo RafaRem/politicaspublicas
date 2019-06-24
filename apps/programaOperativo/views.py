@@ -200,15 +200,54 @@ def ver_accion(request,idAccion):
         'periodos': periodos
     })
 
+class CapturarGastoView(LoginRequiredMixin,View):
+    login_url = 'login'
+    def get(self,request,idAccion,idPeriodo):
+        accion = Acciones.objects.get(pk=idAccion)
+        periodo = Periodo.objects.get(pk=idPeriodo)
+        if periodo.capturaHabilitada == False:
+            messages.error(request,'La capturua de este periodo está inhabilitada')
+            url = reverse('verAccion',args=(idAccion,))
+            return redirect(url)
+        #Si es dependencia o paramunicipal cargará otros conceptos de gasto
+        if request.user.profile.dependencia.tipo == 'd':
+            conceptosGasto = ConceptoGasto.objects.filter(tipoDependencia='d')
+        else:
+            conceptosGasto = ConceptoGasto.objects.filter(tipoDependencia='p',dependencia=request.user.profile.dependencia)
+        detallesGasto = DetallesGasto.objects.filter(accion=accion,periodo=periodo)
+        conceptosGasto = serializers.serialize('json',conceptosGasto, use_natural_foreign_keys=True)
+        return render(request,'programasOperativos/capturarGastos.html',{
+            'conceptosGasto':conceptosGasto
+        })
+    def post(self, request, idAccion, idPeriodo):
+        accion = Acciones.objects.get(pk=idAccion)
+        periodo = Periodo.objects.get(pk=idPeriodo)
+        gastosAccion = request.POST.getlist('gastos[]')
+        detallesGasto = DetallesGasto.objects.filter(accion=accion,periodo=periodo)
+        detallesGasto.delete()
+        for gasto in gastosAccion:
+            gasto = gasto.split('|')
+            conceptoGasto = ConceptoGasto.objects.get(pk=gasto[1])
+            print(gasto[0])
+            objeto = DetallesGasto.objects.create(
+                cantidad=gasto[0],
+                accion=accion,
+                periodo=periodo,
+                gasto=conceptoGasto
+            )
+            objeto.save()
+        #Si es dependencia o paramunicipal cargará otros conceptos de gasto
+        if request.user.profile.dependencia.tipo == 'd':
+            conceptosGasto = ConceptoGasto.objects.filter(tipoDependencia='d')
+        else:
+            conceptosGasto = ConceptoGasto.objects.filter(tipoDependencia='p',dependencia=request.user.profile.dependencia)
+        conceptosGasto = serializers.serialize('json',conceptosGasto, use_natural_foreign_keys=True)
+        return render(request,'programasOperativos/capturarGastos.html',{
+            'conceptosGasto':conceptosGasto
+        })
+    
 @login_required(login_url='login')
-def capturar_gastos(request,idAccion,idPeriodo):
-    #Si es dependencia o paramunicipal cargará otros conceptos de gasto
-    if request.user.profile.dependencia.tipo == 'd':
-        conceptosGasto = ConceptoGasto.objects.filter(tipoDependencia='d')
-    else:
-        conceptosGasto = ConceptoGasto.objects.filter(tipoDependencia='p',dependencia=request.user.profile.dependencia)
-    conceptosGasto = serializers.serialize('json',conceptosGasto, use_natural_foreign_keys=True)
-    return render(request,'programasOperativos/capturarGastos.html',{
-        'conceptosGasto':conceptosGasto
-    })
+def ver_gastos(request,idAccion,idPeriodo):
+    accion = Acciones.objects.get(pk=idAccion)
+    periodo =  Periodo.objects.get(pk=idPeriodo)
     
