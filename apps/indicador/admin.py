@@ -37,3 +37,7 @@ class CategoriaPoblacionAdmin(admin.ModelAdmin):
 @admin.register(SectorEconomico)
 class SectorEconomicoAdmin(admin.ModelAdmin):
     list_display = ['nombre']
+
+@admin.register(Periodo)
+class PeriodoAdmin(admin.ModelAdmin):
+    list_display = ['id','nombre','fechaInicial', 'fechaFinal']

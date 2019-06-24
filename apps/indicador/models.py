@@ -95,3 +95,9 @@ class Periodo(models.Model):
     nombre = models.CharField(max_length=300,verbose_name="Nombre del periodo")
     fechaInicial = models.DateField(verbose_name="Fecha de inicio")
     fechaFinal = models.DateField(verbose_name="Fecha de final")
+    class Meta:
+        verbose_name = 'Periodo'
+        verbose_name_plural = 'Periodos'
+    def __str__(self):
+        return self.nombre
+    

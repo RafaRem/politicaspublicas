@@ -11,7 +11,7 @@ from apps.programaOperativo.forms import ProgramaOperativoForm, ActividadesForm,
 """Modelos"""
 from apps.programaOperativo.models import ProgramaOperativo, Acciones, Actividad, DetallesGasto
 from apps.objetivo.models import Objetivo
-from apps.indicador.models import ConceptoGasto, ClasificacionGasto
+from apps.indicador.models import ConceptoGasto, ClasificacionGasto,Periodo
 # # Crea
 # te your views here.
 #ESTE NO NECESITA PROTECCION
@@ -193,8 +193,22 @@ def ver_actividad(request,idActividad):
 def ver_accion(request,idAccion):
     accion = Acciones.objects.get(pk=idAccion)
     detallesGasto = DetallesGasto.objects.filter(accion=accion)
+    periodos = Periodo.objects.all()
     return render(request,'programasOperativos/accion.html',{
         'accion':accion,
-        'detallesGasto':detallesGasto
+        'detallesGasto':detallesGasto,
+        'periodos': periodos
+    })
+
+@login_required(login_url='login')
+def capturar_gastos(request,idAccion,idPeriodo):
+    #Si es dependencia o paramunicipal cargará otros conceptos de gasto
+    if request.user.profile.dependencia.tipo == 'd':
+        conceptosGasto = ConceptoGasto.objects.filter(tipoDependencia='d')
+    else:
+        conceptosGasto = ConceptoGasto.objects.filter(tipoDependencia='p',dependencia=request.user.profile.dependencia)
+    conceptosGasto = serializers.serialize('json',conceptosGasto, use_natural_foreign_keys=True)
+    return render(request,'programasOperativos/capturarGastos.html',{
+        'conceptosGasto':conceptosGasto
     })
     

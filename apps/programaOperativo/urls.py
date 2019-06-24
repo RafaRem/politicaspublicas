@@ -14,5 +14,6 @@ urlpatterns = [
     TerminarActividadFormView.as_view(), name='terminarActividad'),
     path('programasOperativos/actividad/ver/<str:idActividad>', ver_actividad, name='verActividad'),
     path('programasOperativos/accion/ver/<str:idAccion>', ver_accion, name='verAccion'),
+    path('programasOperativos/accion/capturar-gastos/<str:idAccion>/<str:idPeriodo>', capturar_gastos, name='capturarGastos'),
 
 ]
