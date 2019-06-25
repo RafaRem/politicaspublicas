@@ -252,3 +252,30 @@ def ver_gastos(request,idAccion,idPeriodo):
         'gastos':gastos,
         'total':total
     })
+
+class EditarGastosView(LoginRequiredMixin,View):
+    login_url = 'login'
+    def get(self,request,idAccion,idPeriodo):
+        accion = Acciones.objects.get(pk=idAccion)
+        periodo = Periodo.objects.get(pk=idPeriodo)
+        if periodo.capturaHabilitada == False:
+            messages.error(request,'La captura de este periodo está inhabilitada')
+            url = reverse('verAccion',args=(idAccion,))
+            return redirect(url)
+        gastos = DetallesGasto.objects.filter(accion=accion,periodo=periodo)
+        return render(request,'programasOperativos/editarGastos.html',{
+            'gastos':gastos
+        })
+    def post(self,request,idAccion,idPeriodo):
+        accion = Acciones.objects.get(pk=idAccion)
+        periodo = Periodo.objects.get(pk=idPeriodo)
+        gastos = request.POST.getlist('gastos[]')
+        for gasto in gastos:
+            gasto = gasto.split('|')
+            objeto =  DetallesGasto.objects.get(pk=gasto[1])
+            objeto.cantidad = gasto[0]
+            objeto.save()
+            pass
+        messages.success(request,'Se han actualizado los datos exitosamente')
+        url = reverse('verAccion',args=(idAccion,))
+        return redirect(url)
