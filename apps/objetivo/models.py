@@ -4,8 +4,8 @@ from apps.dependencia.models import *
 # Create your models here.
 class Objetivo(models.Model):
     opcionesEstado = (
-        ('A','Activo'),
-        ('I','Inactivo')
+        ('a','Activo'),
+        ('a','Inactivo')
     )
     opcionesEjesTransversales = (
         ('1','Desarrollo Integral'),
@@ -26,6 +26,9 @@ class Objetivo(models.Model):
     estrategia = models.CharField(max_length=1000, blank=True)
     ejeTransversal = models.CharField(max_length=300,choices=opcionesEjesTransversales)
     dependencia = models.ManyToManyField(Dependencia,blank=True)
-    estado = models.CharField(max_length=3,default='A',choices=opcionesEstado)
+    estado = models.CharField(max_length=3,default='a',choices=opcionesEstado)
+    class Meta:
+        verbose_name = 'Objetivo transversal/estratégico'
+        verbose_name_plural = 'Objetivos transversales/estratégicos'
     def __str__(self):
         return self.numero + ',' + self.nombre

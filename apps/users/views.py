@@ -5,8 +5,8 @@ from django.core import serializers
 from django.contrib import messages
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse, HttpResponseBadRequest
 # decorators for login
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
-from django.utils.decorators import method_decorator
 #forms
 from . import forms
 from .forms import UsuariosForm
@@ -20,6 +20,7 @@ from apps.dependencia.models import Dependencia
 from apps.objetivo.models import Objetivo
 from apps.programaOperativo.models import Actividad, ProgramaOperativo
 from django.db.models import  *
+from django.contrib.auth.models import User
 #Create your views here.a
 import time
 import json
@@ -69,7 +70,8 @@ ejes = [
 ]
 
 
-class IndexView(View):
+class IndexView(LoginRequiredMixin,View):
+    login_url = 'login'
     ejes = [
         {
             'numero':'Eje I',
@@ -98,14 +100,10 @@ class IndexView(View):
         }
         ]
     template_name = 'users/login.html'
-    @method_decorator(login_required(login_url='login'))
     def get(self,request, *args, **kwargs):
-        print(self.ejes)
         return render(request,'index.html',{'ejes':self.ejes})
 
-def prueba():
-    return "hola"
-
+@login_required(login_url='login')
 def CalendarView(request):
     #Model.objects.filter(fecha__range=(f_inicial, f_cierre) CONSULTA POR RANGO DE FECHAS
     hour = timezone.localtime(timezone.now())
@@ -113,8 +111,8 @@ def CalendarView(request):
     date_object = datetime.strptime(formatedDay, '%Y/%m/%d')
     matchs = Actividad.objects.all()
     depend = Dependencia.objects.all()
+    objetivo = Objetivo.objects.all()
     colores=[]
-    actividades=[]
     for i in matchs:
         if (date_object.date() > i.fecha_in):
             colores+= ['red']
@@ -122,35 +120,64 @@ def CalendarView(request):
             colores+= ['green']
 
     evento =zip(matchs, colores)
-    contador = matchs.count()          
+    contador = matchs.count()
+
+    #   GENERAL ************************************************
     if request.method== 'POST':
         srch = request.POST['srh']
-        if srch:
-            dep = Dependencia.objects.get(pk=srch)
-            proper = ProgramaOperativo.objects.filter(dependencia=dep)
-            for i in proper:
-                actividades+=[i.actividad]
+        srch2 = request.POST['srh2']
+        srch3 = request.POST['srh3']
+        srch4 = request.POST['srh4']  
 
+        if (srch or srch2 or srch3 or srch4):
+            actividades = Actividad.objects.all()
 
-            colores=[]
+            
+        
+            
+            dep = Dependencia.objects.get(pk=srch)  
+            print("dep",dep)
+            proper = ProgramaOperativo.objects.filter(dependencia=dep) 
+            print("proper",proper)
+            for i in proper: 
+                actividades = Actividad.objects.filter(programaoperativo=i)
+                print("act",actividades)      
+
+            # if srch3:
+            #     obje = Objetivo.objects.get(pk=srch3)
+            #     print("Objetivo", obje)
+            #     depen = Dependencia.objects.filter(objetivo=obje) 
+            #     print("Dependencias", depen)
+            #     for j in depen:
+            #         proper2 = ProgramaOperativo.objects.filter(dependencia=j)      
+    
+            #     print("Programas ", proper2)
+            #     for x in proper2:
+            #         actividades = actividades.filter(programaoperativo=x) 
+            #         print("x", actividades)         
+            
+               
+            actividades = actividades.filter(Q(estado__icontains=srch2))  
+
             for i in actividades:
                 if (date_object.date() > i.fecha_in):
-                    colores+= ['red']
+                    colores+= ['red'] 
                 else:
                     colores+= ['green']
-        
-            contador = actividades.count()
+            
+            contador = actividades.count() 
             evento =zip(actividades, colores)
             if actividades: 
-                return render(request, 'users/calendario.html', {'actividad':evento, 'contador': contador,'fecha': formatedDay,'color':colores,'depende':depend,'total':actividades})
+                return render(request, 'users/calendario.html', {'actividad':evento, 'contador': contador,'fecha': formatedDay,'color':colores,'depende':depend,'total':actividades,'objetivo':objetivo})
             else:
                 messages.error(request,'Resultados no encontrados')    
         else:
-            return HttpResponseRedirect('/calendario/')    
-    return render(request, 'users/calendario.html',{'actividad':evento,'fecha': formatedDay, 'contador': contador,'depende':depend,'total':actividades})
+            return HttpResponseRedirect('usuarios/calendario/')     
+    return render(request, 'users/calendario.html',{'actividad':evento,'fecha': formatedDay, 'contador': contador,'depende':depend, 'objetivo':objetivo})
 
 
-class UsuarioView(View):
+class UsuarioView(LoginRequiredMixin,View):  
+    login_url = 'login'
     def get(self, request):
         return render(request, 'index.html')
 
@@ -158,7 +185,7 @@ class UsuarioView(View):
 
 class LoginView(View):
     def post(self,request):
-        username = str(request.POST['usuario']).lower()
+        username = str(request.POST['usuario'])
         password = str(request.POST['pass'])
         if username:
             user = authenticate(username=username,password=password)
@@ -170,18 +197,16 @@ class LoginView(View):
                 return redirect('login')
                 
             
-        print(request.POST['usuario'])
         return render(request,"users/login.html")
         pass
     def get(self,request):
-        # print(request.user.is_authenticated)
         if request.user.is_authenticated:
             return redirect('index')
         return render(request,"users/login.html")
         pass
 
 
-
+@login_required(login_url='login')
 def vista_registrar(request):
     if request.method=='POST':
         form = RegistrarPersona(request.POST)
@@ -193,12 +218,19 @@ def vista_registrar(request):
         form = RegistrarPersona()
     return render(request,'users/RegistroPrueba.html',{'form': form})
 
-class GraficaView(View):
+def vista_contrasena_olvidada(request):
+    if request.user.is_authenticated:
+        return redirect('index')
+    return render(request, 'users/contrasenaolvidada.html')
+
+class GraficaView(LoginRequiredMixin,View):
+    login_url = 'login'
     def get(self,request, *args, **kwargs):
         return render(request, 'users/graficas.html', { })
 
 
-class CharData(APIView):
+class CharData(LoginRequiredMixin,APIView):
+    login_url = 'login'
     authentication_classes = []
     permission_classes =[]
 
@@ -213,6 +245,9 @@ class CharData(APIView):
         programa= 'Eventos Culturales'
         preje='$12000'
         fechaini='2019-05-30'
+        labels = ['IMDA', 'IMAC', 'SEDECO', 'IMJU']
+        default_items = [nom,apepat,apemat,ed]
+        title= 'Prueba'
         data ={
         "nombre": nomb,
         "descri": desc,
@@ -224,12 +259,12 @@ class CharData(APIView):
         return Response(data)
 
 
-@login_required
+@login_required(login_url='login')
 def logout_view(request):
     logout(request)
     return redirect('login')
 
-
+@login_required(login_url='login')
 def report(request):
     hour = timezone.localtime(timezone.now())
     formatedHour = hour.strftime("%H:%M:%S")
@@ -279,3 +314,23 @@ def report(request):
     buffer.close()
     response.write(pdf)
     return response
+
+@login_required(login_url='login')
+def perfil_view(request):
+    return render(request,'users/perfil.html')
+
+class CambiarPassview(LoginRequiredMixin,View):
+    login_url = 'login'
+    def get(self,request):
+        return render(request,'users/cambiarPass.html')
+    def post(self,request):
+        user = User.objects.get(pk=request.user.id)
+        autenticar = authenticate(username=user.username,password=request.POST.get("passActual"))
+        if autenticar:
+            user.set_password(request.POST.get("nuevaPass"))
+            user.save()
+            messages.success(request,"Contraseña actualizada con éxito")
+            return redirect('index')
+        else:
+            messages.error(request,"Contraseña incorrecta")
+        return render(request,'users/cambiarPass.html')

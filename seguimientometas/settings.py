@@ -20,7 +20,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '3!p0)f(@a$^c*2k!mxoczfn)3gvec2n2@lg%!dav+)d6_ruxxx'
+SECRET_KEY = os.getenv('PoliticasSecretKey')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -28,7 +28,13 @@ DEBUG = True
 ALLOWED_HOSTS = [
     '127.0.0.1',
     '192.168.125.52',
-    '192.168.125.65'
+    '192.168.125.65',
+    'localhost',
+    '192.168.10.22',
+    '187.216.117.34',
+    '169.254.46.39',
+    '45.6.60.196',
+    'sistemadeevaluacionpp.ahome.gob.mx'
 ]
 
 
@@ -39,6 +45,7 @@ INSTALLED_APPS = [
     'apps.dependencia',
     'apps.objetivo',
     'apps.programaOperativo',
+    'apps.indicador',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -74,6 +81,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'seguimientometas.context_processor.add_variable_context'
             ],
         },
     },
@@ -85,13 +93,12 @@ WSGI_APPLICATION = 'seguimientometas.wsgi.application'
 # Database
 # http
 # s://docs.djangoproject.com/en/2.2/ref/settings/#databases
-
 DATABASES = {
         'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'politicaspublicas',
-        'USER': 'postgres',
-        'PASSWORD':'cetis107',
+        'NAME': os.getenv('PoliticasDb'),
+        'USER': os.getenv('PoliticasDbUser'),
+        'PASSWORD':os.getenv('PoliticasPass'),
         'HOST':'localhost',
         'PORT':'',
     }
@@ -120,7 +127,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/2.2/topics/i18n/
 
-LANGUAGE_CODE = 'es-mx'
+LANGUAGE_CODE = 'es-us'
 
 TIME_ZONE = 'UTC'
 
@@ -135,6 +142,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
-STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
+PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
+STATICFILES_DIRS = (os.path.join(PROJECT_DIR, 'static'),)
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'

@@ -1,0 +1,298 @@
+{%extends 'base/base.html'%}
+{%load staticfiles%}
+
+{%block extracss%}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.43/css/bootstrap-datetimepicker.min.css">
+<link href="https://unpkg.com/gijgo@1.9.13/css/gijgo.min.css" rel="stylesheet" type="text/css" />
+  <style>
+    .container{
+      background: none !important;
+    }
+    label{
+      font-weight: bold;
+    }
+    /* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+       #map {
+        height: 100%;
+        width: 100%;
+
+      }
+      #id_contenedorMapa{
+        width: 100%;
+        height: 400px;
+      }
+      #id_btn_segunda_parte{
+        width: 100%;
+        max-width:300px;
+      }
+  </style>
+{%endblock%}
+
+
+
+{% load crispy_forms_tags %}
+{%block title%}
+Nueva actividad
+{%endblock%}
+
+
+
+ {%block navTitle%}
+Nueva actividad
+ {% endblock %}
+
+ {%block messages %}
+ {%endblock%}
+
+
+{% block content %}
+  <div class="container">
+
+        {% if messages %}
+          <ul class="messages">
+              {% for message in messages %}
+              <li{% if message.tags == "success" %} class="alert alert-success"
+            {%else%}
+            class="alert alert-danger"
+            {% endif %}>
+            {{ message }}</li>
+              {% endfor %}
+          </ul>
+        {% endif %}
+      <form action="" method="post" id="id_form_actividad">
+            <div id="div_id_programaoperativo" class="form-group"> 
+              <label for="id_programaoperativo" class="col-form-label  requiredField">
+                Programa operativo<span class="asteriskField">*</span> </label> 
+                <div class=""> 
+                  <select name="programaoperativo" class="select form-control" required="" id="id_programaoperativo"> 
+                    <option value="" selected="">---------</option>
+                    {% for programaOperativo in programasOperativos %}
+                    <option value="{{programaOperativo.id}}">{{programaOperativo.nombre}}</option>                    
+                    {% endfor %}
+                  </select> 
+                </div> 
+              </div>
+            <div id="div_id_accion" class="form-group"> 
+              <label for="id_accion" class="col-form-label  requiredField">
+                  Acción a la que corresponde<span class="asteriskField">*</span> 
+                </label> 
+                <div class=""> 
+                  <select name="accion" class="select form-control" required="" id="id_accion"> 
+                    <option value="" selected="">---------</option> 
+                  </select> 
+                </div> 
+              </div>
+            {% csrf_token %}
+            {{ form|crispy }}
+            <div id="div_id_fecha_in" class="form-group"> 
+              <label for="id_fecha_in" class="col-form-label  requiredField">
+                Fecha inicial<span class="asteriskField">*</span> 
+              </label> 
+              <div class=""> 
+                <input type="text" name="fecha_in" class="dateinput form-control" required="" id="id_fecha_in"> 
+              </div> 
+            </div>
+
+            <div id="div_id_fecha_fi" class="form-group"> 
+              <label for="id_fecha_fi" class="col-form-label  requiredField">
+                Fecha final<span class="asteriskField">*</span> 
+              </label> <div class=""> 
+                <input type="text" name="fecha_fi" class="dateinput form-control" required="" id="id_fecha_fi"> 
+              </div> 
+            </div>
+
+            <div id="id_contenedorMapa">
+                <input id="pac-input" class="form-control controls col-sm-12" type="text" placeholder="Dirección">
+                <div id="map"></div>
+                <input type="text" value="0" id="id_longitud" name="longitud" style="display: none"></input>
+                <input type="text" value="0" id="id_latitud" name="latitud" style="display: none"></input>
+
+            </div>
+            <div class="d-flex justify-content-center mt-5">
+              <button class="btn btn-primary guinda" id="id_btn_segunda_parte">
+                Registrar &nbsp;<i class="fas fa-check"></i>
+              </button>
+            </div>
+      </form>
+  </div>
+
+
+{% endblock content %}
+
+
+{%block extrascripts%}
+  <script src="https://unpkg.com/gijgo@1.9.13/js/gijgo.min.js" type="text/javascript"></script>
+  <script>
+  $(document).ready(()=>{
+
+      document.querySelector('#id_programaoperativo').addEventListener('change',()=>{
+      /*   Cuando cambie el programa operativo    */
+      programaOperativo = document.querySelector('#id_programaoperativo');
+      idPo = programaOperativo.options[programaOperativo.selectedIndex].value;
+      let acciones = document.querySelector('#id_accion');
+      $('#id_accion').children().remove().end().append('<option selected value="">---------</option>') ;
+        fetch(`/programasOperativos/get/aciones/${idPo}`)
+          .then((data)=>{
+            data.json().then((data)=>{
+              data = JSON.parse(data);  
+              for (let i = 0; i < data.length; i++) {
+                const element = data[i];
+                console.log(element)
+                acciones.options[acciones.length] = new Option(element.fields.nombre,element.pk)
+              }
+            })
+          })
+          })
+      $('#id_fecha_in').datepicker({
+            uiLibrary: 'bootstrap4',
+            format: 'yyyy-mm-dd'
+        });
+      $('#id_fecha_in').attr('readonly',true)
+      $('#id_fecha_fi').attr('readonly',true)
+      $('#id_fecha_fi').datepicker({
+          uiLibrary: 'bootstrap4',
+            format: 'yyyy-mm-dd'
+      });
+      $( "#id_form_actividad" ).submit(function( event ) {
+        latitud = document.getElementById('id_latitud');
+        if (latitud.value == "0") {
+          Swal.fire({
+            title: `<h4 class="modal-title" id="exampleModalLabel">
+                <strong>Selecciona el lugar de esta actividad</strong>
+              </h4>`,
+            type:'warning',
+            customClass:{
+              confirmButton: 'guinda',
+              cancelButton: 'guinda',
+            },
+            html:`
+            <ul>
+                <li>
+                    <strong>
+                        En caso de ser una sindicatura, basta con poner su nombre 
+                        en el campo del mapa y presionar enter.
+                    </strong>
+                </li>
+                <li>
+                    <strong>
+                        En caso de ser en Los Mochis, escribir la colonia y presionar enter.
+                      </strong>
+                </li>
+     
+                <li>
+                    <strong>
+                        En caso de ser una actividad del Ayuntamiento, 
+                        escribir "H. Ayuntamiento" y presionar enter.
+                      </strong>
+                </li>
+              </ul>
+            `
+            })
+        }else{
+          let timerInterval
+          Swal.fire({
+            title: 'Subiendo',
+            timer: 30000,
+            onBeforeOpen: () => {
+              Swal.showLoading()
+            },
+            onClose: () => {
+              clearInterval(timerInterval)
+            }
+          }).then((result) => {
+            if (
+              // Read more about handling dismissals
+              result.dismiss === Swal.DismissReason.timer
+            ) {
+              console.log('I was closed by the timer')
+            }
+          })
+          this.submit()
+
+        }
+
+        event.preventDefault();
+      });
+  })
+
+  </script>
+<script>
+    $(window).keydown(function(event){
+    if(event.keyCode == 13) {
+      event.preventDefault();
+      return false;
+    }
+  });
+    function initAutocomplete() {
+        var map = new google.maps.Map(document.getElementById('map'), {
+          fullscreenControl:false,
+          center: {lat: 25.7904657, lng: -108.985882},
+          zoom: 13,
+          disableDefaultUI: true,
+          mapTypeId: 'roadmap'
+        });
+
+        // Create the search box and link it to the UI element.
+        var input = document.getElementById('pac-input');
+        var searchBox = new google.maps.places.SearchBox(input);
+        map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+
+        // Bias the SearchBox results towards current map's viewport.
+        map.addListener('bounds_changed', function() {
+          searchBox.setBounds(map.getBounds());
+        });
+
+        var markers = [];
+        // Listen for the event fired when the user selects a prediction and retrieve
+        // more details for that place.
+        searchBox.addListener('places_changed', function() {
+          var places = searchBox.getPlaces();
+          if (places.length == 0) {
+            return;
+          }
+          // Clear out the old markers.
+          markers.forEach(function(marker) {
+            marker.setMap(null);
+          });
+          markers = [];
+          // For each place, get the icon, name and location.
+          var bounds = new google.maps.LatLngBounds();
+            if (!places[0].geometry) {
+              console.log("Returned places[0] contains no geometry");
+              return;
+            }
+            var icon = {
+              url: places[0].icon,
+              size: new google.maps.Size(71, 71),
+              origin: new google.maps.Point(0, 0),
+              anchor: new google.maps.Point(17, 34),
+              scaledSize: new google.maps.Size(25, 25)
+            };
+
+            // Create a marker for each place.
+            console.log(markers)
+            markers.push(new google.maps.Marker({
+              map: map,
+              icon: icon,
+              title: places[0].name,
+              position: places[0].geometry.location
+            }));
+            var latitud = document.getElementById('id_latitud');
+            var longitud = document.getElementById('id_longitud');
+            latitud.value = places[0].geometry.location.lat()
+            longitud.value = places[0].geometry.location.lng()
+            if (places[0].geometry.viewport) {
+              // Only geocodes have viewport.
+              bounds.union(places[0].geometry.viewport);
+            } else {
+              bounds.extend(places[0].geometry.location);
+            }
+          map.fitBounds(bounds);
+        });
+      }
+</script>
+      <script src="https://maps.googleapis.com/maps/api/js?key={{api_key}}&libraries=places&callback=initAutocomplete"
+         async defer></script>
+
+{%endblock%}

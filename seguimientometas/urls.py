@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """seguimientometas URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
@@ -14,6 +15,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.conf.urls import url,include
+from django.urls import path
 from django.contrib import admin
 from django.conf import settings
 from django.conf.urls.static  import static
@@ -21,13 +23,15 @@ from django.views.static import serve
 from apps.users import urls as usersUrls
 from apps.programaOperativo import urls as posUrls
 from apps.objetivo import urls as objetivosUrls
+from seguimientometas.views import *
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^',include(usersUrls)),
     url(r'^',include(posUrls)),
     url(r'^',include(objetivosUrls)),
-
+    path('enDesarrollo', RenderView.as_view(template_name='extras/enDesarrollo.html'),name='enDesarrollo'),
+    path('recursos', RenderView.as_view(template_name='extras/recursos.html'),name='recursos')
     #url(r'^',include(ProgramUrls)),
     # url(r'^',include('apps.inmueble.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

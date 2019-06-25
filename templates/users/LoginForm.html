@@ -1,12 +1,6 @@
 {%load staticfiles%}
-{%block extracss%}
- <link rel="stylesheet" href="{%static 'css/responsiveContainer.css'%}">
-{%endblock%}
 
 <div class="container">
-    <div class="row justify-content-center d-flex mt-3 mb-3">
-        <img src="{%static 'images/ahome.png'%}" alt="">
-    </div>
     {% block messages %}
 		{% if messages %}
 			<ul class="messages">
@@ -19,24 +13,26 @@
 					{% endfor %}
 			</ul>
 		{% endif %}
-	{% endblock messages %}
+    {% endblock messages %}
+    <div class="d-flex justify-content-center">
+        <img src="{%static 'images/ahome.png'%}" alt="">
+    </div>
     <form enctype="multipart/form-data" method="POST">
         {%csrf_token%}
-        <h2 class="text-center">Iniciar sesión</h2>
+        <h4 class="text-center">Iniciar sesión</h4>
         <div class="form-group">
-            <label for="usuario">Usuario</label>
-            <input required class="form-control" id="usuario" name="usuario" type="text">
+            <input required class="form-control" id="usuario"
+            placeholder="Usuario" name="usuario" type="text">
         </div>
         <div class="form-group">
-                <label for="pass">Contraseña</label>
-                <input required class="form-control" id="pass" name="pass" type="password">
+                <input required class="form-control" 
+                placeholder="Contraseña" id="pass" name="pass" type="password">
             </div>
             <div class="d-flex justify-content-center">
-                <a href="">¿Olvidaste la contraseña?</a>
+                <a href="{%url 'contraOlvidada'%}">¿Olvidaste la contraseña?</a>
             </div>
-        <div class="align-center mt-3 d-flex justify-content-center">
-                
-                <button class="btn btn-primary guinda" type="submit">Iniciar sesión</button>
+        <div class="align-center mt-3 d-flex justify-content-center min-w-100">
+                <button id="btn-iniciar" class="btn btn-primary guinda" type="submit">Iniciar sesión</button>
         </div>
     </form>
 </div>

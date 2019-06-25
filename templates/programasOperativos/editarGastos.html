@@ -1,0 +1,88 @@
+{%extends 'base/base.html'%}
+
+{%block extracss%}
+ <style>
+   span.badge-dorada{
+    color: rgb(58, 2, 8);
+    background-color: #716439;
+   }
+   button.btn{
+    min-width: 300px;
+  }
+ </style>
+{%endblock%}
+
+
+
+{%load staticfiles%}
+{% load crispy_forms_tags %}
+{%block title%}
+Gastos
+{%endblock%}
+
+ {%block navTitle%}
+Editar gastos
+ {% endblock %}
+
+{%block messages%}
+
+{%endblock%}
+
+
+{% block content %}
+  <div class="container bg-transparent">
+        {% if messages %}
+          <ul class="messages">
+              {% for message in messages %}
+              <li{% if message.tags == "success" %} class="alert alert-success"
+            {%else%}
+            class="alert alert-danger"
+            {% endif %}>
+            {{ message }}</li>
+              {% endfor %}
+          </ul>
+        {% endif %}
+        <form id="id_form_gastos" action="" 
+        method="POST" enctype="multipart/form-data">
+          {% csrf_token %}
+
+          {% for gasto in gastos %}
+          <div id="div_id_nombre" class="form-group"> 
+              <label for="{{gasto.id}}" class="col-form-label  requiredField">
+                {{gasto.gasto.nombre}}<span class="asteriskField">*</span> 
+              </label> <div class=""> 
+                  <input id="{{gasto.id}}" name="gastos[]" required
+                  type="text" class="form-control input-gastos" value={{gasto.cantidad}}> 
+              </div>
+          {% endfor %}
+          <div class="d-flex justify-content-center mt-3">
+              <button type="submit" class="btn btn-primary guinda">
+                  Guardar cambios&nbsp;<i class="fas fa-check-circle"></i>
+              </button>
+            </div>
+        </form>
+
+   
+
+  </div>
+ 
+
+
+{% endblock content %}
+
+{% block extrascripts %}
+<script>
+  $(document).ready(()=>{
+    $('.input-gastos').mask('00000000.00', {reverse: true});
+    $("#id_form_gastos").submit(function(event) {
+      event.preventDefault();
+      inputs = document.getElementsByName('gastos[]');
+      for (let i = 0; i < inputs.length; i++) {
+        const input = inputs[i];
+        input.value =  input.value + '|' + input.id
+        this.submit();
+      }
+    });
+  })
+</script>
+{% endblock %}

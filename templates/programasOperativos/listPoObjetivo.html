@@ -17,43 +17,31 @@
 
 
  {%block navTitle%}
- {{objetivo.numero}}.- {{objetivo.nombre}}
+Programas operativos
  {% endblock %}
 
 
 {% block content %}
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Nombre</th>
-                <th>Acciones</th>
-                <th>
-                    <div class="d-flex justify-content-center">
-                    Datos llenados
-                    </div>
-                </th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for programa in programas %}
-            <tr>
-                <td scope="row">{{programa.nombre}}</td>
-                <td>
-                    <a class="btn btn-primary guinda" 
-                    href="{%url 'postPo' idPo=programa.id%}">Editar</a>
-                </td>
-                <td>
-                    <div class="d-flex justify-content-center">
-                        {% if programa.descripcion %}
-                        <span class="badge badge-success"><i class="fa fa-check-circle"></i></span>
-                        {% else %}
-                        <span class="badge badge-danger"><i class="fa fa-times-circle"></i></span>
-                        {% endif %}
-                    </div>
-                </td>
-            </tr>
-            {% endfor %}
-    
-        </tbody>
-    </table>
+    <h2 class="text-center"> {{objetivo.numero}}.- {{objetivo.nombre}}</h2>
+    <div class="row">
+        {% for programa in programas %}
+        <div class="col-xl-4 col-sm-6 mb-3 animated fadeIn">
+            <div class="card text-dorado eje1 o-hidden h-100">
+              <div class="card-body">
+                <div class="mr-5">
+                 <h3>{{programa.nombre}}</h3>
+                </div>
+              </div>
+              <a class="card-footer text-white clearfix small z-1" href="{%url 'postPo' idPo=programa.id%}">
+                <span class="float-left">Ver acciones...</span>
+                <span class="float-right">
+                  <i class="fas fa-angle-right"></i>
+                </span>
+              </a>
+            </div>
+          </div>
+          {% endfor %}
+    </div>
+
+
 {% endblock content %}

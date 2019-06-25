@@ -1,0 +1,58 @@
+{% extends "base/base.html" %}
+{%load staticfiles%}
+
+{% block extracss %}
+<style>
+    img#logo{
+        width: 40%;
+        height: 40%;
+    }
+</style>
+{% endblock %}
+
+{% block navTitle %}
+Recursos del sistema
+{% endblock %}
+
+{% block content %}
+    <div class="container bg-transparent">
+        <div class="d-flex justify-content-center">
+            <img id="logo" src="{%static 'images/Ahome.png'%}" alt="">
+        </div>
+        <div class="row">
+            <div class="col-xl-4 col-sm-6 mb-3 animated fadeIn">
+                <div class="card text-dorado eje2 o-hidden h-100">
+                <div class="card-body">
+                    <div class="mr-5">
+                    <h3>Formato de evidencia único</h3>
+                    </div>
+                </div>
+                <a class="card-footer text-white clearfix small z-1" 
+                href="{%static 'documentos/Formato-evidencia-unica.docx'%}">
+                    <span class="float-left">Descargar...</span>
+                    <span class="float-right">
+                    <i class="fas fa-angle-right"></i>
+                    </span>
+                </a>
+                </div>
+            </div>
+            <div class="col-xl-4 col-sm-6 mb-3 animated fadeIn">
+                    <div class="card text-dorado eje2 o-hidden h-100">
+                    <div class="card-body">
+                        <div class="mr-5">
+                        <h3>Manual de usuario</h3>
+                        </div>
+                    </div>
+                    <a class="card-footer text-white clearfix small z-1" href="{%static 'documentos/manual-de-usuario-enlace.docx'%}">
+                        <span class="float-left">Descargar...</span>
+                        <span class="float-right">
+                        <i class="fas fa-angle-right"></i>
+                        </span>
+                    </a>
+                    </div>
+                </div>
+        </div>
+
+    </div>
+    
+{% endblock %}

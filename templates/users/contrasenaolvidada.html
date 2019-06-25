@@ -1,0 +1,41 @@
+{% extends "base/base.html" %}
+{% load staticfiles %}
+
+{%block extracss%}
+<link rel="stylesheet" href="{%static 'css/responsiveContainer.css'%}">
+
+<style>
+    img{
+        max-width:150px;
+        max-height:55px;
+        
+    }
+</style>
+{%endblock%}
+
+
+{% block nav %}
+
+{% endblock nav %}
+
+
+
+	{%block messages %}
+    {% endblock%}
+
+{% block superContent %}
+<div class="container">
+    <br>
+    <div class="d-flex justify-content-center">
+            <img src="{%static 'images/ahome.png'%}" alt="">
+    </div>
+    <hr>
+    <h4 class="text-center">Por favor, por seguridad, comuníquese con la Dirección de Planeación e Innovación Gubernamental</h4>
+    <hr>
+    <br>
+    <h5><strong>Correo:</strong> jesus.acosta@ahomedigital.gob.mx</h5>
+    <br>
+    <h5><strong>Teléfono:</strong> (668)816-50-04</h5>
+
+</div>
+{% endblock superContent %}

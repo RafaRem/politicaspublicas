@@ -1,26 +1,49 @@
 from django.shortcuts import render, redirect, reverse
 from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core import serializers
 from django.views.generic import View
 from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
 """Forms"""
 from apps.users.forms import RegistrarActividad
-from apps.programaOperativo.forms import ProgramaOperativoForm, ActividadesForm
+from apps.programaOperativo.forms import ProgramaOperativoForm, ActividadesForm, TerminarActividadesForm
 """Modelos"""
-from apps.programaOperativo.models import ProgramaOperativo
+from apps.programaOperativo.models import ProgramaOperativo, Acciones, Actividad, DetallesGasto
 from apps.objetivo.models import Objetivo
-from apps.objetivo.models import Objetivo
-# Create your views here.
-class ActividadFormView(View):
-    def get(request):
-        pass
+from apps.indicador.models import ConceptoGasto, ClasificacionGasto,Periodo
+# # Crea
+# te your views here.
+#ESTE NO NECESITA PROTECCION
+def get_acciones_po_view(request,idPo):
+    programaOperativo = ProgramaOperativo.objects.get(id=idPo)
+    acciones = serializers.serialize('json',programaOperativo.acciones.all())
+    return JsonResponse(acciones,safe=False)
+    pass
 
+class ActividadesListView(LoginRequiredMixin,View):
+    login_url = 'login'
+    def get(self,request):
+        pos = ProgramaOperativo.objects.filter(dependencia=request.user.profile.dependencia)
+        actividades = []
+        for po in pos:
+            actividadesPo = Actividad.objects.filter(programaoperativo=po)
+            for actividadPo in actividadesPo:
+                actividades.append(actividadPo)
+                pass
+            pass
+        return render(request,'programasOperativos/actividades/listActividades.html',{
+            'actividades':actividades
+        })
 
-class ProgramasOperativosView(View):
+class ProgramasOperativosView(LoginRequiredMixin,View):
+    login_url = 'login'
     def get(self, request, idPo):
         programa = ProgramaOperativo.objects.get(id=idPo)
         form = ProgramaOperativoForm(instance=programa)
         return render(request, 'programasOperativos/poForm.html',{
-            'form':form
+            'form':form,
+            'acciones': programa.acciones.all()
         })
     def post(self,request, idPo):
         programa = ProgramaOperativo.objects.get(id=idPo)
@@ -31,16 +54,121 @@ class ProgramasOperativosView(View):
             url = reverse('postPo',args=(idPo,))
             return redirect(url)
 
-class ProgramasOperativosListView(View):
+class ActividadFormView(LoginRequiredMixin,View):
+    login_url = 'login'
+    def get(self,request):
+        form = ActividadesForm()
+        programasOperativos = ProgramaOperativo.objects.filter(
+            dependencia=request.user.profile.dependencia.id
+            )
+        return render(request,'programasOperativos/actividades/actividadForm.html',{
+            'form':form,
+            'programasOperativos':programasOperativos
+        })
+    def post(self,request):
+        form = ActividadesForm(request.POST)
+        if form.is_valid():
+            datos = form.save(commit=False)
+            accion = Acciones.objects.get(id=request.POST.get('accion'))
+            datos.accion = accion
+            po = ProgramaOperativo.objects.get(id=request.POST.get('programaoperativo'))
+            datos.programaoperativo = po
+            datos.user = request.user
+            datos.latitud = request.POST.get('latitud')
+            datos.longitud = request.POST.get('longitud')
+            datos.fecha_in = request.POST.get('fecha_in')
+            datos.fecha_fi = request.POST.get('fecha_fi')
+            save = datos.save()
+            actividad = Actividad.objects.latest('created')
+            idActividad = actividad.id
+            messages.success(request, 'Actividad registrada con éxito.')
+            url = reverse('terminarActividad',args=(idActividad,))
+            return redirect(url)
+            # return redirect('terminarActividad',args)
+
+        messages.error(request,form._errors)
+        programasOperativos = ProgramaOperativo.objects.filter(
+            dependencia=request.user.profile.dependencia.id
+            )
+        return render(request,'programasOperativos/actividades/actividadForm.html',{
+            'form':form,
+            'programasOperativos':programasOperativos
+        })
+
+class TerminarActividadFormView(LoginRequiredMixin,View):
+    login_url = 'login'
+    def get(self,request,idActividad):
+        """validar si ya subió información no pueda acceder"""
+        actividad = Actividad.objects.get(pk=idActividad)
+        form = TerminarActividadesForm()
+        # if request.user.profile.dependencia.tipo == 'd':
+        #     conceptosGasto = ConceptoGasto.objects.filter(tipoDependencia='d')
+        # else:
+        #     conceptosGasto = ConceptoGasto.objects.filter(tipoDependencia='p',dependencia=request.user.profile.dependencia)
+        # conceptosGasto = serializers.serialize('json',conceptosGasto, use_natural_foreign_keys=True)
+        return render(request,'programasOperativos/actividades/terminarActividad.html',{
+            'form':form,
+            'actividad':actividad
+        })
+    def post(self,request,idActividad):
+        actividad = Actividad.objects.get(pk=idActividad)
+        #SI NO ES VÁLIDA LA ACTIVIDAD ELIMINA SUS DETALLES DE GASTO PARA VOLVER A CAPTURARSE
+        # if actividad.estado == 'n':
+        #     gastosActividad = DetallesGasto.objects.filter(actividad=actividad)
+        #     gastosActividad.delete()
+        form = TerminarActividadesForm(request.POST, instance=actividad)
+        if form.is_valid():
+            datos = form.save(commit=False)
+            archivo = request.FILES['archivos']
+            archivo.name = (
+                str(request.user.profile.dependencia.id) + 
+                '-evidencia.pdf'
+                )
+            datos.evidencia = archivo
+            #'t' significa terminada
+            datos.estado = 't'
+            # gastosActividad = request.POST.getlist('gastos[]')
+            # for gasto in gastosActividad:
+            #     gasto = gasto.split('|')
+            #     conceptoGasto = ConceptoGasto.objects.get(pk=gasto[1])
+            #     DetallesGasto.objects.create(
+            #         cantidad=gasto[0],
+            #         actividad=actividad,
+            #         gasto=conceptoGasto
+            #     )
+            save = datos.save()
+            messages.success(request, 'Actividad actualizada con éxito.')
+            return redirect('listActividades')
+        messages.error(request, form._errors)
+        #Si hay algún error inesperado recarga la página
+        actividad = Actividad.objects.get(pk=idActividad)
+        form = TerminarActividadesForm()
+        conceptosGasto = ConceptoGasto.objects.all()
+        conceptosGasto = serializers.serialize('json',conceptosGasto, use_natural_foreign_keys=True)
+        return render(request,'programasOperativos/actividades/terminarActividad.html',{
+            'form':form,
+            'actividad':actividad,
+            'conceptosGasto':conceptosGasto
+        })
+
+class ProgramasOperativosListView(LoginRequiredMixin,View):
+    login_url = 'login'
     def get(self,request, idObjetivo = 0):
+        #SI EL OBJETIVO DE LA ACCION PERTENECE A ESTE ID, SE ALMACENARÁ ACÁ
+        programasOperativos = []
         objetivo = Objetivo.objects.get(id=idObjetivo)
         if idObjetivo != 0:
             programas = ProgramaOperativo.objects.filter(
-                dependencia=request.user.profile.dependencia,
-                objetivo=idObjetivo
+                dependencia=request.user.profile.dependencia
             )
+            for programa in programas:
+                acciones = programa.acciones.all()
+                for accion in acciones:
+                    if idObjetivo == accion.objetivo.id:
+                        programasOperativos.append(programa)
+            programasOperativos = list(set(programasOperativos))
             return render(request,'programasOperativos/listPoObjetivo.html',{
-            'programas':programas,
+            'programas':programasOperativos,
             'objetivo':objetivo
             })
 
@@ -49,3 +177,105 @@ class ProgramasOperativosListView(View):
             'programas':programas,
             'objetivo':objetivo
         })
+
+@login_required(login_url='login')
+def ver_actividad(request,idActividad):
+    actividad = Actividad.objects.get(pk=idActividad)
+    # gastosActividad = DetallesGasto.objects.filter(actividad=actividad)
+    # total = 0
+    # for gasto in gastosActividad:
+    #     total += float(gasto.cantidad)
+    return render(request,'programasOperativos/actividades/verActividad.html',{
+        'actividad':actividad
+    })
+
+@login_required(login_url='login')
+def ver_accion(request,idAccion):
+    accion = Acciones.objects.get(pk=idAccion)
+    detallesGasto = DetallesGasto.objects.filter(accion=accion)
+    periodos = Periodo.objects.all()
+    return render(request,'programasOperativos/accion.html',{
+        'accion':accion,
+        'detallesGasto':detallesGasto,
+        'periodos': periodos
+    })
+
+class CapturarGastoView(LoginRequiredMixin,View):
+    login_url = 'login'
+    def get(self,request,idAccion,idPeriodo):
+        accion = Acciones.objects.get(pk=idAccion)
+        periodo = Periodo.objects.get(pk=idPeriodo)
+        if periodo.capturaHabilitada == False:
+            messages.error(request,'La captura de este periodo está inhabilitada')
+            url = reverse('verAccion',args=(idAccion,))
+            return redirect(url)
+        #Si es dependencia o paramunicipal cargará otros conceptos de gasto
+        if request.user.profile.dependencia.tipo == 'd':
+            conceptosGasto = ConceptoGasto.objects.filter(tipoDependencia='d')
+        else:
+            conceptosGasto = ConceptoGasto.objects.filter(tipoDependencia='p',dependencia=request.user.profile.dependencia)
+        detallesGasto = DetallesGasto.objects.filter(accion=accion,periodo=periodo)
+        conceptosGasto = serializers.serialize('json',conceptosGasto, use_natural_foreign_keys=True)
+        return render(request,'programasOperativos/capturarGastos.html',{
+            'conceptosGasto':conceptosGasto
+        })
+    def post(self, request, idAccion, idPeriodo):
+        accion = Acciones.objects.get(pk=idAccion)
+        periodo = Periodo.objects.get(pk=idPeriodo)
+        gastosAccion = request.POST.getlist('gastos[]')
+        detallesGasto = DetallesGasto.objects.filter(accion=accion,periodo=periodo)
+        detallesGasto.delete()
+        for gasto in gastosAccion:
+            gasto = gasto.split('|')
+            conceptoGasto = ConceptoGasto.objects.get(pk=gasto[1])
+            print(gasto[0])
+            objeto = DetallesGasto.objects.create(
+                cantidad=gasto[0],
+                accion=accion,
+                periodo=periodo,
+                gasto=conceptoGasto
+            )
+            objeto.save()
+        messages.success(request,'Se han capturado los gastos exitosamente')
+        url = reverse('verAccion',args=(idAccion,))
+        return redirect(url)
+    
+@login_required(login_url='login')
+def ver_gastos(request,idAccion,idPeriodo):
+    accion = Acciones.objects.get(pk=idAccion)
+    periodo =  Periodo.objects.get(pk=idPeriodo)
+    gastos = DetallesGasto.objects.filter(accion=accion,periodo=periodo)
+    total = 0
+    for gasto in gastos:
+        total += float(gasto.cantidad)
+    return render(request,'programasOperativos/verGastos.html',{
+        'gastos':gastos,
+        'total':total
+    })
+
+class EditarGastosView(LoginRequiredMixin,View):
+    login_url = 'login'
+    def get(self,request,idAccion,idPeriodo):
+        accion = Acciones.objects.get(pk=idAccion)
+        periodo = Periodo.objects.get(pk=idPeriodo)
+        if periodo.capturaHabilitada == False:
+            messages.error(request,'La captura de este periodo está inhabilitada')
+            url = reverse('verAccion',args=(idAccion,))
+            return redirect(url)
+        gastos = DetallesGasto.objects.filter(accion=accion,periodo=periodo)
+        return render(request,'programasOperativos/editarGastos.html',{
+            'gastos':gastos
+        })
+    def post(self,request,idAccion,idPeriodo):
+        accion = Acciones.objects.get(pk=idAccion)
+        periodo = Periodo.objects.get(pk=idPeriodo)
+        gastos = request.POST.getlist('gastos[]')
+        for gasto in gastos:
+            gasto = gasto.split('|')
+            objeto =  DetallesGasto.objects.get(pk=gasto[1])
+            objeto.cantidad = gasto[0]
+            objeto.save()
+            pass
+        messages.success(request,'Se han actualizado los datos exitosamente')
+        url = reverse('verAccion',args=(idAccion,))
+        return redirect(url)

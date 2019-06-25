@@ -1,0 +1,99 @@
+{%extends 'base/base.html'%}
+{%load staticfiles%}
+
+{%block navTitle%}
+Tus actividades
+{%endblock%}
+{%block messages %}
+{% endblock%}
+{% block extracss %}
+    <style>
+        a.btn{
+            min-width: 100px;
+        }
+        table.dataTable tbody tr{
+            background: transparent !important;
+        }
+        span.badge{
+            min-width: 100px;
+        }
+        .badge-naranja{
+            background: #f26631;
+        }
+    </style>
+{% endblock %}
+
+{%block content%}
+    {% if messages %}
+        <ul class="messages">
+                {% for message in messages %}
+                <li{% if message.tags == "success" %} class="alert alert-success"
+            {%else%}
+            class="alert alert-danger"
+            {% endif %}>
+            {{ message }}</li>
+                {% endfor %}
+        </ul>
+    {% endif %}
+<table class="table">
+    <thead>
+        <tr>
+            <th>Actividad</th>
+            <th>Acciones</th>
+            <th>
+                <div class="d-flex justify-content-center">
+                Estado
+                </div>
+            </th>
+            <th>Fecha registrada</th>
+        </tr>
+    </thead>
+    <tbody class="bg-transparent">
+        {% for actividad in actividades %}
+        <tr>
+            <td scope="row">{{actividad.nombre}}</td>
+            <td>
+                {% if actividad.estado == 'r' or  actividad.estado == 't'%}
+                <a class="btn btn-primary btn-sm guinda" 
+                href="{%url 'verActividad' idActividad=actividad.id%}">Ver</a>
+                {%elif actividad.estado == 'n'%}
+                <a class="btn btn-primary btn-sm guinda" 
+                href="{%url 'verActividad' idActividad=actividad.id%}">Ver</a>
+                <a class="btn btn-primary btn-sm guinda m-2" 
+                href="{%url 'terminarActividad' idActividad=actividad.id%}">Volver a subir</a>
+                {%else%}
+                <a class="btn btn-primary btn-sm guinda" 
+                href="{%url 'terminarActividad' idActividad=actividad.id%}">Finalizar</a>
+                {% endif %}
+                
+            </td>
+            <td>
+                <div class="d-flex justify-content-center">
+                    {% if actividad.estado == 'r' %}
+                    <span class="badge badge-success">Válida&nbsp;<i class="fa fa-check-circle"></i></span>
+                    {%elif actividad.estado == 'p' %}
+                    <span class="badge badge-naranja">Pendiente&nbsp;<i class="fas fa-exclamation-circle"></i></span>
+                    {%elif actividad.estado == 'n' %}
+                    <span class="badge badge-danger">No válido&nbsp;<i class="fa fa-times-circle"></i></span>
+                    {%else%}
+                    <span class="badge badge-warning">En revisión&nbsp;<i class="fas fa-clock"></i></span>
+                    {% endif %}
+                </div>
+            </td>
+            <td>{{actividad.fechaRegistrada}}</td>
+        </tr>
+        {% endfor %}
+
+    </tbody>
+</table>
+
+{%endblock%}
+
+
+{% block extrascripts %}
+    <script>
+        $(document).ready( function () {
+            $('.table').DataTable();
+        } );
+    </script>
+{% endblock %}

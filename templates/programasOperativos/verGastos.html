@@ -1,0 +1,70 @@
+{%extends 'base/base.html'%}
+
+{%block extracss%}
+ <style>
+   span.badge-dorada{
+    color: rgb(58, 2, 8);
+    background-color: #716439;
+   }
+ </style>
+{%endblock%}
+
+
+
+{%load staticfiles%}
+{% load crispy_forms_tags %}
+{%block title%}
+Gastos
+{%endblock%}
+
+ {%block navTitle%}
+Ver gastos
+ {% endblock %}
+
+{%block messages%}
+
+{%endblock%}
+
+
+{% block content %}
+  <div class="container bg-transparent">
+        {% if messages %}
+          <ul class="messages">
+              {% for message in messages %}
+              <li{% if message.tags == "success" %} class="alert alert-success"
+            {%else%}
+            class="alert alert-danger"
+            {% endif %}>
+            {{ message }}</li>
+              {% endfor %}
+          </ul>
+        {% endif %}
+    <h3 class="text-center font-weight-bold">Detalles de gasto</h3>
+    <div class="row">
+        {% for gasto in gastos %}
+            <div class="col-xl-4 col-sm-6 mb-3 animated fadeIn">
+                <div class="card text-dorado eje3 o-hidden h-100">
+                    <div class="card-body">
+                        <h4>{{gasto.gasto.nombre}}</h4>
+                        <h4 class="text-white text-center">${{gasto.cantidad}}</h4>
+                    </div>
+
+                </div>
+                </div>
+        {% endfor %}        
+        <hr>
+        <div class="col-12 mb-3 animated fadeIn">
+                <div class="card text-dorado eje5 ">
+                    <div class="card-body">
+                        <h3 class="text-center">Total</h3>
+                        <h4 class="text-white text-center">${{total}}</h4>
+                    </div>
+
+                </div>
+                </div>
+    </div>
+  </div>
+ 
+
+
+{% endblock content %}
