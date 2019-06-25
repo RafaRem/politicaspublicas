@@ -49,9 +49,9 @@ class ProgramaOperativo(models.Model):
 class Actividad(models.Model):
     opcionesEstado = (
         ('p','Programada'),
-        ('t','Terminada'),
+        ('t','Por revisar'),
         ('i','Inactiva'),
-        ('r','Revisada'),
+        ('r','Válida'),
         ('n', 'No válida')
     )
     user = models.ForeignKey(User, on_delete= models.PROTECT)

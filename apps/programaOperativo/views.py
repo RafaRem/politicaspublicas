@@ -11,7 +11,7 @@ from apps.programaOperativo.forms import ProgramaOperativoForm, ActividadesForm,
 """Modelos"""
 from apps.programaOperativo.models import ProgramaOperativo, Acciones, Actividad, DetallesGasto
 from apps.objetivo.models import Objetivo
-from apps.indicador.models import ConceptoGasto, ClasificacionGasto
+from apps.indicador.models import ConceptoGasto, ClasificacionGasto,Periodo
 # # Crea
 # te your views here.
 #ESTE NO NECESITA PROTECCION
@@ -193,4 +193,89 @@ def ver_actividad(request,idActividad):
 def ver_accion(request,idAccion):
     accion = Acciones.objects.get(pk=idAccion)
     detallesGasto = DetallesGasto.objects.filter(accion=accion)
+    periodos = Periodo.objects.all()
+    return render(request,'programasOperativos/accion.html',{
+        'accion':accion,
+        'detallesGasto':detallesGasto,
+        'periodos': periodos
+    })
+
+class CapturarGastoView(LoginRequiredMixin,View):
+    login_url = 'login'
+    def get(self,request,idAccion,idPeriodo):
+        accion = Acciones.objects.get(pk=idAccion)
+        periodo = Periodo.objects.get(pk=idPeriodo)
+        if periodo.capturaHabilitada == False:
+            messages.error(request,'La captura de este periodo está inhabilitada')
+            url = reverse('verAccion',args=(idAccion,))
+            return redirect(url)
+        #Si es dependencia o paramunicipal cargará otros conceptos de gasto
+        if request.user.profile.dependencia.tipo == 'd':
+            conceptosGasto = ConceptoGasto.objects.filter(tipoDependencia='d')
+        else:
+            conceptosGasto = ConceptoGasto.objects.filter(tipoDependencia='p',dependencia=request.user.profile.dependencia)
+        detallesGasto = DetallesGasto.objects.filter(accion=accion,periodo=periodo)
+        conceptosGasto = serializers.serialize('json',conceptosGasto, use_natural_foreign_keys=True)
+        return render(request,'programasOperativos/capturarGastos.html',{
+            'conceptosGasto':conceptosGasto
+        })
+    def post(self, request, idAccion, idPeriodo):
+        accion = Acciones.objects.get(pk=idAccion)
+        periodo = Periodo.objects.get(pk=idPeriodo)
+        gastosAccion = request.POST.getlist('gastos[]')
+        detallesGasto = DetallesGasto.objects.filter(accion=accion,periodo=periodo)
+        detallesGasto.delete()
+        for gasto in gastosAccion:
+            gasto = gasto.split('|')
+            conceptoGasto = ConceptoGasto.objects.get(pk=gasto[1])
+            print(gasto[0])
+            objeto = DetallesGasto.objects.create(
+                cantidad=gasto[0],
+                accion=accion,
+                periodo=periodo,
+                gasto=conceptoGasto
+            )
+            objeto.save()
+        messages.success(request,'Se han capturado los gastos exitosamente')
+        url = reverse('verAccion',args=(idAccion,))
+        return redirect(url)
     
+@login_required(login_url='login')
+def ver_gastos(request,idAccion,idPeriodo):
+    accion = Acciones.objects.get(pk=idAccion)
+    periodo =  Periodo.objects.get(pk=idPeriodo)
+    gastos = DetallesGasto.objects.filter(accion=accion,periodo=periodo)
+    total = 0
+    for gasto in gastos:
+        total += float(gasto.cantidad)
+    return render(request,'programasOperativos/verGastos.html',{
+        'gastos':gastos,
+        'total':total
+    })
+
+class EditarGastosView(LoginRequiredMixin,View):
+    login_url = 'login'
+    def get(self,request,idAccion,idPeriodo):
+        accion = Acciones.objects.get(pk=idAccion)
+        periodo = Periodo.objects.get(pk=idPeriodo)
+        if periodo.capturaHabilitada == False:
+            messages.error(request,'La captura de este periodo está inhabilitada')
+            url = reverse('verAccion',args=(idAccion,))
+            return redirect(url)
+        gastos = DetallesGasto.objects.filter(accion=accion,periodo=periodo)
+        return render(request,'programasOperativos/editarGastos.html',{
+            'gastos':gastos
+        })
+    def post(self,request,idAccion,idPeriodo):
+        accion = Acciones.objects.get(pk=idAccion)
+        periodo = Periodo.objects.get(pk=idPeriodo)
+        gastos = request.POST.getlist('gastos[]')
+        for gasto in gastos:
+            gasto = gasto.split('|')
+            objeto =  DetallesGasto.objects.get(pk=gasto[1])
+            objeto.cantidad = gasto[0]
+            objeto.save()
+            pass
+        messages.success(request,'Se han actualizado los datos exitosamente')
+        url = reverse('verAccion',args=(idAccion,))
+        return redirect(url)
