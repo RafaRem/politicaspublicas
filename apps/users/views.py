@@ -111,8 +111,8 @@ def CalendarView(request):
     date_object = datetime.strptime(formatedDay, '%Y/%m/%d')
     matchs = Actividad.objects.all()
     depend = Dependencia.objects.all()
+    objetivo = Objetivo.objects.all()
     colores=[]
-    actividades=[]
     for i in matchs:
         if (date_object.date() > i.fecha_in):
             colores+= ['red']
@@ -120,36 +120,63 @@ def CalendarView(request):
             colores+= ['green']
 
     evento =zip(matchs, colores)
-    contador = matchs.count()          
+    contador = matchs.count()
+
+    #   GENERAL ************************************************
     if request.method== 'POST':
         srch = request.POST['srh']
+        srch2 = request.POST['srh2']
+        srch3 = request.POST['srh3']
+        srch4 = request.POST['srh4']  
+
+        if (srch or srch2 or srch3 or srch4):
+            actividades = Actividad.objects.all()
+
+            
         
-        if srch:
-            dep = Dependencia.objects.get(pk=srch)
-            proper = ProgramaOperativo.objects.filter(dependencia=dep)
-            for i in proper:
-                actividades+=[i.actividad]
+            if srch:
+                dep = Dependencia.objects.get(pk=srch)  
+                print("dep",dep)
+                proper = ProgramaOperativo.objects.filter(dependencia=dep) 
+                print("proper",proper)
+                for i in proper: 
+                    actividades = Actividad.objects.filter(programaoperativo=i) 
+                    print("act",actividades)  
 
+            # if srch3:
+            #     obje = Objetivo.objects.get(pk=srch3)
+            #     print("Objetivo", obje)
+            #     depen = Dependencia.objects.filter(objetivo=obje) 
+            #     print("Dependencias", depen)
+            #     for j in depen:
+            #         proper2 = ProgramaOperativo.objects.filter(dependencia=j)      
+    
+            #     print("Programas ", proper2)
+            #     for x in proper2:
+            #         actividades = actividades.filter(programaoperativo=x) 
+            #         print("x", actividades)         
+            
+               
+            actividades = actividades.filter(Q(estado__icontains=srch2))  
 
-            colores=[]
             for i in actividades:
                 if (date_object.date() > i.fecha_in):
-                    colores+= ['red']
+                    colores+= ['red'] 
                 else:
                     colores+= ['green']
-        
-            contador = actividades.count()
+            
+            contador = actividades.count() 
             evento =zip(actividades, colores)
             if actividades: 
-                return render(request, 'users/calendario.html', {'actividad':evento, 'contador': contador,'fecha': formatedDay,'color':colores,'depende':depend,'total':actividades})
+                return render(request, 'users/calendario.html', {'actividad':evento, 'contador': contador,'fecha': formatedDay,'color':colores,'depende':depend,'total':actividades,'objetivo':objetivo})
             else:
                 messages.error(request,'Resultados no encontrados')    
         else:
-            return HttpResponseRedirect('/calendario/')    
-    return render(request, 'users/calendario.html',{'actividad':evento,'fecha': formatedDay, 'contador': contador,'depende':depend,'total':actividades})
+            return HttpResponseRedirect('usuarios/calendario/')     
+    return render(request, 'users/calendario.html',{'actividad':evento,'fecha': formatedDay, 'contador': contador,'depende':depend, 'objetivo':objetivo})
 
 
-class UsuarioView(LoginRequiredMixin,View):
+class UsuarioView(LoginRequiredMixin,View):  
     login_url = 'login'
     def get(self, request):
         return render(request, 'index.html')

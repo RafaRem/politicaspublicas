@@ -23,7 +23,7 @@
                 {%csrf_token%}
                 <br>
                 <br>
-                <div class="container col-lg-9 col-md-12 bg-transparent"  id="Select1">
+<div class="container col-lg-9 col-md-12 bg-transparent"  id="Select1">
                     {% if messages %}
                     <ul class="messages">
                         {% for message in messages %}
@@ -35,13 +35,48 @@
                         {% endfor %}
                     </ul>
                   {% endif %}
-                    <label for="exampleSelect1">Dependencia</label>
+                  <div>
+                    <label for="srh">Dependencia</label>
                     <select name="srh" class="container col-lg-9 col-md-12">
+                      <option value="">Todas</option>
                       {% for i in depende  %}
                             <option value="{{i.id}}" >{{i.nombre}}</option>
                       {% endfor %}
                     </select>
-                </div>
+                    </div>
+                    <div>
+                    <label for="srh2">Estatus</label>
+                    <select name="srh2" class="container col-lg-9 col-md-12">
+                        <option value="" >Todos</option>
+                        <option value="p" >Programada</option>
+                        <option value="t" >Terminada</option>
+                        <option value="i" >Inactiva</option>
+                        <option value="r" >Revisada</option>
+                        <option value="n" >No válida</option>
+                    </select>
+                    </div>
+                    <label for="srh3">Objetivo</label>
+                    <select name="srh3" class="container col-lg-9 col-md-12">
+                        <option value="" >Todos</option>
+                        {% for x in objetivo  %}
+                            <option value="{{x.id}}" >{{x.tipo}} - {{x.nombre}}</option>
+                        {% endfor %}
+                    </select> 
+                    </div>
+
+                    <div>
+                    <label for="srh4">Ejes</label>
+                    <select name="srh4" class="container col-lg-9 col-md-12">
+                        <option value="" >Todos</option>
+                        <option value="1" >Desarrollo Integral</option>
+                        <option value="2" >Desarrollo Social y Humano</option>
+                        <option value="3" >Promoción Económica y Medio Ambiente</option>
+                        <option value="4" >Seguridad Ciudadana y Protección Civil</option>
+                        <option value="5" >Combate a la Corrupción y Participación Ciudadana</option>
+                    </select>
+                    </div>
+                    
+</div>
                 <br>
 
                 <div class="d-flex justify-content-center">
@@ -54,34 +89,6 @@
             <br>
    <div class="container col-lg-9 col-md-12" url-endpoint='{% url "calendar" %}' id='calendar'></div>
 
-<!-- Modal -->
-<div class="modal fade" id="ModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalCenterTitle">Actividad</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div id="contenido" class="modal-body">
-        <label>Nombre:</label>
-        <p id="nom"></p>
-        <label>Descripción:</label>
-        <p id="desc"></p>
-        <label>Programa Operativo:</label>
-        <p id="promo"> </p>
-        <label>Presupuesto Ejercido:</label>
-        <p id="preje"></p>
-        <label>Fecha Inicial:</label>
-        <p id="fei"></p> 
-      </div>
-        <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Salir</button>
-        </div>
-      </div>
-  </div>
-</div>
 </form>
 <br>
 <br>
@@ -121,21 +128,16 @@
                       right: 'dayGridMonth,timeGridWeek,timeGridDay',
                       default: false
                   },
-                      //Aqui se renderiza con nuevos parametros
-                        eventRender: function(event,element,info) {
-                             var tooltip = new Tooltip(info.el, {
-                            title: info.event.extendedProps.description,
-                            placement: 'top',
-                            trigger: 'hover',
-                            container: 'body'
-                            });
-                        } //Aqui termina la renderizacion eventual 
+                  
                   //Aquí empieza
-                  eventClick: function(info, events) 
+                  eventClick: function(info, event, element) 
                   {
 
-                        $("#ModalCenter").modal("show");
-                        $("#nom").text();
+                      Swal.fire(
+                        info.event.title
+                        
+                      )
+                        
                         
                         
                         
