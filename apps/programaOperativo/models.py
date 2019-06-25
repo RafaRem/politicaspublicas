@@ -49,16 +49,16 @@ class ProgramaOperativo(models.Model):
 class Actividad(models.Model):
     opcionesEstado = (
         ('p','Programada'),
-        ('t','Terminada'),
+        ('t','Por revisar'),
         ('i','Inactiva'),
-        ('r','Revisada'),
+        ('r','Válida'),
         ('n', 'No válida')
     )
     user = models.ForeignKey(User, on_delete= models.PROTECT)
     programaoperativo = models.ForeignKey(ProgramaOperativo, on_delete = models.PROTECT)
-    nombre = models.CharField(max_length=100, 
+    nombre = models.CharField(max_length=500, 
     verbose_name="Actividad")
-    descripcion = models.TextField(max_length=300, 
+    descripcion = models.TextField(max_length=1000, 
     verbose_name="Descripción breve")
     personasInvolucradas = models.CharField(max_length=10,blank=True, null=True,
     verbose_name="Personal involucrado")
