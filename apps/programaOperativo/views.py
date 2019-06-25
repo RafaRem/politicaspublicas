@@ -206,7 +206,7 @@ class CapturarGastoView(LoginRequiredMixin,View):
         accion = Acciones.objects.get(pk=idAccion)
         periodo = Periodo.objects.get(pk=idPeriodo)
         if periodo.capturaHabilitada == False:
-            messages.error(request,'La capturua de este periodo está inhabilitada')
+            messages.error(request,'La captura de este periodo está inhabilitada')
             url = reverse('verAccion',args=(idAccion,))
             return redirect(url)
         #Si es dependencia o paramunicipal cargará otros conceptos de gasto
@@ -236,18 +236,19 @@ class CapturarGastoView(LoginRequiredMixin,View):
                 gasto=conceptoGasto
             )
             objeto.save()
-        #Si es dependencia o paramunicipal cargará otros conceptos de gasto
-        if request.user.profile.dependencia.tipo == 'd':
-            conceptosGasto = ConceptoGasto.objects.filter(tipoDependencia='d')
-        else:
-            conceptosGasto = ConceptoGasto.objects.filter(tipoDependencia='p',dependencia=request.user.profile.dependencia)
-        conceptosGasto = serializers.serialize('json',conceptosGasto, use_natural_foreign_keys=True)
-        return render(request,'programasOperativos/capturarGastos.html',{
-            'conceptosGasto':conceptosGasto
-        })
+        messages.success(request,'Se han capturado los gastos exitosamente')
+        url = reverse('verAccion',args=(idAccion,))
+        return redirect(url)
     
 @login_required(login_url='login')
 def ver_gastos(request,idAccion,idPeriodo):
     accion = Acciones.objects.get(pk=idAccion)
     periodo =  Periodo.objects.get(pk=idPeriodo)
-    
+    gastos = DetallesGasto.objects.filter(accion=accion,periodo=periodo)
+    total = 0
+    for gasto in gastos:
+        total += float(gasto.cantidad)
+    return render(request,'programasOperativos/verGastos.html',{
+        'gastos':gastos,
+        'total':total
+    })

@@ -175,8 +175,15 @@ Acción
                       </span>
                     </a>
                   <a class="card-footer text-white clearfix small z-1" 
-                  href="{%url 'capturarGastos' idAccion=accion.id idPeriodo=periodo.id%}">
+                  href="{%url 'verGastos' idAccion=accion.id idPeriodo=periodo.id%}">
                       <span class="float-left">Ver gastos...</span>
+                      <span class="float-right">
+                        <i class="fas fa-angle-right"></i>
+                      </span>
+                    </a>
+                  <a class="card-footer text-white clearfix small z-1" 
+                  href="{%url 'capturarGastos' idAccion=accion.id idPeriodo=periodo.id%}">
+                      <span class="float-left">Editar gastos...</span>
                       <span class="float-right">
                         <i class="fas fa-angle-right"></i>
                       </span>
