@@ -1,0 +1,72 @@
+{% extends "base/base.html" %}
+{%load staticfiles%}
+
+{% block title %}
+Reporte
+{% endblock %}
+
+{% block navTitle %}
+Reporte de actividades
+{% endblock %}
+
+{% block content %}
+<div class="container bg-transparent">
+    
+    <div class="bg-transparent" id="container" style="min-width: 310px; height: 400px; max-width: 600px; margin: 0 auto"></div>
+</div>
+{% endblock %}
+
+{% block extrascripts %}
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/modules/export-data.js"></script>
+
+    <script>
+        $(document).ready(()=>{
+            arreglo = "{{actividades|escapejs}}";
+            arreglo = JSON.parse(arreglo);
+          // Radialize the colors
+          Highcharts.chart('container', {
+            chart: {
+              plotBackgroundColor: null,
+              plotBorderWidth: 0,
+              plotShadow: false,
+              backgroundColor:'rgba(255, 255, 255, 0.0)'
+            },
+            title: {
+              text: 'Reporte',
+              align: 'center',
+              verticalAlign: 'middle',
+              y: 40
+            },
+            tooltip: {
+              pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+            },
+            plotOptions: {
+              pie: {
+                dataLabels: {
+                  enabled: true,
+                  distance: -50,
+                  style: {
+                    fontWeight: 'bold',
+                    color: 'white'
+                  }
+                },
+                startAngle: -90,
+                endAngle: 90,
+                center: ['50%', '75%'],
+                size: '110%'
+              }
+            },
+            series: [{
+              type: 'pie',
+              name: 'Actividades',
+              innerSize: '50%',
+              data: arreglo
+            }]
+          });
+          
+console.log(arreglo)
+        });
+
+    </script>
+{% endblock %}
