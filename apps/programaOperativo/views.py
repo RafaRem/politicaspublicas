@@ -1,3 +1,4 @@
+import json
 from django.shortcuts import render, redirect, reverse
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -279,3 +280,25 @@ class EditarGastosView(LoginRequiredMixin,View):
         messages.success(request,'Se han actualizado los datos exitosamente')
         url = reverse('verAccion',args=(idAccion,))
         return redirect(url)
+
+class ReporteActividadesEnlaceView(LoginRequiredMixin,View):
+    login_url = 'login'
+    def get(self, request):
+        #En este arreglo se guardará lo que se mostrará en gráfica
+        arreglo = []
+        actividades = Actividad.objects.filter(programaoperativo__dependencia=request.user.profile.dependencia,
+        estado='p')
+        arreglo.append({'Programadas':actividades.count()})
+        actividades = Actividad.objects.filter(programaoperativo__dependencia=request.user.profile.dependencia,
+        estado='t')
+        arreglo.append({'Por revisar':actividades.count()})
+        actividades = Actividad.objects.filter(programaoperativo__dependencia=request.user.profile.dependencia,
+        estado='r')
+        arreglo.append({'Válidas':actividades.count()})
+        actividades = Actividad.objects.filter(programaoperativo__dependencia=request.user.profile.dependencia,
+        estado='n')
+        arreglo.append({'No válida':actividades.count()})
+        arreglo = json.dumps(arreglo)
+        return render(request,'programasOperativos/actividades/reportesEnlace.html',{
+            'actividades':arreglo
+        })

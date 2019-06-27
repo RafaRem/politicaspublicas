@@ -1,0 +1,25 @@
+{% extends "base/base.html" %}
+{%load staticfiles%}
+
+{% block title %}
+Reporte
+{% endblock %}
+
+{% block navTitle %}
+Reporte de actividades
+{% endblock %}
+
+{% block content %}
+<div class="container bg-transparent">
+    
+    
+</div>
+{% endblock %}
+
+{% block extrascripts %}
+    <script>
+        arreglo = "{{actividades|escapejs}}";
+        arreglo = JSON.parse(arreglo);
+        console.log(arreglo);
+    </script>
+{% endblock %}
