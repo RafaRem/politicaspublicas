@@ -288,16 +288,16 @@ class ReporteActividadesEnlaceView(LoginRequiredMixin,View):
         arreglo = []
         actividades = Actividad.objects.filter(programaoperativo__dependencia=request.user.profile.dependencia,
         estado='p')
-        arreglo.append({'Programadas':actividades.count()})
+        arreglo.append({'name':'Programadas','y':actividades.count()})
         actividades = Actividad.objects.filter(programaoperativo__dependencia=request.user.profile.dependencia,
         estado='t')
-        arreglo.append({'Por revisar':actividades.count()})
+        arreglo.append({'name':'Por revisar','y':actividades.count()})
         actividades = Actividad.objects.filter(programaoperativo__dependencia=request.user.profile.dependencia,
         estado='r')
-        arreglo.append({'Válidas':actividades.count()})
+        arreglo.append({'name':'Válidas','y':actividades.count()})
         actividades = Actividad.objects.filter(programaoperativo__dependencia=request.user.profile.dependencia,
         estado='n')
-        arreglo.append({'No válida':actividades.count()})
+        arreglo.append({'name':'No válida','y':actividades.count()})
         arreglo = json.dumps(arreglo)
         return render(request,'programasOperativos/actividades/reportesEnlace.html',{
             'actividades':arreglo
