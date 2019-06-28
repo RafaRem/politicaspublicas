@@ -18,7 +18,8 @@ urlpatterns = [
     path('programasOperativos/actividad/terminar/<str:idActividad>', 
     TerminarActividadFormView.as_view(), name='terminarActividad'),
     path('programasOperativos/actividad/ver/<str:idActividad>', ver_actividad, name='verActividad'),
-    path('programasOperativos/actividad/reporte/enlace', ReporteActividadesEnlaceView.as_view(),
+    path('programasOperativos/actividad/enlace/reporte', ReporteActividadesEnlaceView.as_view(),
      name='reporteActividadEnlace'),
-    
+    path('programasOperativos/actividad/admin/list/actividades', ListActividadesAdmin.as_view(),
+     name='reporteActividadAdmin'),
 ]

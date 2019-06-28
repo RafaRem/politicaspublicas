@@ -1,0 +1,55 @@
+{%extends 'base/base.html'%}
+{%load staticfiles%}
+
+{%block navTitle%}
+Reporte
+{%endblock%}
+
+{% block title %}
+Reporte
+{% endblock %}
+
+{%block messages %}
+{% endblock%}
+{% block extracss %}
+    <style>
+        a.btn{
+            min-width: 100px;
+        }
+        table.dataTable tbody tr{
+            background: transparent !important;
+        }
+        span.badge{
+            min-width: 100px;
+        }
+        .badge-naranja{
+            background: #f26631;
+        }
+    </style>
+{% endblock %}
+
+{%block content%}
+    {% if messages %}
+        <ul class="messages">
+                {% for message in messages %}
+                <li{% if message.tags == "success" %} class="alert alert-success"
+            {%else%}
+            class="alert alert-danger"
+            {% endif %}>
+            {{ message }}</li>
+                {% endfor %}
+        </ul>
+    {% endif %}
+    <div class="container">
+        
+    </div>
+{%endblock%}
+
+
+{% block extrascripts %}
+    <script>
+        $(document).ready( function () {
+            $('.table').DataTable();
+        } );
+    </script>
+{% endblock %}
