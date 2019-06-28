@@ -134,27 +134,33 @@ def CalendarView(request):
 
             
         
-            if srch:
-                dep = Dependencia.objects.get(pk=srch)  
-                proper = ProgramaOperativo.objects.filter(dependencia=dep) 
-                for i in proper: 
-                    actividades = Actividad.objects.filter(programaoperativo=i)      
+            # if srch:
+            #     dep = Dependencia.objects.get(pk=srch)  
+            #     proper = ProgramaOperativo.objects.filter(dependencia=dep) 
+            #     for i in proper: 
+            #         actividades = Actividad.objects.filter(programaoperativo=i)      
 
-            # if srch3:
-            #     obje = Objetivo.objects.get(pk=srch3)
-            #     print("Objetivo", obje)
-            #     depen = Dependencia.objects.filter(objetivo=obje) 
-            #     print("Dependencias", depen)
-            #     for j in depen:
-            #         proper2 = ProgramaOperativo.objects.filter(dependencia=j)      
+            if srch3:
+                act = []
+                obje = Objetivo.objects.get(pk=srch3) 
+                print("Objetivo", obje)
+                depen = Dependencia.objects.filter(objetivo=obje)   
+                print("Dependencias", depen) 
+                for j in depen:
+                    proper2 = ProgramaOperativo.objects.filter(dependencia=j)      
     
-            #     print("Programas ", proper2)
-            #     for x in proper2:
-            #         actividades = actividades.filter(programaoperativo=x) 
-            #         print("x", actividades)         
+                print("Programas ", proper2)  
+                for x in proper2:
+                    act+= [x]
+ 
+
+                print("dsd",act)
+                actividades = actividades.filter(programaoperativo__in=act)
+                print("x", actividades)           
             
-               
-            actividades = actividades.filter(Q(estado__icontains=srch2))  
+
+            print("ACT", actividades)     
+            actividades = actividades.filter(Q(estado__icontains=srch2))     
 
             for i in actividades:
                 if (date_object.date() > i.fecha_in):
