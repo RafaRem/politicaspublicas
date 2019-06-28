@@ -134,11 +134,11 @@ def CalendarView(request):
 
             
         
-            # if srch:
-            #     dep = Dependencia.objects.get(pk=srch)  
-            #     proper = ProgramaOperativo.objects.filter(dependencia=dep) 
-            #     for i in proper: 
-            #         actividades = Actividad.objects.filter(programaoperativo=i)      
+            if srch:
+                dep = Dependencia.objects.get(pk=srch)  
+                proper = ProgramaOperativo.objects.filter(dependencia=dep) 
+                for i in proper: 
+                    actividades = Actividad.objects.filter(programaoperativo=i)      
 
             if srch3:
                 act = []
