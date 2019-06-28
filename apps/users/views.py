@@ -152,11 +152,40 @@ def CalendarView(request):
                     proper2 = ProgramaOperativo.objects.filter(dependencia=j)      
     
                 for x in proper2:
-                    act+= [x]
+                    act+= [x] 
  
 
                 actividades = actividades.filter(programaoperativo__in=act)
             
+
+            if srch4:
+                obje2=[]
+                act2 = []
+                po2 = []
+                obeje = Objetivo.objects.filter(ejeTransversal=srch4)
+                for i in obeje:
+                    obje2+=[i]
+
+                print("Objetivos", obje2)
+                dependencia = Dependencia.objects.filter(objetivo__in=obje2) 
+                
+                for k in dependencia:
+                    po2+=[k]
+
+                print("Dependencia", po2)
+                
+                proper3 = ProgramaOperativo.objects.filter(dependencia__in=po2)  
+                print("Programa", proper3)           
+                for a in proper3:
+                    act2+= [a]
+
+
+                actividades = actividades.filter(programaoperativo__in=act2)     
+
+
+
+
+
 
             actividades = actividades.filter(Q(estado__icontains=srch2))     
 
