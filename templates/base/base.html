@@ -111,14 +111,14 @@
     <ul class="sidebar sidebar-blanco navbar-nav">
       {#Si el usuario es diferente a ENLACE#}
       {% if request.user.profile.tipoUsuario != 'e' %}
-          <li class="nav-item active {% if request.resolver_match.url_name == "my_view_name" %}active{% endif %}">
+          <!--<li class="nav-item active {% if request.resolver_match.url_name == "my_view_name" %}active{% endif %}">
               <a class="nav-link" href="{%url 'calendar'%}">
                 <i class="fas fa-fw fa-tachometer-alt"></i>
                 <span class="font-weight-bold">Calendario</span>
               </a>
-          </li>
+          </li> 
 
-          <li class="nav-item">
+          {<li class="nav-item">
             <a class="nav-link" href="{%url 'report'%}">
               <i class="fas fa-file"></i>
               <span class="font-weight-bold">Reporte</span></a>
@@ -127,8 +127,19 @@
             <a class="nav-link" href="{%url 'grafica'%}">
               <i class="fas fa-fw fa-chart-area"></i>
               <span class="font-weight-bold">Gráficas</span></a>
+          </li> -->
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="pagesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <i class="fa fa-plus-square"></i>
+              <span class="font-weight-bold">Administrador</span>
+            </a>
+            <div class="dropdown-menu" aria-labelledby="pagesDropdown">
+              <!-- <h6 class="dropdown-header">Actividades</h6> -->
+              <a class="dropdown-item" href="{%url 'calendar'%}">Calendario</a>
+              <a class="dropdown-item" href="{%url 'enDesarrollo'%}">Actividades</a>
+              <a class="dropdown-item" href="{%url 'reporteActividadAdmin'%}">Reportes</a>
+            </div>
           </li>
-
       {% endif %}
           <li class="nav-item">
             <a class="nav-link" href="{%url 'listaObjetivos'%}">
@@ -144,7 +155,7 @@
                 <!-- <h6 class="dropdown-header">Actividades</h6> -->
                 <a class="dropdown-item" href="{%url 'nuevaActividad'%}">Nueva actividad</a>
                 <a class="dropdown-item" href="{%url 'listActividades'%}">Ver actividades</a>
-                <a class="dropdown-item" href="{%url 'reporteActividadEnlace'%}">Reporte de actividades</a>
+                <a class="dropdown-item" href="{%url 'reporteActividadEnlace'%}">Reportes</a>
               </div>
             </li>
           <li class="nav-item">

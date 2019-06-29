@@ -134,30 +134,63 @@ def CalendarView(request):
 
             
         
-            
-            dep = Dependencia.objects.get(pk=srch)  
-            print("dep",dep)
-            proper = ProgramaOperativo.objects.filter(dependencia=dep) 
-            print("proper",proper)
-            for i in proper: 
-                actividades = Actividad.objects.filter(programaoperativo=i)
-                print("act",actividades)      
+            if srch:
+                po = []
+                dep = Dependencia.objects.get(pk=srch)  
+                proper = ProgramaOperativo.objects.filter(dependencia=dep) 
+                for i in proper:
+                    po += [i]
 
-            # if srch3:
-            #     obje = Objetivo.objects.get(pk=srch3)
-            #     print("Objetivo", obje)
-            #     depen = Dependencia.objects.filter(objetivo=obje) 
-            #     print("Dependencias", depen)
-            #     for j in depen:
-            #         proper2 = ProgramaOperativo.objects.filter(dependencia=j)      
+
+                actividades = Actividad.objects.filter(programaoperativo__in=po)      
+
+            if srch3:
+                act = []
+                depd = []
+                obje = Objetivo.objects.get(pk=srch3)
+                depen = Dependencia.objects.filter(objetivo=obje)   
+                for j in depen:
+                    depd+= [j] 
+                
+                proper2 = ProgramaOperativo.objects.filter(dependencia__in=depd)      
     
-            #     print("Programas ", proper2)
-            #     for x in proper2:
-            #         actividades = actividades.filter(programaoperativo=x) 
-            #         print("x", actividades)         
+                for x in proper2: 
+                    act+= [x]   
+ 
+
+                actividades = actividades.filter(programaoperativo__in=act)
             
-               
-            actividades = actividades.filter(Q(estado__icontains=srch2))  
+
+            if srch4:
+                obje2=[]
+                act2 = []
+                po2 = []
+                obeje = Objetivo.objects.filter(ejeTransversal=srch4)
+                for i in obeje:
+                    obje2+=[i]
+
+                print("Objetivos", obje2)
+                dependencia = Dependencia.objects.filter(objetivo__in=obje2) 
+                
+                for k in dependencia:
+                    po2+=[k]
+
+                print("Dependencia", po2)
+                
+                proper3 = ProgramaOperativo.objects.filter(dependencia__in=po2)  
+                print("Programa", proper3)           
+                for a in proper3:
+                    act2+= [a]
+
+
+                actividades = actividades.filter(programaoperativo__in=act2)     
+
+
+
+
+
+
+            actividades = actividades.filter(Q(estado__icontains=srch2))     
 
             for i in actividades:
                 if (date_object.date() > i.fecha_in):

@@ -6,7 +6,8 @@ admin.site.register(Raiz)
 
 @admin.register(Dependencia)
 class DependenciaAdmin(admin.ModelAdmin):
-    list_display = ('nombre', 'tipo')
+    list_display = ('id', 'nombre', 'tipo')
+    list_display_links = ['id','nombre']
     search_fields = ('nombre', 'tipo')
     # filter_horizontal = ('adscrita',)
     # fieldsets = (
