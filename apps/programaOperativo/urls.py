@@ -21,5 +21,5 @@ urlpatterns = [
     path('programasOperativos/actividad/enlace/reporte', ReporteActividadesEnlaceView.as_view(),
      name='reporteActividadEnlace'),
     path('programasOperativos/actividad/admin/list/actividades', ListActividadesAdmin.as_view(),
-     name='reporteActividadAdmin'),
+     name='listActividadesAdmin'),
 ]

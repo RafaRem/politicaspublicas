@@ -17,7 +17,7 @@ from apps.dependencia.models import Dependencia
 from django.db.models import Q
 
 def filtroActividades(id_dependencia=0,estado="",id_objetivo=0,id_eje="",id_programaOperativo=0):
-    #No se aplicará filtros si los parametros son iguales 0
+    #No se aplicará filtros si los parametros son iguales 0 o ""
     consulta = Q()
     if id_dependencia>0:
         dependencia = Dependencia.objects.get(pk=id_dependencia)
