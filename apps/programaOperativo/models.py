@@ -17,6 +17,7 @@ class Acciones(models.Model):
     sectorEconomico = models.ManyToManyField(SectorEconomico, blank=True)
     ubicacion = models.ManyToManyField(Ubicacion, blank=True)
     categoriaPoblacion = models.ManyToManyField(CategoriaPoblacion, blank=True)
+    meta = models.IntegerField(blank=True, null=True)
     class Meta:
         verbose_name = 'Acción de programa operativo'
         verbose_name_plural = 'Acciones de programas operativos'
