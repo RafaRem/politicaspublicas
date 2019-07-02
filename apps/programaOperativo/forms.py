@@ -54,4 +54,29 @@ class TerminarActividadesForm(forms.ModelForm):
         super(TerminarActividadesForm, self).__init__(*args, **kwargs)
         for key in self.fields:
             self.fields[key].required = True 
+
+class RevalidarActividadesForm(forms.ModelForm):
+    class Meta:
+        model=Actividad
+        fields = [        
+            'personasInvolucradas',
+            'beneficiarios',
+            'descripcion'
+            ]
+        exclude = [
+            'programaoperativo',
+            'evidencia',
+            'observaciones',
+            'user',
+            'latitud',
+            'longitud',
+            'accion',
+            'fecha_in',
+            'fecha_fi',
+        ]
+        pass
+    def __init__(self, *args, **kwargs):
+        super(RevalidarActividadesForm, self).__init__(*args, **kwargs)
+        for key in self.fields:
+            self.fields[key].required = True 
     

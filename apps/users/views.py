@@ -156,7 +156,6 @@ def CalendarView(request):
     
                 for x in proper2: 
                     act+= [x]   
- 
 
                 actividades = actividades.filter(programaoperativo__in=act)
             
