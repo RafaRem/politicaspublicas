@@ -37,6 +37,7 @@ from reportlab.lib.enums import TA_CENTER
 from reportlab.lib import colors
 from reportlab.platypus import SimpleDocTemplate, Paragraph, TableStyle, Table
 from io import StringIO, BytesIO
+from apps.programaOperativo.views import filtroActividades
 import time
 
 # Create your views here.
@@ -127,69 +128,75 @@ def CalendarView(request):
         srch = request.POST['srh']
         srch2 = request.POST['srh2']
         srch3 = request.POST['srh3']
-        srch4 = request.POST['srh4']  
-
+        srch4 = request.POST['srh4']
         if (srch or srch2 or srch3 or srch4):
             actividades = Actividad.objects.all()
 
             
         
             if srch:
-                po = []
-                dep = Dependencia.objects.get(pk=srch)  
-                proper = ProgramaOperativo.objects.filter(dependencia=dep) 
-                for i in proper:
-                    po += [i]
+                actividades = filtroActividades(id_dependencia=int(srch))
+                # po = []
+                # dep = Dependencia.objects.get(pk=srch)  
+                # proper = ProgramaOperativo.objects.filter(dependencia=dep) 
+                # for i in proper:
+                #     po += [i]
 
 
-                actividades = Actividad.objects.filter(programaoperativo__in=po)      
+                # actividades = Actividad.objects.filter(programaoperativo__in=po)      
+            if srch2:
+                actividades = filtroActividades(estado=srch2)
+                
+
 
             if srch3:
-                act = []
-                depd = []
-                obje = Objetivo.objects.get(pk=srch3)
-                depen = Dependencia.objects.filter(objetivo=obje)   
-                for j in depen:
-                    depd+= [j] 
+                actividades = filtroActividades(id_objetivo=int(srch3))
+                # act = []
+                # depd = []
+                # obje = Objetivo.objects.get(pk=srch3)
+                # depen = Dependencia.objects.filter(objetivo=obje)   
+                # for j in depen:
+                #     depd+= [j] 
                 
-                proper2 = ProgramaOperativo.objects.filter(dependencia__in=depd)      
+                # proper2 = ProgramaOperativo.objects.filter(dependencia__in=depd)      
     
-                for x in proper2: 
-                    act+= [x]   
+                # for x in proper2: 
+                #     act+= [x]   
 
-                actividades = actividades.filter(programaoperativo__in=act)
+                # actividades = actividades.filter(programaoperativo__in=act)
             
 
             if srch4:
-                obje2=[]
-                act2 = []
-                po2 = []
-                obeje = Objetivo.objects.filter(ejeTransversal=srch4)
-                for i in obeje:
-                    obje2+=[i]
+                actividades = filtroActividades(id_eje=srch4)
+                # obje2=[]
+                # act2 = []
+                # po2 = []
+                # obeje = Objetivo.objects.filter(ejeTransversal=srch4)
+                # for i in obeje:
+                #     obje2+=[i]
 
-                print("Objetivos", obje2)
-                dependencia = Dependencia.objects.filter(objetivo__in=obje2) 
+                # print("Objetivos", obje2)
+                # dependencia = Dependencia.objects.filter(objetivo__in=obje2) 
                 
-                for k in dependencia:
-                    po2+=[k]
+                # for k in dependencia:
+                #     po2+=[k]
 
-                print("Dependencia", po2)
+                # print("Dependencia", po2)
                 
-                proper3 = ProgramaOperativo.objects.filter(dependencia__in=po2)  
-                print("Programa", proper3)           
-                for a in proper3:
-                    act2+= [a]
+                # proper3 = ProgramaOperativo.objects.filter(dependencia__in=po2)  
+                # print("Programa", proper3)           
+                # for a in proper3:
+                #     act2+= [a]
 
 
-                actividades = actividades.filter(programaoperativo__in=act2)     
-
-
-
+            #     actividades = actividades.filter(programaoperativo__in=act2)     
 
 
 
-            actividades = actividades.filter(Q(estado__icontains=srch2))     
+
+
+
+            # actividades = actividades.filter(Q(estado__icontains=srch2))     
 
             for i in actividades:
                 if (date_object.date() > i.fecha_in):
