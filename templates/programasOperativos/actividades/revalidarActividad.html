@@ -34,6 +34,9 @@
       width: 100%;
       max-width:300px;
     }
+    #filtros{
+      position: fixed;
+    }
 </style>
 {% endblock extracss %}
 
@@ -42,7 +45,13 @@
 
 
 {% block content %}
+
     <div class="container bg-transparent">
+        <div class="d-flex justify-content-end">
+            <button id="filtros" class="btn guinda" data-toggle="tooltip" data-placement="top" title="Observaciones de la actividad">
+                <i class="fas fa-comment"></i>
+            </button>
+        </div>
         {% if messages %}
         <ul class="messages">
             {% for message in messages %}
@@ -54,6 +63,7 @@
             {% endfor %}
         </ul>
       {% endif %}
+      
         <form id="id_form_actividad" action="" 
         method="POST" enctype="multipart/form-data">
             {% csrf_token %}
@@ -126,86 +136,25 @@
         }, 1000);
  
     $(document).ready(()=>{
-      //var conceptosGasto = "{{conceptosGasto|escapejs}}"
-      //conceptosGasto = JSON.parse(conceptosGasto)
-      //este arreglo se usa para cuando hay cambios en los componentes, se registra su
-      //valor en el ya que al cambiar en paginación se destruyen los inputs
-      //usability price is fucking high...
-      /*var arregloGastos = [];
-      for (let i = 0; i < conceptosGasto.length; i++) {
-        arregloGastos.push({
-          valor:"",
-          pk:""
-        });        
-      }
-      for (let i = 0; i < conceptosGasto.length; i++) {
-        const element = conceptosGasto[i];
-        $('#id_tabla_presupuesto').find('tbody')
-        .append(`
-        <tr>
-            <th scope="row">${i}</th>
-            <td>${element.fields.nombre}</td>
-            <td>${element.fields.clasificacion}</td>
-            <td>
-              <div class="input-group mb-3  input-pago">
-                <div class="input-group-prepend">
-                  <div class="input-group-text">  
-                    <input type="checkbox" id="checkbox-gastos-${i}"
-                    aria-label="Checkbox for following text input">
-                  </div>
-                </div>
-                <input readonly="true" id="input-gastos-${i}" pk="${element.pk}"
-                type="text" class="form-control input-gastos" aria-label="Text input with checkbox">
-              </div>
-            </td>
-          </tr>
-        `);
-        $(`#checkbox-gastos-${i}`).on('click',()=>{
-          let checkbox = document.querySelector(`#checkbox-gastos-${i}`);
-          if(checkbox.checked){
-            $(`#input-gastos-${i}`).attr('readonly', false);
-            $(`#input-gastos-${i}`).attr('required', true);
-          }else{
-            $(`#input-gastos-${i}`).attr('readonly', true);
-            $(`#input-gastos-${i}`).attr('required', false);
-            //le quitamos el valor en el arreglo y en el input
-            arregloGastos[i].valor = "";
-            arregloGastos[i].pk = "";
-            document.querySelector(`#input-gastos-${i}`).value = "";
+      $('[data-toggle="tooltip"]').tooltip();
+      $('#filtros').click(()=>{
+        console.log('hoooolaaa')
+        Swal.fire({
+          title: `<h4 class="modal-title">
+              <strong>{{actividad.observaciones}}</strong>
+            </h4>`,
+          type:'warning',
+          customClass:{
+            confirmButton: 'guinda',
+            cancelButton: 'guinda',
           }
         })
-        $(`#input-gastos-${i}`).on('keyup',()=>{
-          arregloGastos[i].valor = document.getElementById(`input-gastos-${i}`).value;
-          arregloGastos[i].pk = document.getElementById(`input-gastos-${i}`).getAttribute('pk');
-        })
-      }
-      */
-     
-      //$('#id_tabla_presupuesto').DataTable();
-      //Validaciones
-      //$('.input-gastos').mask('00000000.00', {reverse: true});
+      });
       $('#id_personasInvolucradas').mask('00000000');
       $('#id_beneficiarios').mask('00000000');
       //*********************
       $( "#id_form_actividad" ).submit(function( event ) {
         event.preventDefault();
-        //ESTE CODIGO INCRUSTA INPUTS PARA ENVIARLOS AL FORMULARIO POR MÉTODO POST
-        /*
-        let gastoIngresado = false;
-          for (let i = 0; i < arregloGastos.length; i++) {
-            const element = arregloGastos[i];
-            if(element.valor != ""){
-              gastoIngresado = true
-              valorString = element.valor + '|' + element.pk
-              $(`#id_gastos`).append(`
-                      <input readonly="true" id="input-gastos-${i}" name="gastos[]"
-                      type="text" class="form-control input-gastos"
-                      hidden value=${valorString}> 
-              `);
-            }
-            
-          }
-          */
           let timerInterval
           Swal.fire({
             title: 'Subiendo',
@@ -228,21 +177,6 @@
           string  = string.replace(/[^a-zA-Z0-9 ]/g, "")
           $('#input-42-es')[0].files[0].name = string  + '_evidencia.pdf'
           this.submit()
-            /*Swal.fire({
-              title: `<h4 class="modal-title" id="exampleModalLabel">
-                  <strong>Selecciona el lugar de esta actividad</strong>
-                </h4>`,
-              type:'warning',
-              customClass:{
-                confirmButton: 'guinda',
-                cancelButton: 'guinda',
-              },
-              html:`
-              <ul>
-                  <li>En caso de que la actividad no haya llevado ningún gasto, elegir uno y escribir 0.</li>
-                </ul>
-                `
-              })*/
 
       });
     })

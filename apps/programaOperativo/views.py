@@ -312,21 +312,12 @@ class RevalidarActividadFormView(LoginRequiredMixin,View):
         """validar si ya subió información no pueda acceder"""
         actividad = Actividad.objects.get(pk=idActividad)
         form = RevalidarActividadesForm(instance=actividad) 
-        # if request.user.profile.dependencia.tipo == 'd':
-        #     conceptosGasto = ConceptoGasto.objects.filter(tipoDependencia='d')
-        # else:
-        #     conceptosGasto = ConceptoGasto.objects.filter(tipoDependencia='p',dependencia=request.user.profile.dependencia)
-        # conceptosGasto = serializers.serialize('json',conceptosGasto, use_natural_foreign_keys=True)
-        return render(request,'programasOperativos/actividades/terminarActividad.html',{
+        return render(request,'programasOperativos/actividades/revalidarActividad.html',{
             'form':form,
             'actividad':actividad
         })
     def post(self,request,idActividad):
         actividad = Actividad.objects.get(pk=idActividad)
-        #SI NO ES VÁLIDA LA ACTIVIDAD ELIMINA SUS DETALLES DE GASTO PARA VOLVER A CAPTURARSE
-        # if actividad.estado == 'n':
-        #     gastosActividad = DetallesGasto.objects.filter(actividad=actividad)
-        #     gastosActividad.delete()
         form = RevalidarActividadesForm(request.POST, instance=actividad)
         if form.is_valid():
             datos = form.save(commit=False)
@@ -336,27 +327,16 @@ class RevalidarActividadFormView(LoginRequiredMixin,View):
                 '-evidencia.pdf'
                 )
             datos.evidencia = archivo
-            #'t' significa terminada
             datos.estado = 't'
-            # gastosActividad = request.POST.getlist('gastos[]')
-            # for gasto in gastosActividad:
-            #     gasto = gasto.split('|')
-            #     conceptoGasto = ConceptoGasto.objects.get(pk=gasto[1])
-            #     DetallesGasto.objects.create(
-            #         cantidad=gasto[0],
-            #         actividad=actividad,
-            #         gasto=conceptoGasto
-            #     )
             save = datos.save()
             messages.success(request, 'Actividad actualizada con éxito.')
             return redirect('listActividades')
         messages.error(request, form._errors)
-        #Si hay algún error inesperado recarga la página
         actividad = Actividad.objects.get(pk=idActividad)
         form = TerminarActividadesForm()
         conceptosGasto = ConceptoGasto.objects.all()
         conceptosGasto = serializers.serialize('json',conceptosGasto, use_natural_foreign_keys=True)
-        return render(request,'programasOperativos/actividades/terminarActividad.html',{
+        return render(request,'programasOperativos/actividades/revalidarActividad.html',{
             'form':form,
             'actividad':actividad,
             'conceptosGasto':conceptosGasto
