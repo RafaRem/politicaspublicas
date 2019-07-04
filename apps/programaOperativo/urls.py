@@ -24,4 +24,6 @@ urlpatterns = [
      name='reporteActividadEnlace'),
     path('programasOperativos/actividad/admin/list/actividades', ListActividadesAdmin.as_view(),
      name='listActividadesAdmin'),
+    path('programasOperativos/actividad/admin/ver/actividad/<str:idActividad>', VerActividadAdmin.as_view(),
+     name='verActividadAdmin'),
 ]

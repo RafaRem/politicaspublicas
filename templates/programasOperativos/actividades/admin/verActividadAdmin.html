@@ -2,10 +2,12 @@
 {%load staticfiles%}
 
 {% block navTitle %}
-{{actividad.nombre}}
 {% endblock %}
 
 {% block content %}
+<h2 class="text-center">
+{{actividad.nombre}}
+</h2>
 <div class="container bg-transparent">
         <table class="table">
                 <tbody>
@@ -132,6 +134,15 @@
 
     <div class="d-flex justify-content-center">
         <embed src="/media/{{actividad.evidencia}}" width="600" height="500" alt="pdf" pluginspage="http://www.adobe.com/products/acrobat/readstep2.html">
+    </div>
+    <div class="d-flex justify-content-center">
+        <a class="btn guinda" href="/media/{{actividad.evidencia}}" target="_blank">Ver evidencia</a>
+    </div>
+    <hr>
+    <div class="row">
+        <div class="col-lg-4">
+            
+        </div>
     </div>
     
 </div>

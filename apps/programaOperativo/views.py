@@ -390,6 +390,12 @@ class ListActividadesAdmin(LoginRequiredMixin,View):
             'actividades':actividades
         })
 
-
+class VerActividadAdmin(LoginRequiredMixin,View):
+    login_url = 'login'
+    def get(self, request,idActividad):
+        actividad = Actividad.objects.get(pk=idActividad)
+        return render(request,'programasOperativos/actividades/admin/verActividadAdmin.html',{
+            'actividad':actividad
+        })    
 
 
