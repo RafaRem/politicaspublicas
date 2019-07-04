@@ -5,7 +5,7 @@ from apps.dependencia.models import *
 class Objetivo(models.Model):
     opcionesEstado = (
         ('a','Activo'),
-        ('a','Inactivo')
+        ('i','Inactivo')
     )
     opcionesEjesTransversales = (
         ('1','Desarrollo Integral'),

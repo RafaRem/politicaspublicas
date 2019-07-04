@@ -1,0 +1,175 @@
+{%extends 'base/base.html'%}
+{%load staticfiles%}
+
+{%block navTitle%}
+Actividades
+{%endblock%}
+
+{% block title %}
+Actividades
+{% endblock %}
+
+{%block messages %}
+{% endblock%}
+{% block extracss %}
+    <style>
+        a.btn{
+            min-width: 100px;
+        }
+        table.dataTable tbody tr{
+            background: transparent !important;
+        }
+        span.badge{
+            min-width: 100px;
+        }
+        .badge-naranja{
+            background: #f26631;
+        }
+        #filtros{
+            position: fixed;
+            z-index: 9999;
+        }
+        
+    </style>
+{% endblock %}
+
+{%block content%}
+    {% if messages %}
+        <ul class="messages">
+                {% for message in messages %}
+                <li{% if message.tags == "success" %} class="alert alert-success"
+            {%else%}
+            class="alert alert-danger"
+            {% endif %}>
+            {{ message }}</li>
+                {% endfor %}
+        </ul>
+    {% endif %}
+    <div class="d-flex justify-content-end">
+        <button data-toggle="modal" data-target="#exampleModal"
+        id="filtros" class="btn guinda">
+            Filtros &nbsp;<i class="fas fa-filter"></i>
+        </button>
+    </div>
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Filtros</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                </div>
+                <form action="" method="post">
+                    {% csrf_token %}
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="dependencia">Dependencia</label>
+                            <select id="dependencia" name="dependencia" class="form-control">
+                            <option value="">Todas</option>
+                            {% for dependencia in dependencias  %}
+                                    <option value="{{dependencia.id}}">
+                                        {{dependencia.nombre}}
+                                    </option>
+                            {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="estado">Estado</label>
+                            <select name="estado" class="form-control">
+                                <option value="" >Todos</option>
+                                <option value="p" >Programada</option>
+                                <option value="t" >Por revisar</option>
+                                <option value="i" >Inactiva</option>
+                                <option value="r" >Válida</option>
+                                <option value="n" >No válida</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="objetivo">Objetivo</label>
+                            <select name="objetivo" class="form-control">
+                                <option value="" >Todos</option>
+                                {% for objetivo in objetivos  %}
+                                    <option value="{{objetivo.id}}">
+                                        {{objetivo.numero}} - {{objetivo.nombre}}
+                                    </option>
+                                {% endfor %}
+                            </select> 
+                        </div>
+                        <div class="form-group">
+                            <label for="eje">Ejes</label>
+                            <select name="eje" class="form-control">
+                                <option value="" >Todos</option>
+                                <option value="1" >Desarrollo Integral</option>
+                                <option value="2" >Desarrollo Social y Humano</option>
+                                <option value="3" >Promoción Económica y Medio Ambiente</option>
+                                <option value="4" >Seguridad Ciudadana y Protección Civil</option>
+                                <option value="5" >Combate a la Corrupción y Participación Ciudadana</option>
+                            </select> 
+                        </div>
+  
+                    </div>
+                    <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                    <button type="submit" class="btn guinda">Aplicar filtros</button>
+                    </div>
+                </form>
+
+            </div>
+            </div>
+        </div>
+    <div class="container bg-transparent mt-5">
+            <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Actividad</th>
+                            <th>Acciones</th>
+                            <th>
+                                <div class="d-flex justify-content-center">
+                                Estado
+                                </div>
+                            </th>
+                            <th>Fecha registrada</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-transparent">
+                        {% for actividad in actividades %}
+                        <tr>
+                            <td scope="row">{{actividad.nombre}}</td>
+                            <td>
+                                <a class="btn btn-primary btn-sm guinda" 
+                                href="{%url 'verActividad' idActividad=actividad.id%}">Ver</a>
+                                
+                            </td>
+                            <td>
+                                <div class="d-flex justify-content-center">
+                                    {% if actividad.estado == 'r' %}
+                                    <span class="badge badge-success">Válida&nbsp;<i class="fa fa-check-circle"></i></span>
+                                    {%elif actividad.estado == 'p' %}
+                                    <span class="badge badge-naranja">Pendiente&nbsp;<i class="fas fa-exclamation-circle"></i></span>
+                                    {%elif actividad.estado == 'n' %}
+                                    <span class="badge badge-danger">No válido&nbsp;<i class="fa fa-times-circle"></i></span>
+                                    {%else%}
+                                    <span class="badge badge-warning">En revisión&nbsp;<i class="fas fa-clock"></i></span>
+                                    {% endif %}
+                                </div>
+                            </td>
+                            <td>{{actividad.fechaRegistrada}}</td>
+                        </tr>
+                        {% endfor %}
+                
+                    </tbody>
+                </table>
+    </div>
+
+{%endblock%}
+
+
+{% block extrascripts %}
+    <script>
+        $(document).ready( function () {
+            $('.table').DataTable();
+        } );
+    </script>
+{% endblock %}

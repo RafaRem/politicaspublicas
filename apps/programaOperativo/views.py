@@ -361,10 +361,35 @@ class ActividadesListView(LoginRequiredMixin,View):
 class ListActividadesAdmin(LoginRequiredMixin,View):
     login_url = 'login'
     def get(self,request):
-        print(filtroActividades(id_objetivo=23))
         if request.user.profile.tipoUsuario == 'e':
             return redirect('index')
-        return render(request,'programasOperativos/actividades/admin/listActividades.html')
+        dependencias = Dependencia.objects.filter(estado='a')
+        dependencias = dependencias.order_by('nombre')
+        objetivos = Objetivo.objects.filter(estado='a')
+        objetivos = objetivos.order_by('nombre')
+        return render(request,'programasOperativos/actividades/admin/listActividadesAdmin.html',{
+            'dependencias':dependencias,
+            'objetivos':objetivos
+        })
+    def post(self,request):
+        if request.user.profile.tipoUsuario == 'e':
+            return redirect('index')
+        dependencias = Dependencia.objects.filter(estado='a')
+        dependencias = dependencias.order_by('nombre')
+        objetivos = Objetivo.objects.filter(estado='a')
+        objetivos = objetivos.order_by('nombre')
+        actividades = filtroActividades(
+            id_dependencia=int(request.POST.get('dependencia') if request.POST.get('dependencia') else 0),
+            id_eje=request.POST.get('eje'),
+            id_objetivo=int(request.POST.get('objetivo') if request.POST.get('objetivo') else 0),
+            estado=request.POST.get('estado')
+        )
+        return render(request,'programasOperativos/actividades/admin/listActividadesAdmin.html',{
+            'dependencias':dependencias,
+            'objetivos':objetivos,
+            'actividades':actividades
+        })
+
 
 
 

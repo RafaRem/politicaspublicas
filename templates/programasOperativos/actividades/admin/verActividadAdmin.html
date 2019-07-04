@@ -1,0 +1,138 @@
+{% extends "base/base.html" %}
+{%load staticfiles%}
+
+{% block navTitle %}
+{{actividad.nombre}}
+{% endblock %}
+
+{% block content %}
+<div class="container bg-transparent">
+        <table class="table">
+                <tbody>
+                  <tr>
+                    <th scope="row">
+                        <h5 class="text-center">
+                            <strong>Subido por
+                            </strong>
+                        </h5>
+                    </th>
+                    <td>
+                        <h5 class="text-center">
+                                {{actividad.user.username}}, {{actividad.user.profile.dependencia.nombre}}
+                        </h5>
+                    </td>
+                  </tr>
+                  <tr>
+                    <th scope="row">
+                            <h5 class="text-center">
+                                    <strong>Programa operativo:</strong>
+                                </h5>
+                    </th>
+                    <td>
+                        <h5 class="text-center">
+                        {{actividad.programaoperativo.nombre}}
+                        </h5>
+                    </td>
+                  </tr>
+                  <tr>
+                    <th scope="row">
+                        <h5 class="text-center"><strong>Acción:</strong> </h5>
+                    </th>
+                    <td>
+                        <h5 class="text-center">
+                            {{actividad.accion.nombre}}
+                        </h5>
+                    </td>
+                  </tr>
+                  <tr>
+                        <th scope="row">
+                            <h5 class="text-center">
+                                <strong>Descripción</strong>
+                            </h5>
+                        </th>
+                        <td>
+                            <h5 class="text-center">
+                                {{actividad.descripcion}}
+                            </h5>
+                        </td>
+                      </tr>
+                    <tr>
+                        <th scope="row">
+                            <h5 class="text-center">
+                                <strong>Personas involucradas en la actividad:</strong>
+                            </h5>
+                        </th>
+                        <td>
+                            <h5 class="text-center">
+                                {{actividad.personasInvolucradas}}
+                            </h5>
+                        </td>
+                        </tr>
+                    <tr>
+                        <th scope="row">
+                            <h5 class="text-center">
+                                <strong>Actividad desde:</strong>
+                            </h5>
+                        </th>
+                        <td>
+                            <h5 class="text-center">
+                                {{actividad.fecha_in}}
+                            </h5>
+                        </td>
+                        </tr>
+                    <tr>
+                        <th scope="row">
+                            <h5 class="text-center">
+                                <strong>Hasta:</strong>
+                            </h5>
+                        </th>
+                        <td>
+                            <h5 class="text-center">
+                                {{actividad.fecha_fi}}
+                            </h5>
+                        </td>
+                        </tr>
+                </tbody>
+              </table>
+    <!-- <h3 class="text-center font-weight-bold">Detalles de gasto</h3>
+    <div class="row">
+        {% for gasto in gastos %}
+            <div class="col-xl-4 col-sm-6 mb-3 animated fadeIn">
+                <div class="card text-dorado eje3 o-hidden h-100">
+                    <div class="card-body">
+                        <h4>{{gasto.gasto.nombre}}</h4>
+                        <h4 class="text-white text-center">${{gasto.cantidad}}</h4>
+                    </div>
+
+                </div>
+                </div>
+        {% endfor %}        
+        <hr>
+        <div class="col-12 mb-3 animated fadeIn">
+                <div class="card text-dorado eje5 ">
+                    <div class="card-body">
+                        <h3 class="text-center">Total</h3>
+                        <h4 class="text-white text-center">${{total}}</h4>
+                    </div>
+
+                </div>
+                </div>
+    </div> -->
+    <hr>
+    <h3 class="text-center font-weight-bold">Observaciones</h3>
+    {% if actividad.observaciones %}
+     <h4 class="text-center">{{actividad.observaciones}}</h4>
+
+    {%else%}
+        <h4 class="text-center">Sin observaciones</h4>
+
+    {% endif %}
+    <hr>
+    
+
+    <div class="d-flex justify-content-center">
+        <embed src="/media/{{actividad.evidencia}}" width="600" height="500" alt="pdf" pluginspage="http://www.adobe.com/products/acrobat/readstep2.html">
+    </div>
+    
+</div>
+{% endblock %}
