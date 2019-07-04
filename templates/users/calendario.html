@@ -20,35 +20,74 @@
 
 <br>
 <form id="formulario" method="POST">
-                {%csrf_token%}
-                <br>
-                <br>
+        {%csrf_token%}
+        <br>
+        <br>
 <div class="container col-lg-9 col-md-12 bg-transparent"  id="Select1">
-                    {% if messages %}
-                    <ul class="messages">
-                        {% for message in messages %}
-                        <li{% if message.tags == "success" %} class="alert alert-success"
-                      {%else%}
-                      class="alert alert-danger"
-                      {% endif %}>
-                      {{ message }}</li>
-                        {% endfor %}
-                    </ul>
-                  {% endif %}
-          
-                    
+            {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                <li{% if message.tags == "success" %} class="alert alert-success"
+              {%else%}
+              class="alert alert-danger"
+              {% endif %}>
+              {{ message }}</li>
+                {% endfor %}
+            </ul>
+          {% endif %}
+          <div>
+            <label for="srh">Dependencia</label>
+            <select name="srh" class="container col-lg-9 col-md-12">
+              <option value="">Todas</option>
+              {% for i in depende  %}
+                    <option value="{{i.id}}" >{{i.nombre}}</option>
+              {% endfor %}
+            </select>
+            </div>
+            <div>
+            <label for="srh2">Estatus</label>
+            <select name="srh2" class="container col-lg-9 col-md-12">
+                <option value="" >Todos</option>
+                <option value="p" >Programada</option>
+                <option value="t" >Por revisar</option>
+                <option value="i" >Inactiva</option>
+                <option value="r" >Válida</option>
+                <option value="n" >No válida</option>
+            </select>
+            </div>
+            <label for="srh3">Objetivo</label>
+            <select name="srh3" class="container col-lg-9 col-md-12">
+                <option value="" >Todos</option>
+                {% for x in objetivo  %}
+                    <option value="{{x.id}}" >{{x.tipo}} - {{x.nombre}}</option>
+                {% endfor %}
+            </select> 
+            </div>
+
+            <div>
+            <label for="srh4">Ejes</label>
+            <select name="srh4" class="container col-lg-9 col-md-12">
+                <option value="" >Todos</option>
+                <option value="1" >Desarrollo Integral</option>
+                <option value="2" >Desarrollo Social y Humano</option>
+                <option value="3" >Promoción Económica y Medio Ambiente</option>
+                <option value="4" >Seguridad Ciudadana y Protección Civil</option>
+                <option value="5" >Combate a la Corrupción y Participación Ciudadana</option>
+            </select>
+            </div>
+            
 </div>
-                <br>
+        <br>
 
-                <div class="d-flex justify-content-center">
-                    <button class="btn btn-secondary" id="search-egresados" type="submit">Buscar</button>
+        <div class="d-flex justify-content-center">
+            <button class="btn btn-secondary" id="search-egresados" type="submit">Buscar</button>
 
-                </div>
-            <br>
-            <br>
-            <h4 class="container bg-transparent col-lg-9 col-md-12">Número de actividades encontradas: {{contador}}</h4>
-            <br>
-   <div class="container col-lg-9 col-md-12" url-endpoint='{% url "calendar" %}' id='calendar'></div>
+        </div>
+    <br>
+    <br>
+    <h4 class="container bg-transparent col-lg-9 col-md-12">Número de actividades encontradas: {{contador}}</h4>
+    <br>
+<div class="container col-lg-9 col-md-12" url-endpoint='{% url "calendar" %}' id='calendar'></div>
 
 </form>
 <br>
