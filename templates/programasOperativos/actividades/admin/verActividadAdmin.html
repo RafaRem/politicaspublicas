@@ -4,6 +4,18 @@
 {% block navTitle %}
 {% endblock %}
 
+{% block extracss %}
+<style>
+    .full-width{
+        width: 100%;
+    }
+    #evidencia{
+        min-width: 300px;
+        max-width: 100%;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <h2 class="text-center">
 {{actividad.nombre}}
@@ -94,32 +106,30 @@
                             </h5>
                         </td>
                         </tr>
+                    <tr>
+                            <th scope="row">
+                                <h5 class="text-center">
+                                    <strong>Estado:</strong>
+                                </h5>
+                            </th>
+                            <td>
+                                <h5 class="text-center">
+                                        {% if actividad.estado == 'r' %}
+                                        <span class="badge badge-success">Válida&nbsp;<i class="fa fa-check-circle"></i></span>
+                                        {%elif actividad.estado == 'p' %}
+                                        <span class="badge badge-naranja">Pendiente&nbsp;<i class="fas fa-exclamation-circle"></i></span>
+                                        {%elif actividad.estado == 'n' %}
+                                        <span class="badge badge-danger">No válido&nbsp;<i class="fa fa-times-circle"></i></span>
+                                        {%else%}
+                                        <span class="badge badge-warning">En revisión&nbsp;<i class="fas fa-clock"></i></span>
+                                        {% endif %}
+                                </h5>
+                            </td>
+                            </tr>
+                        
                 </tbody>
               </table>
-    <!-- <h3 class="text-center font-weight-bold">Detalles de gasto</h3>
-    <div class="row">
-        {% for gasto in gastos %}
-            <div class="col-xl-4 col-sm-6 mb-3 animated fadeIn">
-                <div class="card text-dorado eje3 o-hidden h-100">
-                    <div class="card-body">
-                        <h4>{{gasto.gasto.nombre}}</h4>
-                        <h4 class="text-white text-center">${{gasto.cantidad}}</h4>
-                    </div>
 
-                </div>
-                </div>
-        {% endfor %}        
-        <hr>
-        <div class="col-12 mb-3 animated fadeIn">
-                <div class="card text-dorado eje5 ">
-                    <div class="card-body">
-                        <h3 class="text-center">Total</h3>
-                        <h4 class="text-white text-center">${{total}}</h4>
-                    </div>
-
-                </div>
-                </div>
-    </div> -->
     <hr>
     <h3 class="text-center font-weight-bold">Observaciones</h3>
     {% if actividad.observaciones %}
@@ -135,15 +145,60 @@
     <div class="d-flex justify-content-center">
         <embed src="/media/{{actividad.evidencia}}" width="600" height="500" alt="pdf" pluginspage="http://www.adobe.com/products/acrobat/readstep2.html">
     </div>
-    <div class="d-flex justify-content-center">
-        <a class="btn guinda" href="/media/{{actividad.evidencia}}" target="_blank">Ver evidencia</a>
+    <div class="d-flex justify-content-center mt-2">
+        <a id="evidencia" class="btn guinda m-2" href="/media/{{actividad.evidencia}}" target="_blank">Ver evidencia</a>
     </div>
     <hr>
-    <div class="row">
-        <div class="col-lg-4">
-            
+    <form action="" id="frm_actividad" method="POST">
+        {% csrf_token %}°
+        <div class="form-group">
+            <label for="id_observaciones" class="">
+            <strong>Observaciones</strong>
+            </label>
+            <textarea class="form-control" name="observaciones" id="id_observaciones"
+            maxlength="800" cols="30" rows="10"></textarea>
         </div>
-    </div>
-    
+        <h4 class="text-center">Cambiar estado</h4>
+        <div class="row">
+            <div class="col-lg-4">
+                <button type="button" id="validar" class="btn btn-success full-width">
+                    <i class="fas fa-check"></i>&nbsp;Validar
+                </button>
+            </div>
+            <div class="col-lg-4">
+                <button type="button" id="invalidar" class="btn btn-warning full-width">
+                        <i class="fas fa-exclamation-triangle"></i>&nbsp;Invalidar
+                </button>
+            </div>
+            <div class="col-lg-4">
+                    <button type="button" id="desactivar" class="btn btn-danger full-width">
+                        <i class="fas fa-times" aria-hidden="true"></i>&nbsp;Desactivar
+                    </button>
+                </div>
+        </div>
+        <input id="estado" name="estado" type="text" value="" hidden>
+    </form>
 </div>
+{% endblock %}
+
+{% block extrascripts %}
+<script>
+    $(document).ready(()=>{
+        inputEstado = document.querySelector('#estado')
+        $('#validar').click(()=>{
+            inputEstado.value = 'r';
+            $('#frm_actividad').submit();
+        })
+        $('#invalidar').click(()=>{
+            inputEstado.value = 'n';
+            $('#frm_actividad').submit();
+
+        })
+        $('#desactivar').click(()=>{
+            inputEstado.value = 'i';
+            $('#frm_actividad').submit();
+        })
+
+    });
+</script>
 {% endblock %}
