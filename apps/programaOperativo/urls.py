@@ -26,4 +26,6 @@ urlpatterns = [
      name='listActividadesAdmin'),
     path('programasOperativos/actividad/admin/ver/actividad/<str:idActividad>', VerActividadAdmin.as_view(),
      name='verActividadAdmin'),
+    path('programasOperativos/actividad/admin/reporte', ReporteActividadesAdmin.as_view(),
+     name='reporteActividadesAdmin'),
 ]

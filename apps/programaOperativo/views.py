@@ -35,7 +35,26 @@ def filtroActividades(id_dependencia=0,estado="",id_objetivo=0,id_eje="",id_prog
     actividades = Actividad.objects.filter(consulta)        
     return actividades
 
+def filtroProgramasOperativos(id_objetivo=0,id_dependencia=0):
+    consulta = Q(estado='a')
+    programasOperativos = []
+    if id_dependencia > 0:
+        dependencia = Dependencia.objects.get(pk=id_dependencia)
+        consulta &= Q(dependencia=id_dependencia)
+    #Hacemos la consulta, se deja al final el filtro por objetivo por complejidad
+    programas = ProgramaOperativo.objects.filter(consulta)    
+    if id_objetivo > 0:
+        programasOperativos = []
+        for programa in programas:
+            acciones = programa.acciones.all()
+            for accion in acciones:
+                if id_objetivo == accion.objetivo.id:
+                    programasOperativos.append(programa)
+        programasOperativos = list(set(programasOperativos))
+    return programasOperativos
 
+def getDependenciasByObjetivo(id_objetivo):
+    return ""
 #ESTE NO NECESITA PROTECCION
 def get_acciones_po_view(request,idPo):
     programaOperativo = ProgramaOperativo.objects.get(id=idPo)
@@ -69,15 +88,11 @@ class ProgramasOperativosListView(LoginRequiredMixin,View):
         programasOperativos = []
         objetivo = Objetivo.objects.get(id=idObjetivo)
         if idObjetivo != 0:
-            programas = ProgramaOperativo.objects.filter(
-                dependencia=request.user.profile.dependencia
-            )
-            for programa in programas:
-                acciones = programa.acciones.all()
-                for accion in acciones:
-                    if idObjetivo == accion.objetivo.id:
-                        programasOperativos.append(programa)
-            programasOperativos = list(set(programasOperativos))
+            programasOperativos = filtroProgramasOperativos(
+                id_dependencia=request.user.profile.dependencia.id,
+                id_objetivo=idObjetivo
+                )
+
             return render(request,'programasOperativos/listPoObjetivo.html',{
             'programas':programasOperativos,
             'objetivo':objetivo
@@ -406,4 +421,16 @@ class VerActividadAdmin(LoginRequiredMixin,View):
             'actividad':actividad
         })
 
-
+class ReporteActividadesAdmin(LoginRequiredMixin,View):
+    login_url = 'login'
+    def get(self,request):
+        categories = []
+        title='Prueba de agrupación'
+        filtroActividades(id_objetivo=23)
+        #Obtenemos todas las dependencias de un objetivo
+        
+        if request.user.profile.tipoUsuario == 'e':
+            return redirect('index')
+        return render(request,'programasOperativos/actividades/admin/reporteActividadesAdmin.html',{
+            'title':title
+        })
