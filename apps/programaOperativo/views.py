@@ -53,8 +53,26 @@ def filtroProgramasOperativos(id_objetivo=0,id_dependencia=0):
         programasOperativos = list(set(programasOperativos))
     return programasOperativos
 
-def getDependenciasByObjetivo(id_objetivo):
-    return ""
+def filtroDependencias(id_objetivo=0):
+    dependencias = []
+    if id_objetivo > 0:
+        programasOperativos = filtroProgramasOperativos(id_objetivo=id_objetivo)
+        for po in programasOperativos:
+            dependencias.append(po.dependencia)
+        dependencias = list(set(dependencias))        
+    return dependencias
+
+def filtroObjetivos(id_eje="", tipo=""):
+    consulta = Q(estado='a')
+    if id_eje!="":
+        consulta &= Q(ejeTransversal=id_eje)
+    if tipo!="":
+        consulta &= Q(tipo=tipo)
+    objetivos = Objetivo.objects.filter(consulta)
+    return objetivos
+
+        
+
 #ESTE NO NECESITA PROTECCION
 def get_acciones_po_view(request,idPo):
     programaOperativo = ProgramaOperativo.objects.get(id=idPo)
@@ -423,14 +441,74 @@ class VerActividadAdmin(LoginRequiredMixin,View):
 
 class ReporteActividadesAdmin(LoginRequiredMixin,View):
     login_url = 'login'
+    def filtrar(self,eje):
+        categories = ''
+        dependencias = []
+        #En este arreglo estarán todos los arreglos de todas las actividades
+        arregloObjetivos = []
+        objetivos = filtroObjetivos(id_eje=eje)
+        #Iteramos todos los objetivos
+        for objetivo in objetivos:
+            categories = ''
+            arreglosActividades = [{
+                'name':'Programadas',
+                'data':[]
+            },{
+                'name':'Por revisar',
+                'data':[]
+            },{
+                'name':'Válidas',
+                'data':[]
+            },{
+                'name':'No válida',
+                'data':[]
+            }]
+            #Obtenemos todas las dependencias de un objetivo
+            dependencias = filtroDependencias(id_objetivo=objetivo.id)
+            #Cada dependencia será una categoría, las iteramos para obtener su nombre
+            for dependencia in dependencias:
+                categories =  dependencia.nombre + '|' + categories
+                actividades = Actividad.objects.filter(
+                    programaoperativo__dependencia=dependencia,
+                    estado='p'
+                    )
+                arreglosActividades[0]['data'].append(actividades.count())
+                actividades = Actividad.objects.filter(
+                    programaoperativo__dependencia=dependencia,
+                    estado='t'
+                )
+                arreglosActividades[1]['data'].append(actividades.count())
+                actividades = Actividad.objects.filter(
+                    programaoperativo__dependencia=dependencia,
+                    estado='r'
+                )
+                arreglosActividades[2]['data'].append(actividades.count())
+                actividades = Actividad.objects.filter(
+                    programaoperativo__dependencia=dependencia,
+                    estado='n'
+                )
+                arreglosActividades[3]['data'].append(actividades.count())
+            #Agregamos lo obtenido de los filtros
+            arregloObjetivos.append({
+                'title':objetivo.nombre,
+                'categories':categories,
+                'arregloActividades':arreglosActividades
+            })
+
+        arregloObjetivos = json.dumps(arregloObjetivos)
+        return arregloObjetivos
     def get(self,request):
-        categories = []
-        title='Prueba de agrupación'
-        filtroActividades(id_objetivo=23)
-        #Obtenemos todas las dependencias de un objetivo
-        
         if request.user.profile.tipoUsuario == 'e':
             return redirect('index')
+        arregloObjetivos = self.filtrar("1")
         return render(request,'programasOperativos/actividades/admin/reporteActividadesAdmin.html',{
-            'title':title
+            'arregloObjetivos':arregloObjetivos
+        })
+    def post(self,request):
+        if request.user.profile.tipoUsuario == 'e':
+            return redirect('index')
+        eje = request.POST.get('eje')
+        arregloObjetivos = self.filtrar(eje)
+        return render(request,'programasOperativos/actividades/admin/reporteActividadesAdmin.html',{
+            'arregloObjetivos':arregloObjetivos
         })

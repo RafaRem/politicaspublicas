@@ -56,7 +56,7 @@ Actividades
             <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Filtros</h5>
+                <h5 class="modal-title" id="exampleModalLabel">Mostrar</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -64,39 +64,6 @@ Actividades
                 <form action="" method="post">
                     {% csrf_token %}
                     <div class="modal-body">
-                        <div class="form-group">
-                            <label for="dependencia">Dependencia</label>
-                            <select id="dependencia" name="dependencia" class="form-control">
-                            <option value="">Todas</option>
-                            {% for dependencia in dependencias  %}
-                                    <option value="{{dependencia.id}}">
-                                        {{dependencia.nombre}}
-                                    </option>
-                            {% endfor %}
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="estado">Estado</label>
-                            <select name="estado" class="form-control">
-                                <option value="" >Todos</option>
-                                <option value="p" >Programada</option>
-                                <option value="t" >Por revisar</option>
-                                <option value="i" >Inactiva</option>
-                                <option value="r" >Válida</option>
-                                <option value="n" >No válida</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="objetivo">Objetivo</label>
-                            <select name="objetivo" class="form-control">
-                                <option value="" >Todos</option>
-                                {% for objetivo in objetivos  %}
-                                    <option value="{{objetivo.id}}">
-                                        {{objetivo.numero}} - {{objetivo.nombre}}
-                                    </option>
-                                {% endfor %}
-                            </select> 
-                        </div>
                         <div class="form-group">
                             <label for="eje">Ejes</label>
                             <select name="eje" class="form-control">
@@ -119,42 +86,88 @@ Actividades
             </div>
             </div>
         </div>
-    <div id="container">
+    <div class="container bg-transparent" id="container"></div>
 
-    </div>
 
 {%endblock%}
 
 
 {% block extrascripts %}
-<script src="https://code.highcharts.com/modules/exporting.js"></script>
-<script src="https://code.highcharts.com/modules/export-data.js"></script>
+
     <script>
-        
-        document.addEventListener('DOMContentLoaded', function () {
-            var myChart = Highcharts.chart('container', {
+        $(document).ready(()=>{
+            
+            //Se hará split ya que son valores separados por coma
+            var objetivos = '{{arregloObjetivos|escapejs}}';
+            objetivos = JSON.parse(objetivos);
+            console.log(objetivos); 
+
+            for (let i = 0; i < objetivos.length; i++) {
+                const objetivo = objetivos[i];
+                //le hace split a todas las categorías
+                let categories = objetivo.categories.split('|')
+                $(`#container`).append(`
+                <div id="id_grafica_${i}" class="mt-5 bg-transparent"></div>
+                `);
+                var myChart = Highcharts.chart(`id_grafica_${i}`, {
+                    chart: {
+                        type: 'bar',
+                        backgroundColor:'rgba(255, 255, 255, 0.0)'
+    
+                    },
+                    title: {
+                        text: objetivo.title
+                    },
+                    xAxis: {
+                        categories: categories
+                    },
+                    yAxis: {
+                        title: {
+                            text: 'Actividades'
+                        }
+                    },
+                    legend: {
+                        reversed: true
+                    },
+                    plotOptions: {
+                        series: {
+                            stacking: 'normal'
+                        }
+                    },
+                    series: objetivo.arregloActividades
+                });
+            }
+
+
+            /*var myChart = Highcharts.chart('container', {
                 chart: {
-                    type: 'bar'
+                    type: 'bar',
+                    backgroundColor:'rgba(255, 255, 255, 0.0)'
+
                 },
                 title: {
-                    text: '{{title}}'
+                    text: '{{objetivo.nombre}}'
                 },
                 xAxis: {
-                    categories: ['Apples', 'Bananas', 'Oranges']
+                    categories: dependencias
                 },
                 yAxis: {
                     title: {
-                        text: '{{title}}'
+                        text: 'Actividades'
                     }
                 },
-                series: [{
-                    name: 'Jane',
-                    data: [1, 0, 4]
-                }, {
-                    name: 'John',
-                    data: [5, 7, 3]
-                }]
-            });
+                legend: {
+                    reversed: true
+                },
+                plotOptions: {
+                    series: {
+                        stacking: 'normal'
+                    }
+                },
+                series: data
+            });*/
+
         });
+
     </script>
 {% endblock %}
