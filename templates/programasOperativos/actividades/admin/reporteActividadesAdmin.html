@@ -79,7 +79,7 @@ Actividades
                     </div>
                     <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                    <button type="submit" class="btn guinda">Aplicar filtros</button>
+                    <button id="id_form_filtro" type="submit" class="btn guinda">Aplicar filtros</button>
                     </div>
                 </form>
 
@@ -96,11 +96,30 @@ Actividades
 
     <script>
         $(document).ready(()=>{
-            
+            $("#id_form_filtro").click(()=>{
+                Swal.fire({
+                    title: 'Generando gráficas',
+                    timer: 60000,
+                    onBeforeOpen: () => {
+                      Swal.showLoading()
+                    },
+                    onClose: () => {
+                      clearInterval(timerInterval)
+                    }
+                  }).then((result) => {
+                    if (
+                      // Read more about handling dismissals
+                      result.dismiss === Swal.DismissReason.timer
+                    ) {
+                    }
+                  })
+            })
+
+
+
             //Se hará split ya que son valores separados por coma
             var objetivos = '{{arregloObjetivos|escapejs}}';
             objetivos = JSON.parse(objetivos);
-            console.log(objetivos); 
 
             for (let i = 0; i < objetivos.length; i++) {
                 const objetivo = objetivos[i];

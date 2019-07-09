@@ -135,7 +135,7 @@
               <!-- <h6 class="dropdown-header">Actividades</h6> -->
               <a class="dropdown-item" href="{%url 'calendar'%}">Calendario</a>
               <a class="dropdown-item" href="{%url 'listActividadesAdmin'%}">Actividades</a>
-              <a class="dropdown-item" href="{%url 'reporteActividadesAdmin'%}">Reportes</a>
+              <a class="dropdown-item" id="id_reporte_actividades" class="graficas" href="{%url 'reporteActividadesAdmin'%}">Reportes</a>
             </div>
           </li>
       {% endif %}
@@ -295,7 +295,31 @@
       <footer class="d-flex justify-content-center align-items-center fixed-bottom dorado-alto">
         <h6 class="small text-uppercase mb-0">© 2019 derechos reservados. <a href="https://www.ahome.gob.mx/" target="_blank">h. ayuntamiento de ahome</a>. </h6>
       </footer>
-			<script src="{%static 'js/sb-admin.js'%}"></script>
+      <script src="{%static 'js/sb-admin.js'%}"></script>
+      <script>
+          $(document).ready(()=>{
+            $('#id_reporte_actividades').click(()=>{
+              Swal.fire({
+                title: 'Generando gráficas',
+                timer: 60000,
+                onBeforeOpen: () => {
+                  Swal.showLoading()
+                },
+                onClose: () => {
+                  clearInterval(timerInterval)
+                }
+              }).then((result) => {
+                if (
+                  // Read more about handling dismissals
+                  result.dismiss === Swal.DismissReason.timer
+                ) {
+                  console.log('I was closed by the timer')
+                }
+              })
+            })
+    
+          });
+        </script>
 </body>
 
 </html>

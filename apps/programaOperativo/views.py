@@ -489,6 +489,10 @@ class ReporteActividadesAdmin(LoginRequiredMixin,View):
                 )
                 arreglosActividades[3]['data'].append(actividades.count())
             #Agregamos lo obtenido de los filtros
+            arreglosActividades[0]['data'].reverse()
+            arreglosActividades[1]['data'].reverse()
+            arreglosActividades[2]['data'].reverse()
+            arreglosActividades[3]['data'].reverse()
             arregloObjetivos.append({
                 'title':objetivo.nombre,
                 'categories':categories,
