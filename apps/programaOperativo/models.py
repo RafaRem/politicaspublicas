@@ -17,7 +17,10 @@ class Acciones(models.Model):
     sectorEconomico = models.ManyToManyField(SectorEconomico, blank=True)
     ubicacion = models.ManyToManyField(Ubicacion, blank=True)
     categoriaPoblacion = models.ManyToManyField(CategoriaPoblacion, blank=True)
-    meta = models.CharField(max_length=300,blank=True, null=True)
+    meta = models.CharField(max_length=300,blank=True, null=True,
+    verbose_name='Meta numérica')
+    descripcionMeta = models.CharField(max_length=300,blank=True, null=True,
+    verbose_name='Descripción de la meta')
     class Meta:
         verbose_name = 'Acción de programa operativo'
         verbose_name_plural = 'Acciones de programas operativos'
