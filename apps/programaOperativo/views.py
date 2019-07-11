@@ -14,7 +14,7 @@ from apps.programaOperativo.models import ProgramaOperativo, Acciones, Actividad
 from apps.objetivo.models import Objetivo
 from apps.indicador.models import ConceptoGasto, ClasificacionGasto,Periodo
 from apps.dependencia.models import Dependencia
-from django.db.models import Q
+from django.db.models import Q,Count
 
 def filtroActividades(id_dependencia=0,estado="",id_objetivo=0,id_eje="",id_programaOperativo=0):
     #No se aplicará filtros si los parametros son iguales 0 o ""
@@ -169,7 +169,6 @@ class CapturarGastoView(LoginRequiredMixin,View):
         for gasto in gastosAccion:
             gasto = gasto.split('|')
             conceptoGasto = ConceptoGasto.objects.get(pk=gasto[1])
-            print(gasto[0])
             objeto = DetallesGasto.objects.create(
                 cantidad=gasto[0],
                 accion=accion,
@@ -482,11 +481,13 @@ class ReporteActividadesAdmin(LoginRequiredMixin,View):
                     programaoperativo__dependencia=dependencia,
                     estado='r'
                 )
+ 
                 arreglosActividades[2]['data'].append(actividades.count())
                 actividades = Actividad.objects.filter(
                     programaoperativo__dependencia=dependencia,
                     estado='n'
                 )
+ 
                 arreglosActividades[3]['data'].append(actividades.count())
             #Agregamos lo obtenido de los filtros
             arreglosActividades[0]['data'].reverse()

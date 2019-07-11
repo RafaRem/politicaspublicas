@@ -120,13 +120,13 @@ Actividades
             //Se hará split ya que son valores separados por coma
             var objetivos = '{{arregloObjetivos|escapejs}}';
             objetivos = JSON.parse(objetivos);
-
+            console.log(objetivos)
             for (let i = 0; i < objetivos.length; i++) {
                 const objetivo = objetivos[i];
                 //le hace split a todas las categorías
                 let categories = objetivo.categories.split('|')
                 $(`#container`).append(`
-                <div id="id_grafica_${i}" class="mt-5 bg-transparent"></div>
+                <div id="id_grafica_${i}"class="mt-5 bg-transparent"></div>
                 `);
                 var myChart = Highcharts.chart(`id_grafica_${i}`, {
                     chart: {
@@ -156,36 +156,6 @@ Actividades
                     series: objetivo.arregloActividades
                 });
             }
-
-
-            /*var myChart = Highcharts.chart('container', {
-                chart: {
-                    type: 'bar',
-                    backgroundColor:'rgba(255, 255, 255, 0.0)'
-
-                },
-                title: {
-                    text: '{{objetivo.nombre}}'
-                },
-                xAxis: {
-                    categories: dependencias
-                },
-                yAxis: {
-                    title: {
-                        text: 'Actividades'
-                    }
-                },
-                legend: {
-                    reversed: true
-                },
-                plotOptions: {
-                    series: {
-                        stacking: 'normal'
-                    }
-                },
-                series: data
-            });*/
-
         });
 
     </script>
