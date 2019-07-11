@@ -100,4 +100,4 @@ class DetallesGasto(models.Model):
         verbose_name_plural = 'Detalles de gasto por acción'
         unique_together = ['accion','gasto','periodo']
     def __str__(self):
-        return (self.actividad.nombre + ', ' + self.gasto.nombre)
+        return (self.accion.nombre + ', ' + self.gasto.nombre)
