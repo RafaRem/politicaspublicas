@@ -217,23 +217,20 @@ AQUÍ VAN LAS FLECHAS DE ANTES Y DESPUES
 
         $('#id_anterior').click(()=>{
             const index = arrayActividades.indexOf(idActividad)
+            console.log(`/programasOperativos/actividad/admin/ver/actividad/${String(arrayActividades[index - 1])}`);
             if(index == 0){
-                window.location = `/programasOperativos/actividad/admin/ver/actividad/
-                ${arrayActividades[arrayActividades.length -1]}`;
+                window.location = `/programasOperativos/actividad/admin/ver/actividad/${String(arrayActividades[arrayActividades.length -1])}`;
             }else{
-                window.location = `/programasOperativos/actividad/admin/ver/actividad/
-                ${arrayActividades[index - 1]}`;
+                window.location = `/programasOperativos/actividad/admin/ver/actividad/${String(arrayActividades[index - 1])}`;
             }
+        
         });
         $('#id_siguiente').click(()=>{
             const index = arrayActividades.indexOf(idActividad)
             if(index == arrayActividades.length - 1){
-                window.location = `/programasOperativos/actividad/admin/ver/actividad/
-                ${arrayActividades[0]}`;
-
+                window.location = `/programasOperativos/actividad/admin/ver/actividad/${arrayActividades[0]}`;
             }else{
-                window.location = `/programasOperativos/actividad/admin/ver/actividad/
-                ${arrayActividades[index + 1]}`;
+                window.location = `/programasOperativos/actividad/admin/ver/actividad/${arrayActividades[index + 1]}`;
             }
 
         });
