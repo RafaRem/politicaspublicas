@@ -71,8 +71,6 @@ def filtroObjetivos(id_eje="", tipo=""):
     objetivos = Objetivo.objects.filter(consulta)
     return objetivos
 
-        
-
 #ESTE NO NECESITA PROTECCION
 def get_acciones_po_view(request,idPo):
     programaOperativo = ProgramaOperativo.objects.get(id=idPo)
@@ -338,6 +336,7 @@ class TerminarActividadFormView(LoginRequiredMixin,View):
             'actividad':actividad,
             'conceptosGasto':conceptosGasto
         })
+
 class RevalidarActividadFormView(LoginRequiredMixin,View):
     login_url = 'login'
     def get(self,request,idActividad):
@@ -416,10 +415,15 @@ class ListActividadesAdmin(LoginRequiredMixin,View):
             id_objetivo=int(request.POST.get('objetivo') if request.POST.get('objetivo') else 0),
             estado=request.POST.get('estado')
         )
+        arrayActividades = []
+        for actividad in actividades:
+            arrayActividades.append(actividad.id)
+        arrayActividades = json.dumps(arrayActividades)
         return render(request,'programasOperativos/actividades/admin/listActividadesAdmin.html',{
             'dependencias':dependencias,
             'objetivos':objetivos,
-            'actividades':actividades
+            'actividades':actividades,
+            'arrayActividades':arrayActividades
         })
 
 class VerActividadAdmin(LoginRequiredMixin,View):
@@ -481,13 +485,11 @@ class ReporteActividadesAdmin(LoginRequiredMixin,View):
                     programaoperativo__dependencia=dependencia,
                     estado='r'
                 )
- 
                 arreglosActividades[2]['data'].append(actividades.count())
                 actividades = Actividad.objects.filter(
                     programaoperativo__dependencia=dependencia,
                     estado='n'
                 )
- 
                 arreglosActividades[3]['data'].append(actividades.count())
             #Agregamos lo obtenido de los filtros
             arreglosActividades[0]['data'].reverse()
@@ -499,7 +501,6 @@ class ReporteActividadesAdmin(LoginRequiredMixin,View):
                 'categories':categories,
                 'arregloActividades':arreglosActividades
             })
-
         arregloObjetivos = json.dumps(arregloObjetivos)
         return arregloObjetivos
     def get(self,request):

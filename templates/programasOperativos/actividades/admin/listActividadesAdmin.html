@@ -120,7 +120,7 @@ Actividades
             </div>
         </div>
     <div class="container bg-transparent mt-5">
-            <table class="table">
+            <table id="id_tabla_actividades" class="table">
                     <thead>
                         <tr>
                             <th>Actividad</th>
@@ -134,31 +134,30 @@ Actividades
                         </tr>
                     </thead>
                     <tbody class="bg-transparent">
-                        {% for actividad in actividades %}
-                        <tr>
-                            <td scope="row">{{actividad.nombre}}</td>
-                            <td>
-                                <a class="btn btn-primary btn-sm guinda" 
-                                href="{%url 'verActividadAdmin' idActividad=actividad.id%}">Ver</a>
-                                
-                            </td>
-                            <td>
-                                <div class="d-flex justify-content-center">
-                                    {% if actividad.estado == 'r' %}
-                                    <span class="badge badge-success">Válida&nbsp;<i class="fa fa-check-circle"></i></span>
-                                    {%elif actividad.estado == 'p' %}
-                                    <span class="badge badge-naranja">Pendiente&nbsp;<i class="fas fa-exclamation-circle"></i></span>
-                                    {%elif actividad.estado == 'n' %}
-                                    <span class="badge badge-danger">No válido&nbsp;<i class="fa fa-times-circle"></i></span>
-                                    {%else%}
-                                    <span class="badge badge-warning">En revisión&nbsp;<i class="fas fa-clock"></i></span>
-                                    {% endif %}
-                                </div>
-                            </td>
-                            <td>{{actividad.fechaRegistrada}}</td>
-                        </tr>
-                        {% endfor %}
-                
+                            {% for actividad in actividades %}
+                            <tr>
+                                <td scope="row">{{actividad.nombre}}</td>
+                                <td>
+                                    <a class="btn btn-primary btn-sm guinda" 
+                                    href="{%url 'verActividadAdmin' idActividad=actividad.id%}">Ver</a>
+                                    
+                                </td>
+                                <td>
+                                    <div class="d-flex justify-content-center">
+                                        {% if actividad.estado == 'r' %}
+                                        <span class="badge badge-success">Válida&nbsp;<i class="fa fa-check-circle"></i></span>
+                                        {%elif actividad.estado == 'p' %}
+                                        <span class="badge badge-naranja">Pendiente&nbsp;<i class="fas fa-exclamation-circle"></i></span>
+                                        {%elif actividad.estado == 'n' %}
+                                        <span class="badge badge-danger">No válido&nbsp;<i class="fa fa-times-circle"></i></span>
+                                        {%else%}
+                                        <span class="badge badge-warning">En revisión&nbsp;<i class="fas fa-clock"></i></span>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                                <td>{{actividad.fechaRegistrada}}</td>
+                            </tr>
+                            {% endfor %}
                     </tbody>
                 </table>
     </div>
@@ -169,7 +168,17 @@ Actividades
 {% block extrascripts %}
     <script>
         $(document).ready( function () {
+            var arrayActividades = '{{arrayActividades|escapejs}}';
+            //si no hay actividades nos quedamos con la búsqueda anterior
+            if(arrayActividades)
+            {
+                localStorage.setItem('arrayActividades',arrayActividades);
+                arrayActividades = JSON.parse(arrayActividades);
+            }
             $('.table').DataTable();
-        } );
+
+
+        });
+
     </script>
 {% endblock %}

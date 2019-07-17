@@ -13,10 +13,35 @@
         min-width: 300px;
         max-width: 100%;
     }
+    .flecha{
+        position: fixed;
+        z-index: 9999;
+        top: 50%;
+        cursor: pointer;
+    }
+    .full-height{
+        height: 100%;
+    }
+    .color-guinda{
+        color: rgb(96, 2, 12) !important;
+    }
 </style>
 {% endblock %}
 
 {% block content %}
+<!--
+AQUÍ VAN LAS FLECHAS DE ANTES Y DESPUES
+-->
+<div class="flecha">
+    <i id="id_anterior" class="fas fa-chevron-left fa-3x color-guinda"></i>
+</div>
+<div class="justify-content-end d-flex full-height">
+    <div class="flecha">
+            <i id="id_siguiente" class="fas fa-chevron-right fa-3x color-guinda"></i>
+        </div>
+</div>
+
+
 <h2 class="text-center">
 {{actividad.nombre}}
 </h2>
@@ -184,7 +209,35 @@
 {% block extrascripts %}
 <script>
     $(document).ready(()=>{
+        var idActividad = "{{actividad.id}}";
+        idActividad = parseInt(idActividad);
+        var arrayActividades = localStorage.getItem('arrayActividades');
+        arrayActividades = JSON.parse(arrayActividades);
         inputEstado = document.querySelector('#estado')
+
+        $('#id_anterior').click(()=>{
+            const index = arrayActividades.indexOf(idActividad)
+            if(index == 0){
+                window.location = `/programasOperativos/actividad/admin/ver/actividad/
+                ${arrayActividades[arrayActividades.length -1]}`;
+            }else{
+                window.location = `/programasOperativos/actividad/admin/ver/actividad/
+                ${arrayActividades[index - 1]}`;
+            }
+        });
+        $('#id_siguiente').click(()=>{
+            const index = arrayActividades.indexOf(idActividad)
+            if(index == arrayActividades.length - 1){
+                window.location = `/programasOperativos/actividad/admin/ver/actividad/
+                ${arrayActividades[0]}`;
+
+            }else{
+                window.location = `/programasOperativos/actividad/admin/ver/actividad/
+                ${arrayActividades[index + 1]}`;
+            }
+
+        });
+
         $('#validar').click(()=>{
             inputEstado.value = 'r';
             $('#frm_actividad').submit();
