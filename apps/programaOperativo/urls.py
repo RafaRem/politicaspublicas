@@ -28,4 +28,6 @@ urlpatterns = [
      name='verActividadAdmin'),
     path('programasOperativos/actividad/admin/reporte', ReporteActividadesAdmin.as_view(),
      name='reporteActividadesAdmin'),
+    path('programasOperativos/actividad/admin/productividad', ProductividadAdmin.as_view(),
+     name='productividadAdmin'),
 ]

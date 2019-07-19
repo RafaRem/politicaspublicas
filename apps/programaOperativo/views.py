@@ -519,3 +519,7 @@ class ReporteActividadesAdmin(LoginRequiredMixin,View):
         return render(request,'programasOperativos/actividades/admin/reporteActividadesAdmin.html',{
             'arregloObjetivos':arregloObjetivos
         })
+
+class ProductividadAdmin(LoginRequiredMixin,View):
+    def get(self,request):
+        return render(request,'programasOperativos/actividades/admin/productividadAdmin.html')

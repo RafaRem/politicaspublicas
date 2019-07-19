@@ -1,0 +1,76 @@
+{%extends 'base/base.html'%}
+{%load staticfiles%}
+
+{%block navTitle%}
+Productividad
+{%endblock%}
+
+{% block title %}
+Productividad
+{% endblock %}
+
+{%block messages %}
+{% endblock%}
+{% block extracss %}
+    <style>
+        a.btn{
+            min-width: 100px;
+        }
+        table.dataTable tbody tr{
+            background: transparent !important;
+        }
+        span.badge{
+            min-width: 100px;
+        }
+        .badge-naranja{
+            background: #f26631;
+        }
+        #filtros{
+            position: fixed;
+            z-index: 9999;
+        }
+              /* Set the size of the div element that contains the map */
+        #map {
+            height: 400px;  /* The height is 400 pixels */
+            width: 100%;  /* The width is the width of the web page */
+        }
+    </style>
+{% endblock %}
+
+{%block content%}
+    {% if messages %}
+        <ul class="messages">
+                {% for message in messages %}
+                <li{% if message.tags == "success" %} class="alert alert-success"
+            {%else%}
+            class="alert alert-danger"
+            {% endif %}>
+            {{ message }}</li>
+                {% endfor %}
+        </ul>
+    {% endif %}
+    <div class="container bg-transparent" id="container">
+    </div>
+    <div id="map"></div>
+
+
+
+{%endblock%}
+
+
+{% block extrascripts %}
+    <script>
+    // Initialize and add the map
+    function initAutocomplete() {
+      // The location of Uluru
+      var uluru = {lat: -25.344, lng: 131.036};
+      // The map, centered at Uluru
+      var map = new google.maps.Map(
+          document.getElementById('map'), {zoom: 4, center: uluru});
+      // The marker, positioned at Uluru
+      var marker = new google.maps.Marker({position: uluru, map: map});
+    }
+        </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key={{api_key}}&libraries=places&callback=initAutocomplete"
+    async defer></script>
+{% endblock %}
