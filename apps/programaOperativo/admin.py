@@ -33,6 +33,15 @@ class ActividadAdmin(admin.ModelAdmin):
         return obj.accion.nombre
     get_accion.short_description = 'Acción'
     get_accion.admin_order_field = 'accion__nombre'
+    def save_model(self, request, obj, form, change):
+        # print(form.get('estado'))
+        log = LogActividad.objects.create(
+        usuario=request.user,
+        actividad=obj, 
+        estado=request.POST.get('estado'))
+        log.save()
+        obj.user = request.user
+        super().save_model(request, obj, form, change)
 
 @admin.register(DetallesGasto)
 class DetallesGastoAdmin(admin.ModelAdmin):
@@ -40,3 +49,6 @@ class DetallesGastoAdmin(admin.ModelAdmin):
     ordering = ['accion']
     search_fields = ['id','accion__nombre', 'gasto__nombre']
 
+@admin.register(LogActividad)
+class LogActividadAdmin(admin.ModelAdmin):
+    list_display = ['usuario', 'actividad', 'estado', 'created']

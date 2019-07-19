@@ -24,9 +24,6 @@ class UsuariosForm(forms.ModelForm):
     class Meta:
         model = User
         fields = '__all__'
-     
-
-
 
 class RegistrarActividad(forms.ModelForm):
     class Meta:
@@ -47,3 +44,4 @@ class RegistrarActividad(forms.ModelForm):
             'fecha_in':'Fecha Inicial',
             'fecha_fi':'Fecha Final',
         }
+        

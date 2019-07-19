@@ -437,7 +437,8 @@ class VerActividadAdmin(LoginRequiredMixin,View):
         actividad = Actividad.objects.get(pk=idActividad)
         actividad.observaciones = request.POST.get('observaciones')
         actividad.estado = request.POST.get('estado')
-        actividad.save()
+        kwargs = {'holi':'hoooliiiii'}
+        actividad.save(usuario=request.user.id,estado=request.POST.get('estado'))
         return render(request,'programasOperativos/actividades/admin/verActividadAdmin.html',{
             'actividad':actividad
         })

@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from apps.dependencia.models import *
+from apps.programaOperativo.models import Actividad
 # Create your models here.
 
     #Proxy model que extiende el perfil de usuarios
@@ -42,3 +43,4 @@ class Persona(models.Model):
     apellidomaterno = models.CharField(max_length=30, blank=True)
     edad = models.IntegerField(blank=True)   
     
+

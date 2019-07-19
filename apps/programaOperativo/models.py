@@ -4,9 +4,8 @@ from apps.objetivo.models import *
 from apps.objetivo.models import Objetivo
 from apps.dependencia.models import *
 from apps.indicador.models import *
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User 
 from apps.indicador.models import ConceptoGasto,Periodo
-
 # Create your models here.
 class Acciones(models.Model):
     nombre = models.CharField(max_length=700)
@@ -85,6 +84,15 @@ class Actividad(models.Model):
         verbose_name_plural = 'Actividades'
     def __str__(self):
         return self.nombre
+    def save(self, usuario=None, estado="", *args, **kwargs):
+        if usuario:
+            usuario = User.objects.get(pk=usuario)
+            log = LogActividad.objects.create(usuario=usuario,actividad=self, estado=estado)
+            log.save()
+            pass
+ 
+        super().save(*args, **kwargs)  
+        # Call the "real" save() method.
 
 class DetallesGasto(models.Model):
     cantidad = models.CharField(max_length=100, 
@@ -101,3 +109,16 @@ class DetallesGasto(models.Model):
         unique_together = ['accion','gasto','periodo']
     def __str__(self):
         return (self.accion.nombre + ', ' + self.gasto.nombre)
+
+class LogActividad(models.Model):
+    opcionesEstado = (
+        ('p','Programada'),
+        ('t','Por revisar'),
+        ('i','Inactiva'),
+        ('r','Válida'),
+        ('n', 'No válida')
+    )
+    usuario = models.ForeignKey(User, on_delete=models.PROTECT)
+    actividad = models.ForeignKey(Actividad, on_delete=models.PROTECT)
+    estado = models.CharField(choices=opcionesEstado,max_length=30,default='p')
+    created = models.DateTimeField(auto_now_add=True)    

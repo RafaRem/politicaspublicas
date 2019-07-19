@@ -26,7 +26,7 @@ class Dependencia(models.Model):
         ('p','Paramunicipal')
     )
     opcionesEstado = (
-        ('a', 'Acticho'),
+        ('a', 'Activo'),
         ('i', 'Inactivo')
     )
     nombre = models.CharField(max_length=100, blank=True)
