@@ -1,4 +1,5 @@
 import json
+import datetime
 from django.shortcuts import render, redirect, reverse
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -264,6 +265,15 @@ class ActividadFormView(LoginRequiredMixin,View):
             datos.longitud = request.POST.get('longitud')
             datos.fecha_in = request.POST.get('fecha_in')
             datos.fecha_fi = request.POST.get('fecha_fi')
+            fecha_final = datetime.datetime.strptime(request.POST.get('fecha_fi'),'%Y-%m-%d')
+            fecha_inicial = datetime.datetime.strptime(request.POST.get('fecha_in'),'%Y-%m-%d')
+
+            junio = datetime.datetime.strptime('2019-06-30','%Y-%m-%d')
+            if((fecha_final <= junio or fecha_inicial <= junio)
+            and
+            (request.user.profile.dependencia.id != 14)):
+                messages.error(request,'La captura anterior al 30 de junio de 2019 está inhabilitada')
+                return redirect('nuevaActividad')
             save = datos.save()
             actividad = Actividad.objects.latest('created')
             idActividad = actividad.id
