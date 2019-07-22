@@ -404,12 +404,18 @@ class ListActividadesAdmin(LoginRequiredMixin,View):
     def get(self,request):
         if request.user.profile.tipoUsuario == 'e':
             return redirect('index')
+        
         dependencias = Dependencia.objects.filter(estado='a')
-        dependencias = dependencias.order_by('nombre')
+        arrDependencias = []
+        for dependencia in dependencias:
+            actividades = Actividad.objects.filter(estado='t',programaoperativo__dependencia=dependencia)
+            if actividades:
+                arrDependencias.append(dependencia)
+        # arrDependencias = arrDependencias.order_by('nombre')
         objetivos = Objetivo.objects.filter(estado='a')
         objetivos = objetivos.order_by('nombre')
         return render(request,'programasOperativos/actividades/admin/listActividadesAdmin.html',{
-            'dependencias':dependencias,
+            'dependencias':arrDependencias,
             'objetivos':objetivos
         })
     def post(self,request):
