@@ -488,7 +488,7 @@ class ReporteActividadesAdmin(LoginRequiredMixin,View):
             dependencias = filtroDependencias(id_objetivo=objetivo.id)
             #Cada dependencia será una categoría, las iteramos para obtener su nombre
             for dependencia in dependencias:
-                nombres += usuario.first_name + '|'
+                categories += dependencia.nombre + '|'
                 actividades = Actividad.objects.filter(
                     programaoperativo__dependencia=dependencia,
                     estado='p'
