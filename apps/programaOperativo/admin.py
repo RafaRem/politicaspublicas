@@ -23,7 +23,7 @@ class ActividadAdmin(admin.ModelAdmin):
     list_display = ['nombre', 'get_dependencia', 'estado', 'fechaRegistrada', 'fechaActualizada']
     ordering = ['nombre']
     search_fields = ['nombre']
-    list_filter = ['programaoperativo__dependencia__nombre']
+    list_filter = ['programaoperativo__dependencia__nombre', 'estado']
     def get_dependencia(self,obj):
         return obj.programaoperativo.dependencia.nombre
     get_dependencia.short_description = 'Dependencia'

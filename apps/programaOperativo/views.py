@@ -11,7 +11,7 @@ from django.http import JsonResponse
 from apps.users.forms import RegistrarActividad
 from apps.programaOperativo.forms import ProgramaOperativoForm, ActividadesForm, TerminarActividadesForm, RevalidarActividadesForm
 """Modelos"""
-from apps.programaOperativo.models import ProgramaOperativo, Acciones, Actividad, DetallesGasto
+from apps.programaOperativo.models import ProgramaOperativo, Acciones, Actividad, DetallesGasto, LogActividad
 from apps.objetivo.models import Objetivo
 from apps.indicador.models import ConceptoGasto, ClasificacionGasto,Periodo
 from apps.dependencia.models import Dependencia
@@ -454,8 +454,8 @@ class VerActividadAdmin(LoginRequiredMixin,View):
         actividad = Actividad.objects.get(pk=idActividad)
         actividad.observaciones = request.POST.get('observaciones')
         actividad.estado = request.POST.get('estado')
-        kwargs = {'holi':'hoooliiiii'}
         actividad.save(usuario=request.user.id,estado=request.POST.get('estado'))
+        messages.success(request,'Cambio realizado con éxito')
         return render(request,'programasOperativos/actividades/admin/verActividadAdmin.html',{
             'actividad':actividad
         })
@@ -488,7 +488,7 @@ class ReporteActividadesAdmin(LoginRequiredMixin,View):
             dependencias = filtroDependencias(id_objetivo=objetivo.id)
             #Cada dependencia será una categoría, las iteramos para obtener su nombre
             for dependencia in dependencias:
-                categories =  dependencia.nombre + '|' + categories
+                nombres += usuario.first_name + '|'
                 actividades = Actividad.objects.filter(
                     programaoperativo__dependencia=dependencia,
                     estado='p'
@@ -509,11 +509,7 @@ class ReporteActividadesAdmin(LoginRequiredMixin,View):
                     estado='n'
                 )
                 arreglosActividades[3]['data'].append(actividades.count())
-            #Agregamos lo obtenido de los filtros
-            arreglosActividades[0]['data'].reverse()
-            arreglosActividades[1]['data'].reverse()
-            arreglosActividades[2]['data'].reverse()
-            arreglosActividades[3]['data'].reverse()
+
             arregloObjetivos.append({
                 'title':objetivo.nombre,
                 'categories':categories,
@@ -539,4 +535,33 @@ class ReporteActividadesAdmin(LoginRequiredMixin,View):
 
 class ProductividadAdmin(LoginRequiredMixin,View):
     def get(self,request):
-        return render(request,'programasOperativos/actividades/admin/productividadAdmin.html')
+        logs = LogActividad.objects.all()
+        #este será el arreglo que iteraremos para obtener lo que ha hecho
+        usuarios = []
+        #definimos el formato que leerá la gráfica
+        arreglosActividades = [{
+                'name':'Validadas',
+                'data':[]
+            },{
+                'name':'Invalidadas',
+                'data':[]
+            }]
+        #En esta variable se concatenarán las categoráis de la gráfica
+        nombres = ''
+        for log in logs:
+            usuarios.append(log.usuario)
+            # print(log.usuario.first_name)
+            # nombres =  log.usuario.first_name + '|' + nombres
+        usuarios = list(set(usuarios))
+        for usuario in usuarios:
+            nombres += usuario.first_name + '|'
+            logs = LogActividad.objects.filter(usuario=usuario,estado='r')
+            arreglosActividades[0]['data'].append(logs.count())
+            logs = LogActividad.objects.filter(usuario=usuario,estado='n')
+            arreglosActividades[1]['data'].append(logs.count())
+        arreglosActividades = json.dumps(arreglosActividades)
+        
+        return render(request,'programasOperativos/actividades/admin/productividadAdmin.html',{
+            'nombres':nombres,
+            'arregloActividades':arreglosActividades
+        })

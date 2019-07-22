@@ -4,6 +4,11 @@
 {% block navTitle %}
 {% endblock %}
 
+
+{% block messages %}
+{% endblock %}
+
+
 {% block extracss %}
 <style>
     .full-width{
@@ -45,11 +50,22 @@ AQUÍ VAN LAS FLECHAS DE ANTES Y DESPUES
         </div>
 </div>
 
-
+{% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+    <li{% if message.tags == "success" %} class="alert alert-success"
+  {%else%}
+  class="alert alert-danger"
+  {% endif %}>
+  {{ message }}</li>
+    {% endfor %}
+</ul>
+{% endif %}
 <h2 class="text-center">
 {{actividad.nombre}}
 </h2>
 <div class="container bg-transparent">
+
         <table class="table">
                 <tbody>
                   <tr>

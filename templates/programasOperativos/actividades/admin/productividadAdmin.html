@@ -50,8 +50,8 @@ Productividad
         </ul>
     {% endif %}
     <div class="container bg-transparent" id="container">
+
     </div>
-    <div id="map"></div>
 
 
 
@@ -59,18 +59,42 @@ Productividad
 
 
 {% block extrascripts %}
-    <script>
-    // Initialize and add the map
-    function initAutocomplete() {
-      // The location of Uluru
-      var uluru = {lat: -25.344, lng: 131.036};
-      // The map, centered at Uluru
-      var map = new google.maps.Map(
-          document.getElementById('map'), {zoom: 4, center: uluru});
-      // The marker, positioned at Uluru
-      var marker = new google.maps.Marker({position: uluru, map: map});
-    }
-        </script>
-    <script src="https://maps.googleapis.com/maps/api/js?key={{api_key}}&libraries=places&callback=initAutocomplete"
-    async defer></script>
+<script>
+    $(document).ready(()=>{
+        let nombres = '{{nombres}}'
+        nombres = nombres.split('|')
+        console.log();
+        let arregloActividades = '{{arregloActividades|escapejs}}'
+        console.log(arregloActividades)
+
+        arregloActividades = JSON.parse(arregloActividades);
+        var myChart = Highcharts.chart('container', {
+            chart: {
+                type: 'bar',
+                backgroundColor:'rgba(255, 255, 255, 0.0)'
+
+            },
+            title: {
+                text: 'Productividad'
+            },
+            xAxis: {
+                categories: nombres
+            },
+            yAxis: {
+                title: {
+                    text: 'Actividades'
+                }
+            },
+            legend: {
+                reversed: true
+            },
+            plotOptions: {
+                series: {
+                    stacking: 'normal'
+                }
+            },
+            series: arregloActividades
+        });
+    })
+</script>
 {% endblock %}
