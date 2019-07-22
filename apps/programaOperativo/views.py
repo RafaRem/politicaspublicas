@@ -401,28 +401,29 @@ class ActividadesListView(LoginRequiredMixin,View):
 #Todas las vistas de admins
 class ListActividadesAdmin(LoginRequiredMixin,View):
     login_url = 'login'
-    def get(self,request):
-        if request.user.profile.tipoUsuario == 'e':
-            return redirect('index')
-        
+    def obtenerDependencias(self):
         dependencias = Dependencia.objects.filter(estado='a')
+        dependencias = dependencias.order_by('nombre')
         arrDependencias = []
         for dependencia in dependencias:
             actividades = Actividad.objects.filter(estado='t',programaoperativo__dependencia=dependencia)
             if actividades:
                 arrDependencias.append(dependencia)
-        # arrDependencias = arrDependencias.order_by('nombre')
+        return arrDependencias
+    def get(self,request):
+        if request.user.profile.tipoUsuario == 'e':
+            return redirect('index')
+        dependencias = self.obtenerDependencias()
         objetivos = Objetivo.objects.filter(estado='a')
         objetivos = objetivos.order_by('nombre')
         return render(request,'programasOperativos/actividades/admin/listActividadesAdmin.html',{
-            'dependencias':arrDependencias,
+            'dependencias':dependencias,
             'objetivos':objetivos
         })
     def post(self,request):
         if request.user.profile.tipoUsuario == 'e':
             return redirect('index')
-        dependencias = Dependencia.objects.filter(estado='a')
-        dependencias = dependencias.order_by('nombre')
+        dependencias = self.obtenerDependencias()
         objetivos = Objetivo.objects.filter(estado='a')
         objetivos = objetivos.order_by('nombre')
         actividades = filtroActividades(
