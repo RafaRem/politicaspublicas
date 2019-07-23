@@ -492,45 +492,26 @@ class ReporteActividadesAdmin(LoginRequiredMixin,View):
             #Cada dependencia será una categoría, las iteramos para obtener su nombre
             for dependencia in dependencias:
                 categories += dependencia.nombre + '|'
-                # actividades = Actividad.objects.filter(
-                #     programaoperativo__dependencia=dependencia,
-                #     estado='p'
-                #     )
-                programadas = actividades.filter(
+                actividades = Actividad.objects.filter(
                     programaoperativo__dependencia=dependencia,
                     estado='p'
-                )
-                arreglosActividades[0]['data'].append(programadas.count())
-
-                # actividades = Actividad.objects.filter(
-                #     programaoperativo__dependencia=dependencia,
-                #     estado='t'
-                # )
-                terminadas = actividades.filter(
+                    )
+                arreglosActividades[0]['data'].append(actividades.count())
+                actividades = Actividad.objects.filter(
                     programaoperativo__dependencia=dependencia,
                     estado='t'
                 )
-                arreglosActividades[1]['data'].append(terminadas.count())
-
-                # actividades = Actividad.objects.filter(
-                #     programaoperativo__dependencia=dependencia,
-                #     estado='r'
-                # )
-                revisadas = actividades.filter(
+                arreglosActividades[1]['data'].append(actividades.count())
+                actividades = Actividad.objects.filter(
                     programaoperativo__dependencia=dependencia,
                     estado='r'
                 )
-                arreglosActividades[2]['data'].append(revisadas.count())
-
-                # actividades = Actividad.objects.filter(
-                #     programaoperativo__dependencia=dependencia,
-                #     estado='n'
-                # )
-                invalidas = actividades.filter(
+                arreglosActividades[2]['data'].append(actividades.count())
+                actividades = Actividad.objects.filter(
                     programaoperativo__dependencia=dependencia,
                     estado='n'
                 )
-                arreglosActividades[3]['data'].append(invalidas.count())
+                arreglosActividades[3]['data'].append(actividades.count())
 
             arregloObjetivos.append({
                 'title':objetivo.nombre,
