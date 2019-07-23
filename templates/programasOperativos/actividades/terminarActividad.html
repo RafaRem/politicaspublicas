@@ -4,7 +4,7 @@
 {% load crispy_forms_tags %}
 
 {% block navTitle %}
-{{actividad.nombre}}
+Actividad
 {% endblock %}
 
 
@@ -54,6 +54,7 @@
             {% endfor %}
         </ul>
       {% endif %}
+      <h2 class="text-center">{{actividad.nombre}}</h2>
         <form id="id_form_actividad" action="" 
         method="POST" enctype="multipart/form-data">
             {% csrf_token %}
@@ -73,6 +74,9 @@
               </table>
   
             </div> -->
+            <hr>
+            <h3 class="text-center"><strong>Descripción</strong></h3>
+            <h4 class="text-center">{{actividad.descripcion}}</h4>
             <hr>
             {{ form|crispy }}
             <label for="input-42-es">Evidencia*</label>
