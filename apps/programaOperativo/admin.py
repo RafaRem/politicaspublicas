@@ -51,4 +51,9 @@ class DetallesGastoAdmin(admin.ModelAdmin):
 
 @admin.register(LogActividad)
 class LogActividadAdmin(admin.ModelAdmin):
-    list_display = ['usuario', 'actividad', 'estado', 'created']
+    list_display = ['getActividadId' ,'usuario', 'actividad', 'estado', 'created']
+    search_fields = ['actividad__id','usuario__username']
+    def getActividadId(self,obj):
+        return obj.actividad.id
+    getActividadId.short_description = 'ID'
+    getActividadId.admin_order_field = 'actividad__id'
