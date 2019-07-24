@@ -66,6 +66,6 @@ ul{
 .fadeIn {
     animation-name: fadeIn;
 }
-.min-w-100{
-    min-width: 100px;
+.dropdown-item{
+    word-wrap: break-word;
 }

@@ -23,6 +23,7 @@ from django.views.static import serve
 from apps.users import urls as usersUrls
 from apps.programaOperativo import urls as posUrls
 from apps.objetivo import urls as objetivosUrls
+from apps.dependencia import urls as dependenciasUrls
 from seguimientometas.views import *
 
 urlpatterns = [
@@ -30,6 +31,7 @@ urlpatterns = [
     url(r'^',include(usersUrls)),
     url(r'^',include(posUrls)),
     url(r'^',include(objetivosUrls)),
+    url(r'^',include(dependenciasUrls)),
     path('enDesarrollo', RenderView.as_view(template_name='extras/enDesarrollo.html'),name='enDesarrollo'),
     path('recursos', RenderView.as_view(template_name='extras/recursos.html'),name='recursos')
     #url(r'^',include(ProgramUrls)),
