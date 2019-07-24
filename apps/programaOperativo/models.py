@@ -41,6 +41,8 @@ class ProgramaOperativo(models.Model):
     )
     nombre = models.CharField(max_length=300)
     dependencia = models.ForeignKey(Dependencia, on_delete=models.PROTECT)
+    departamento = models.ForeignKey(Departamento,blank=True, null=True, 
+    on_delete=models.PROTECT, verbose_name="Departamento")
     acciones = models.ManyToManyField(Acciones, blank=True)
     estado = models.CharField(choices=opcionesEstado,max_length=30,default='a')
     class Meta:
