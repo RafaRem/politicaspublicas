@@ -272,7 +272,7 @@ class ActividadFormView(LoginRequiredMixin,View):
             if((fecha_final <= junio or fecha_inicial <= junio)
             and
             ((request.user.profile.dependencia.id != 14) and (request.user.profile.dependencia.id != 23)
-            and (request.user.profile.dependencia.id != 12))):
+            and (request.user.profile.dependencia.id != 12) and (request.user.profile.dependencia.id != 22))):
                 messages.error(request,'La captura anterior al 30 de junio de 2019 está inhabilitada')
                 return redirect('nuevaActividad')
             save = datos.save()
@@ -489,29 +489,31 @@ class ReporteActividadesAdmin(LoginRequiredMixin,View):
             }]
             #Obtenemos todas las dependencias de un objetivo
             dependencias = filtroDependencias(id_objetivo=objetivo.id)
-            #Nueva variable para mejorar la consulta
-            actividades = Actividad.objects.filter(accion__objetivo=objetivo)
 
             #Cada dependencia será una categoría, las iteramos para obtener su nombre
             for dependencia in dependencias:
                 categories += dependencia.nombre + '|'
                 actividades = Actividad.objects.filter(
                     programaoperativo__dependencia=dependencia,
+                    accion__objetivo=objetivo,
                     estado='p'
                     )
                 arreglosActividades[0]['data'].append(actividades.count())
                 actividades = Actividad.objects.filter(
                     programaoperativo__dependencia=dependencia,
+                    accion__objetivo=objetivo,
                     estado='t'
                 )
                 arreglosActividades[1]['data'].append(actividades.count())
                 actividades = Actividad.objects.filter(
                     programaoperativo__dependencia=dependencia,
+                    accion__objetivo=objetivo,
                     estado='r'
                 )
                 arreglosActividades[2]['data'].append(actividades.count())
                 actividades = Actividad.objects.filter(
                     programaoperativo__dependencia=dependencia,
+                    accion__objetivo=objetivo,
                     estado='n'
                 )
                 arreglosActividades[3]['data'].append(actividades.count())
