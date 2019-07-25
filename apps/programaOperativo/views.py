@@ -413,7 +413,9 @@ class ListActividadesAdmin(LoginRequiredMixin,View):
     def get(self,request):
         if request.user.profile.tipoUsuario == 'e':
             return redirect('index')
-        dependencias = self.obtenerDependencias()
+        #dependencias = self.obtenerDependencias()
+        dependencias = Dependencia.objects.filter(estado='a')
+        dependencias = dependencias.order_by('nombre')
         objetivos = Objetivo.objects.filter(estado='a')
         objetivos = objetivos.order_by('nombre')
         return render(request,'programasOperativos/actividades/admin/listActividadesAdmin.html',{
