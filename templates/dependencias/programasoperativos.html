@@ -58,6 +58,9 @@
       {% endfor %}
 
   </div>
+  <form action="" method="POST" id="id_form">
+
+  </form>
   <div class="justify-content-center d-flex">
       <button id="id_guardar_cambios" class="btn guinda">
         <i class="fas fa-check-circle"></i>&nbsp; Guardar cambios</button>
@@ -97,6 +100,9 @@
         for (let i = 0; i < divs.length; i++) {
           const div = divs[i];
           let select = div.childNodes[0].nextElementSibling;
+          $('#id_form').append(`
+          <input type="text" name="valoresDependencia">
+          `);
           console.log(select.value)
         }
       });
