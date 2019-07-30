@@ -409,9 +409,9 @@ class ListActividadesAdmin(LoginRequiredMixin,View):
         for dependencia in dependencias:
             actividades = Actividad.objects.filter(estado='t',programaoperativo__dependencia=dependencia).exclude(estado='i')
             if actividades:
+                dependencia.nombre += '*'
                 arrDependencias.append(dependencia)
             else:
-                dependencia.nombre += '*'
                 arrDependencias.append(dependencia)
         return arrDependencias
     def get(self,request):
