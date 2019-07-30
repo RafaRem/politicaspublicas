@@ -390,7 +390,7 @@ class ActividadesListView(LoginRequiredMixin,View):
         pos = ProgramaOperativo.objects.filter(dependencia=request.user.profile.dependencia)
         actividades = []
         for po in pos:
-            actividadesPo = Actividad.objects.filter(programaoperativo=po)
+            actividadesPo = Actividad.objects.filter(programaoperativo=po).exclude(estado='i')
             for actividadPo in actividadesPo:
                 actividades.append(actividadPo)
                 pass
@@ -407,16 +407,19 @@ class ListActividadesAdmin(LoginRequiredMixin,View):
         dependencias = dependencias.order_by('nombre')
         arrDependencias = []
         for dependencia in dependencias:
-            actividades = Actividad.objects.filter(estado='t',programaoperativo__dependencia=dependencia)
+            actividades = Actividad.objects.filter(estado='t',programaoperativo__dependencia=dependencia).exclude(estado='i')
             if actividades:
+                arrDependencias.append(dependencia)
+            else:
+                dependencia.nombre += '*'
                 arrDependencias.append(dependencia)
         return arrDependencias
     def get(self,request):
         if request.user.profile.tipoUsuario == 'e':
             return redirect('index')
-        #dependencias = self.obtenerDependencias()
-        dependencias = Dependencia.objects.filter(estado='a')
-        dependencias = dependencias.order_by('nombre')
+        dependencias = self.obtenerDependencias()
+        # dependencias = Dependencia.objects.filter(estado='a')
+        # dependencias = dependencias.order_by('nombre')
         objetivos = Objetivo.objects.filter(estado='a')
         objetivos = objetivos.order_by('nombre')
         return render(request,'programasOperativos/actividades/admin/listActividadesAdmin.html',{
