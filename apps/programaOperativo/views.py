@@ -272,7 +272,8 @@ class ActividadFormView(LoginRequiredMixin,View):
             if((fecha_final <= junio or fecha_inicial <= junio)
             and
             ((request.user.profile.dependencia.id != 14) and (request.user.profile.dependencia.id != 23)
-            and (request.user.profile.dependencia.id != 12) and (request.user.profile.dependencia.id != 22))):
+            and (request.user.profile.dependencia.id != 12) and (request.user.profile.dependencia.id != 1)
+             and (request.user.profile.dependencia.id != 22))):
                 messages.error(request,'La captura anterior al 30 de junio de 2019 está inhabilitada')
                 return redirect('nuevaActividad')
             save = datos.save()
