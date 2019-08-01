@@ -54,7 +54,9 @@ def filtroProgramasOperativos(id_objetivo=0,id_dependencia=0):
         programasOperativos = list(set(programasOperativos))
     return programasOperativos
 
+
 def corregirAcciones(request):
+    """Script to correct actions from the database, it gets just the number"""
     acciones = Acciones.objects.all()
     for accion in acciones:
         cadena =  accion.meta
