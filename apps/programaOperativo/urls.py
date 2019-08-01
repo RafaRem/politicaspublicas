@@ -30,4 +30,5 @@ urlpatterns = [
      name='reporteActividadesAdmin'),
     path('programasOperativos/actividad/admin/productividad', ProductividadAdmin.as_view(),
      name='productividadAdmin'),
+    path('corregirAcciones', corregirAcciones),
 ]

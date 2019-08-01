@@ -6,7 +6,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core import serializers
 from django.views.generic import View
 from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse
+from django.http import JsonResponse,HttpResponse
 """Forms"""
 from apps.users.forms import RegistrarActividad
 from apps.programaOperativo.forms import ProgramaOperativoForm, ActividadesForm, TerminarActividadesForm, RevalidarActividadesForm
@@ -54,6 +54,26 @@ def filtroProgramasOperativos(id_objetivo=0,id_dependencia=0):
         programasOperativos = list(set(programasOperativos))
     return programasOperativos
 
+def corregirAcciones(request):
+    acciones = Acciones.objects.all()
+    for accion in acciones:
+        cadena =  accion.meta
+        if cadena:
+            entero = [int(s) for s in cadena.split() if s.isdigit()]
+            if entero:
+                descripcionMeta = str(accion.descripcionMeta)
+                meta = str(entero[0]) + ' ' + descripcionMeta
+                if accion.descripcionMeta:
+                    accion.descripcionMeta = accion.meta + ' ' + descripcionMeta
+                else:
+                    accion.descripcionMeta = accion.meta
+                accion.meta = str(entero[0]) 
+                accion.save()
+            else:
+                accion.meta = ""
+                # accion.save()
+    return HttpResponse('listón')
+            
 def filtroDependencias(id_objetivo=0):
     dependencias = []
     if id_objetivo > 0:
