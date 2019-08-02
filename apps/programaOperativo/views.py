@@ -1,5 +1,7 @@
 import json
 import datetime
+import os
+from django.conf import settings
 from django.shortcuts import render, redirect, reverse
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -357,6 +359,16 @@ class TerminarActividadFormView(LoginRequiredMixin,View):
             #         gasto=conceptoGasto
             #     )
             save = datos.save()
+            # print(today.year)
+            ruta = str(datetime.datetime.now().year) + '/' + str(datetime.datetime.now().month) + '/'
+            print(ruta)
+            if not os.path.exists(settings.MEDIA_ROOT + '/' + ruta):
+                os.makedirs(settings.MEDIA_ROOT + '/' + ruta)
+            os.rename(actividad.evidencia.path,settings.MEDIA_ROOT+'/'+ruta+str(actividad.evidencia))
+            actividad.evidencia = ruta + str(actividad.evidencia)
+
+            actividad.save()
+            
             messages.success(request, 'Actividad actualizada con éxito.')
             return redirect('listActividades')
         messages.error(request, form._errors)
