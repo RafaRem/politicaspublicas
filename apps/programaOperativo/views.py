@@ -1,6 +1,7 @@
 import json
 import datetime
 import os
+import threading
 from django.conf import settings
 from django.shortcuts import render, redirect, reverse
 from django.contrib import messages
@@ -319,6 +320,13 @@ class ActividadFormView(LoginRequiredMixin,View):
 
 class TerminarActividadFormView(LoginRequiredMixin,View):
     login_url = 'login'
+    def cambiarRuta(self,actividad):
+        ruta = str(datetime.datetime.now().year) + '/' + str(datetime.datetime.now().month) + '/'
+        if not os.path.exists(settings.MEDIA_ROOT + '/' + ruta):
+            os.makedirs(settings.MEDIA_ROOT + '/' + ruta)
+        os.rename(actividad.evidencia.path,settings.MEDIA_ROOT+'/'+ruta+str(actividad.evidencia))
+        actividad.evidencia = ruta + str(actividad.evidencia)
+        actividad.save()
     def get(self,request,idActividad):
         """validar si ya subió información no pueda acceder"""
         actividad = Actividad.objects.get(pk=idActividad)
@@ -347,28 +355,11 @@ class TerminarActividadFormView(LoginRequiredMixin,View):
                 '-evidencia.pdf'
                 )
             datos.evidencia = archivo
-            #'t' significa terminada
             datos.estado = 't'
-            # gastosActividad = request.POST.getlist('gastos[]')
-            # for gasto in gastosActividad:
-            #     gasto = gasto.split('|')
-            #     conceptoGasto = ConceptoGasto.objects.get(pk=gasto[1])
-            #     DetallesGasto.objects.create(
-            #         cantidad=gasto[0],
-            #         actividad=actividad,
-            #         gasto=conceptoGasto
-            #     )
             save = datos.save()
-            # print(today.year)
-
             #ESTO ENTRARÍA EN UN HILO
-            # ruta = str(datetime.datetime.now().year) + '/' + str(datetime.datetime.now().month) + '/'
-            # if not os.path.exists(settings.MEDIA_ROOT + '/' + ruta):
-            #     os.makedirs(settings.MEDIA_ROOT + '/' + ruta)
-            # os.rename(actividad.evidencia.path,settings.MEDIA_ROOT+'/'+ruta+str(actividad.evidencia))
-            # actividad.evidencia = ruta + str(actividad.evidencia)
-
-            # actividad.save()
+            cambiarRuta = threading.Thread(name='cambiarRuta',target=self.cambiarRuta,args=(actividad, ))
+            cambiarRuta.start()
             
             messages.success(request, 'Actividad actualizada con éxito.')
             return redirect('listActividades')
