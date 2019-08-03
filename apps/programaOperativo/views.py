@@ -360,14 +360,15 @@ class TerminarActividadFormView(LoginRequiredMixin,View):
             #     )
             save = datos.save()
             # print(today.year)
-            ruta = str(datetime.datetime.now().year) + '/' + str(datetime.datetime.now().month) + '/'
-            print(ruta)
-            if not os.path.exists(settings.MEDIA_ROOT + '/' + ruta):
-                os.makedirs(settings.MEDIA_ROOT + '/' + ruta)
-            os.rename(actividad.evidencia.path,settings.MEDIA_ROOT+'/'+ruta+str(actividad.evidencia))
-            actividad.evidencia = ruta + str(actividad.evidencia)
 
-            actividad.save()
+            #ESTO ENTRARÍA EN UN HILO
+            # ruta = str(datetime.datetime.now().year) + '/' + str(datetime.datetime.now().month) + '/'
+            # if not os.path.exists(settings.MEDIA_ROOT + '/' + ruta):
+            #     os.makedirs(settings.MEDIA_ROOT + '/' + ruta)
+            # os.rename(actividad.evidencia.path,settings.MEDIA_ROOT+'/'+ruta+str(actividad.evidencia))
+            # actividad.evidencia = ruta + str(actividad.evidencia)
+
+            # actividad.save()
             
             messages.success(request, 'Actividad actualizada con éxito.')
             return redirect('listActividades')
