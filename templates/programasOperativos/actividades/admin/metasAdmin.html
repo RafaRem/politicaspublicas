@@ -2,11 +2,11 @@
 {%load staticfiles%}
 
 {%block navTitle%}
-Actividades
+Metas
 {%endblock%}
 
 {% block title %}
-Actividades
+Metas
 {% endblock %}
 
 {%block messages %}
@@ -51,9 +51,24 @@ Actividades
             Filtros &nbsp;<i class="fas fa-filter"></i>
         </button>
     </div>
+    <div class="container bg-transparent">
+        <div class="row">
+            <div class="col-6">
+                    <div id="container">
+                        </div>
+            </div>
+            <div class="col-6">
+                    <div id="container2">
+                        </div>
+            </div>
+        </div>
+            
+    </div>
+
+
     <!-- Modal -->
     <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog" role="document">
+        <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">Mostrar</h5>
@@ -64,6 +79,18 @@ Actividades
                 <form action="" method="post">
                     {% csrf_token %}
                     <div class="modal-body">
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label for="dependencia">Dependencias</label>
+                                <select id="dependencia" name="dependencia" class="form-control">
+                                <option value="">Todas</option>
+                                {% for dependencia in dependencias  %}
+                                        <option value="{{dependencia.id}}">
+                                            {{dependencia.nombre}}
+                                        </option>
+                                {% endfor %}
+                                </select>
+                            </div>
                         <div class="form-group">
                             <label for="eje">Ejes</label>
                             <select name="eje" class="form-control">
@@ -75,86 +102,36 @@ Actividades
                                 <option value="5" >Combate a la Corrupción y Participación Ciudadana</option>
                             </select> 
                         </div>
-  
+    
                     </div>
                     <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
                     <button id="id_form_filtro" type="submit" class="btn guinda">Aplicar filtros</button>
                     </div>
                 </form>
+    
+            </div>
+            </div>
+    </div>
 
-            </div>
-            </div>
-        </div>
-    <div class="container bg-transparent" id="container"></div>
+
 
 
 {%endblock%}
 
 
 {% block extrascripts %}
-
+<script src="https://code.highcharts.com/highcharts-more.js"></script>
+<script src="https://code.highcharts.com/modules/solid-gauge.js"></script>
     <script>
         $(document).ready(()=>{
-            $("#id_form_filtro").click(()=>{
-                Swal.fire({
-                    title: 'Generando gráficas',
-                    timer: 60000,
-                    onBeforeOpen: () => {
-                      Swal.showLoading()
-                    },
-                    onClose: () => {
-                      clearInterval(timerInterval)
-                    }
-                  }).then((result) => {
-                    if (
-                      // Read more about handling dismissals
-                      result.dismiss === Swal.DismissReason.timer
-                    ) {
-                    }
-                  })
-            })
-
-
-
-            //Se hará split ya que son valores separados por coma
-            var objetivos = '{{arregloObjetivos|escapejs}}';
-            objetivos = JSON.parse(objetivos);
-            for (let i = 0; i < objetivos.length; i++) {
-                const objetivo = objetivos[i];
-                //le hace split a todas las categorías
-                let categories = objetivo.categories.split('|')
-                $(`#container`).append(`
-                <div id="id_grafica_${i}"class="mt-5 bg-transparent"></div>
-                `);
-                var myChart = Highcharts.chart(`id_grafica_${i}`, {
-                    chart: {
-                        type: 'bar',
-                        backgroundColor:'rgba(255, 255, 255, 0.0)'
+            var acciones = '{{acciones|escapejs}}';
+            acciones = acciones.substr(2)
+            acciones = acciones.substring(0, acciones.length - 1);
+            console.log(acciones)
+            JSON.parse(acciones);
+            console.log(acciones);
     
-                    },
-                    title: {
-                        text: objetivo.title
-                    },
-                    xAxis: {
-                        categories: categories
-                    },
-                    yAxis: {
-                        title: {
-                            text: 'Actividades'
-                        }
-                    },
-                    legend: {
-                        reversed: true
-                    },
-                    plotOptions: {
-                        series: {
-                            stacking: 'normal'
-                        }
-                    },
-                    series: objetivo.arregloActividades
-                });
-            }
         });
 
     </script>

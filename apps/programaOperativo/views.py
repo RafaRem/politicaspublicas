@@ -19,6 +19,23 @@ from apps.objetivo.models import Objetivo
 from apps.indicador.models import ConceptoGasto, ClasificacionGasto,Periodo
 from apps.dependencia.models import Dependencia
 from django.db.models import Q,Count
+"""Serializer"""
+from apps.programaOperativo.serializers import AccionesSerializer
+from rest_framework.renderers import JSONRenderer
+
+def filtroAcciones(id_dependencia=0,id_objetivo=0,id_eje="",id_programaOperativo=0):
+    consulta = Q()
+    if id_objetivo>0:
+        objetivo = Objetivo.objects.get(pk=id_objetivo)
+        consulta &= Q(objetivo=objetivo)
+    if id_eje!="":
+        consulta&=Q(objetivo__ejeTransversal=id_eje)
+    acciones =  Acciones.objects.filter(consulta)
+    #hasta aquí comenzamos a hacerlo casi manual
+    if id_programaOperativo>0:
+        accionesDePo = ProgramaOperativo.acciones.all()
+    
+    pass
 
 def filtroActividades(id_dependencia=0,estado="",id_objetivo=0,id_eje="",id_programaOperativo=0):
     #No se aplicará filtros si los parametros son iguales 0 o ""
@@ -603,3 +620,33 @@ class ProductividadAdmin(LoginRequiredMixin,View):
             'nombres':nombres,
             'arregloActividades':arreglosActividades
         })
+
+class MetasAdmin(LoginRequiredMixin,View):
+    login_url = 'login'
+    def obtenerDependencias(self):
+        dependencias = Dependencia.objects.filter(estado='a')
+        dependencias = dependencias.order_by('nombre')
+        return dependencias
+    def get(self,request):
+        #se renderiza como dependencia, como objetivo, como eje
+        if request.user.profile.tipoUsuario == 'e':
+            return redirect('index')
+        dependencias = self.obtenerDependencias()
+        acciones = filtroAcciones(
+            id_dependencia=int(request.POST.get('dependencia') if request.POST.get('dependencia') else 0),
+            id_eje=request.POST.get('eje'),
+            id_objetivo=int(request.POST.get('objetivo') if request.POST.get('objetivo') else 0),
+        )
+        return render(request,'programasOperativos/actividades/admin/metasAdmin.html',{
+            'dependencias':dependencias,
+            'acciones':JSONRenderer().render(serializer.data)
+        })
+    def post(self,request):
+        if request.user.profile.tipoUsuario == 'e':
+            return redirect('index')
+        eje = request.POST.get('eje')
+        dependencias = self.obtenerDependencias()
+        return render(request,'programasOperativos/actividades/admin/metasAdmin.html',{
+            'dependencias':dependencias            
+        })
+

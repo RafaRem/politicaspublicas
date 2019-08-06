@@ -30,4 +30,6 @@ urlpatterns = [
      name='reporteActividadesAdmin'),
     path('programasOperativos/actividad/admin/productividad', ProductividadAdmin.as_view(),
      name='productividadAdmin'),
+    path('programasOperativos/actividad/admin/metas', MetasAdmin.as_view(),
+     name='metasAdmin'),
 ]

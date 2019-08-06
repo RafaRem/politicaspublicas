@@ -136,7 +136,8 @@
               <a class="dropdown-item" href="{%url 'calendar'%}">Calendario</a>
               <a class="dropdown-item" href="{%url 'listActividadesAdmin'%}">Actividades</a>
               <a class="dropdown-item" id="id_reporte_actividades" class="graficas" href="{%url 'reporteActividadesAdmin'%}">Reportes</a>
-              <a class="dropdown-item" id="id_reporte_actividades" class="graficas" href="{%url 'productividadAdmin'%}">Productividad</a>
+              <a class="dropdown-item" class="graficas" href="{%url 'productividadAdmin'%}">Productividad</a>
+              <a class="dropdown-item" class="graficas" href="{%url 'enDesarrollo'%}">Metas</a>            
             </div>
           </li>
       {% endif %}
@@ -313,7 +314,7 @@
       <script src="{%static 'js/sb-admin.js'%}"></script>
       <script>
           $(document).ready(()=>{
-            $('#id_reporte_actividades').click(()=>{
+            $('.graficas').click(()=>{
               Swal.fire({
                 title: 'Generando gráficas',
                 timer: 60000,
