@@ -2,6 +2,7 @@ import json
 import datetime
 import os
 import threading
+import queue
 from django.conf import settings
 from django.shortcuts import render, redirect, reverse
 from django.contrib import messages
@@ -72,7 +73,9 @@ def filtroProgramasOperativos(id_objetivo=0,id_dependencia=0):
                 if id_objetivo == accion.objetivo.id:
                     programasOperativos.append(programa)
         programasOperativos = list(set(programasOperativos))
-    return programasOperativos
+        return programasOperativos
+    return programas
+
 
 
 def corregirAcciones(request):
@@ -605,7 +608,6 @@ class ProductividadAdmin(LoginRequiredMixin,View):
         nombres = ''
         for log in logs:
             usuarios.append(log.usuario)
-            # print(log.usuario.first_name)
             # nombres =  log.usuario.first_name + '|' + nombres
         usuarios = list(set(usuarios))
         for usuario in usuarios:
@@ -623,30 +625,109 @@ class ProductividadAdmin(LoginRequiredMixin,View):
 
 class MetasAdmin(LoginRequiredMixin,View):
     login_url = 'login'
-    def obtenerDependencias(self):
+    queue = queue.Queue()
+    def obtenerContexto(self):
         dependencias = Dependencia.objects.filter(estado='a')
         dependencias = dependencias.order_by('nombre')
-        return dependencias
+        objetivos = Objetivo.objects.filter(estado='a')
+        objetivos = objetivos.order_by('nombre')
+        return {
+            'dependencias':dependencias,
+            'objetivos':objetivos
+        }
+    def obtenerDatosDependencia(self,queue, id_dependencia=0):
+        dependencia = Dependencia.objects.get(pk=id_dependencia)
+        objetoDependencia = {
+        'dependencia':dependencia.nombre,
+        'pos':[]
+        }
+        pos = filtroProgramasOperativos(id_dependencia=id_dependencia)
+        for po in pos:
+            objetoPo = {
+                'id':po.id,
+                'nombre':po.nombre,
+                'acciones':[],
+                'porcentajePo':0
+            }
+            acciones = po.acciones.all()
+            acumuladorPorcentajeAccion = 0
+            contadorAccionesConMeta = 0
+            for accion in acciones:
+                tieneMeta = False
+                porcentajeAccion = 0
+                if accion.meta:
+                    meta = 0
+                    try:
+                        meta = int(accion.meta)
+                    except:
+                        pass
+                    if meta:
+                        actividades = Actividad.objects.filter(accion=accion,estado='r')
+                        actividades =actividades.count()
+                        tieneMeta=True
+                        contadorAccionesConMeta += 1
+                        porcentajeAccion = (actividades / int(accion.meta)) * 100
+                        acumuladorPorcentajeAccion += porcentajeAccion
+                objetoPo['acciones'].append({
+                        'id':accion.id,
+                        'nombre':accion.nombre,
+                        'meta':accion.meta,
+                        'descripcionMeta':accion.descripcionMeta,
+                        'totalActividades':actividades if tieneMeta else None,
+                        'porcentajeAccion':int(round(porcentajeAccion,0))
+                })
+                pass
+            porcentajePo = (acumuladorPorcentajeAccion / contadorAccionesConMeta) if contadorAccionesConMeta else 0
+            objetoPo['porcentajePo'] = int(round(porcentajePo,0))
+            objetoDependencia['pos'].append(objetoPo)
+            pass
+
+        self.queue.put(objetoDependencia)
+        return
+    def filtrarDependencias(self,id_dependencia=0):
+        #ESTE ES EL MODELO DE OBJETO QUE OBTENDREMOS
+        arreglosDependencia = []
+        dependencias = []
+        #se hará lo mismo en caso de ser individual o todas las dependencias
+        if id_dependencia==0:
+            dependencias = Dependencia.objects.filter(estado='a')
+        else:
+            dependencia = Dependencia.objects.get(pk=id_dependencia)
+            dependencias= dependencias.append(dependencia)
+        #lista de hilos de consulta
+        threads = []
+        for dependencia in dependencias:
+            hiloDatosDependencia = threading.Thread(name='datosDependencia',
+            target=self.obtenerDatosDependencia,args=(self.queue,dependencia.id,))
+            threads.append(hiloDatosDependencia)
+            hiloDatosDependencia.start()
+        for thread in threads:
+            #cerramos threads por buenas prácticas
+            thread.join()
+            pass
+        #AQUÍ TENEMOS LOS DATOS GENERADOS POR LOS HILOS
+        for i in range(self.queue.qsize()):
+            arreglosDependencia.append(self.queue.get())
+        return arreglosDependencia
     def get(self,request):
         #se renderiza como dependencia, como objetivo, como eje
         if request.user.profile.tipoUsuario == 'e':
             return redirect('index')
-        dependencias = self.obtenerDependencias()
-        acciones = filtroAcciones(
-            id_dependencia=int(request.POST.get('dependencia') if request.POST.get('dependencia') else 0),
-            id_eje=request.POST.get('eje'),
-            id_objetivo=int(request.POST.get('objetivo') if request.POST.get('objetivo') else 0),
-        )
-        return render(request,'programasOperativos/actividades/admin/metasAdmin.html',{
-            'dependencias':dependencias,
-            'acciones':JSONRenderer().render(serializer.data)
-        })
+        contexto = self.obtenerContexto()
+        arreglosDependencias = self.filtrarDependencias()
+        # arreglosDependencias = json.dumps(arreglosDependencias)
+        contexto ['arreglosDependencias'] = arreglosDependencias
+        contexto ['tipoFiltro'] = 'dependencia'
+        objetivos = Objetivo.objects.filter(estado='a')
+        return render(request,'programasOperativos/actividades/admin/metasAdmin.html',contexto)
     def post(self,request):
         if request.user.profile.tipoUsuario == 'e':
             return redirect('index')
+        if request.POST.get('options') == 'dependencias':
+
+            resultado = self.filtrarDependencias()
+            filtroProgramasOperativos()
         eje = request.POST.get('eje')
-        dependencias = self.obtenerDependencias()
-        return render(request,'programasOperativos/actividades/admin/metasAdmin.html',{
-            'dependencias':dependencias            
-        })
+        contexto = self.obtenerContexto()
+        return render(request,'programasOperativos/actividades/admin/metasAdmin.html',contexto)
 
