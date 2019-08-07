@@ -655,6 +655,7 @@ class MetasAdmin(LoginRequiredMixin,View):
             for accion in acciones:
                 tieneMeta = False
                 porcentajeAccion = 0
+                claseSemaforo = 'danger'
                 if accion.meta:
                     meta = 0
                     try:
@@ -668,13 +669,21 @@ class MetasAdmin(LoginRequiredMixin,View):
                         contadorAccionesConMeta += 1
                         porcentajeAccion = (actividades / int(accion.meta)) * 100
                         acumuladorPorcentajeAccion += porcentajeAccion
+                        if porcentajeAccion > 34 and porcentajeAccion < 85:
+                            claseSemaforo = 'warning'
+                        elif porcentajeAccion >= 85:
+                            claseSemaforo = 'success'
+
+
                 objetoPo['acciones'].append({
                         'id':accion.id,
                         'nombre':accion.nombre,
                         'meta':accion.meta,
                         'descripcionMeta':accion.descripcionMeta,
                         'totalActividades':actividades if tieneMeta else None,
-                        'porcentajeAccion':int(round(porcentajeAccion,0))
+                        'porcentajeAccion':round(porcentajeAccion,1),
+                        'porcentajeEnteroAccion':int(round(porcentajeAccion,1)),
+                        'claseSemaforo':claseSemaforo
                 })
                 pass
             porcentajePo = (acumuladorPorcentajeAccion / contadorAccionesConMeta) if contadorAccionesConMeta else 0

@@ -77,9 +77,9 @@ Metas
                                     {% for accion in po.acciones %}
                                     {{accion.nombre}}
                                     <div class="progress">
-                                            <div class="progress-bar bg-success" role="progressbar" style="width: {{accion.porcentajeAccion}}%" aria-valuenow="{{accion.porcentajeAccion}}" aria-valuemin="0" aria-valuemax="100">{{accion.porcentajeAccion}}</div>
+                                            <div class="progress-bar bg-{{accion.claseSemaforo}}" role="progressbar" style="width: {{accion.porcentajeEnteroAccion}}%" aria-valuenow="{{accion.porcentajeAccion}}" aria-valuemin="0" aria-valuemax="100">{{accion.porcentajeAccion}}%</div>
                                           </div>
-                                          
+                 
                                     {% endfor %}
                                 </div>
                                 <hr>
