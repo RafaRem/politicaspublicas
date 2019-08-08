@@ -97,7 +97,30 @@ class Periodo(models.Model):
     fechaFinal = models.DateField(verbose_name="Fecha de final")
     capturaHabilitada = models.BooleanField(verbose_name="Captura habilitada",default=True)
     class Meta:
-        verbose_name = 'Periodo'
-        verbose_name_plural = 'Periodos'
+        verbose_name = 'Periodo de gastos'
+        verbose_name_plural = 'Periodos de gastos'
     def __str__(self):
         return self.nombre
+
+class PeriodoGobierno(models.Model):
+    descripcion = models.CharField(max_length=300,verbose_name="Descripción del periodo")
+    fehcaInicial = models.DateField(verbose_name="Fecha de inicio del periodo")
+    fechaFinal = models.DateField(verbose_name="Fecha fianl del periodo")
+    class Meta:
+        verbose_name= 'Periodo de gobierno'
+        verbose_name_plural = 'Periodos de gobierno'
+    def __str__(self):
+        return self.descripcion
+
+class Meta(models.Model):
+    descripcion = models.CharField(max_length=300,verbose_name="Descripción del periodo")
+    descendente = models.BooleanField(default=False,verbose_name="¿Es descendente?")
+    cualitativa = models.BooleanField(default=False,verbose_name="¿Es cualitativa?")
+    noPublica = models.BooleanField(default=False, verbose_name="¿No es pública?")
+    meta = models.IntegerField(verbose_name="Meta numérica")
+    periodo = models.ForeignKey(PeriodoGobierno,on_delete=models.PROTECT,verbose_name="Periodo de gobierno")
+    class Meta:
+        verbose_name= 'Meta de actividad'
+        verbose_name_plural = 'Metas de actividades'
+    def __str__(self):
+        return str(self.id) + ',' + self.descripcion

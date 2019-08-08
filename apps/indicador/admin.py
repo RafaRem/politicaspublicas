@@ -41,3 +41,11 @@ class SectorEconomicoAdmin(admin.ModelAdmin):
 @admin.register(Periodo)
 class PeriodoAdmin(admin.ModelAdmin):
     list_display = ['id','nombre','fechaInicial', 'fechaFinal']
+
+@admin.register(PeriodoGobierno)
+class PeriodoGobiernoAdmin(admin.ModelAdmin):
+    list_display = ['descripcion','fehcaInicial','fechaFinal']
+
+@admin.register(Meta)
+class MetaAdmin(admin.ModelAdmin):
+    list_display = ['id', 'descripcion']
