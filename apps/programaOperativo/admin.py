@@ -15,7 +15,7 @@ class ProgramaOperativoAdmin(admin.ModelAdmin):
 class AccionesAdmin(admin.ModelAdmin):
     list_display = ['id','nombre', 'objetivo']
     ordering = ['nombre',]
-    filter_horizontal = ['escolaridad','gruposVulnerables', 'sectorSocial','sectorEconomico','ubicacion','categoriaPoblacion','meta']
+    filter_horizontal = ['escolaridad','gruposVulnerables', 'sectorSocial','sectorEconomico','ubicacion','categoriaPoblacion','meta','indicador']
     search_fields = ['id', 'nombre']
 # admin.site.register(ProgramaOperativo)
 @admin.register(Actividad)

@@ -5,7 +5,7 @@ from apps.objetivo.models import Objetivo
 from apps.dependencia.models import *
 from apps.indicador.models import *
 from django.contrib.auth.models import User 
-from apps.indicador.models import ConceptoGasto,Periodo,Meta
+from apps.indicador.models import ConceptoGasto,Periodo,Meta,PeriodoGobierno
 # Create your models here.
 class Acciones(models.Model):
     nombre = models.CharField(max_length=700)
@@ -16,6 +16,7 @@ class Acciones(models.Model):
     sectorEconomico = models.ManyToManyField(SectorEconomico, blank=True)
     ubicacion = models.ManyToManyField(Ubicacion, blank=True)
     categoriaPoblacion = models.ManyToManyField(CategoriaPoblacion, blank=True)
+    indicador = models.ManyToManyField(Indicador, blank=True)
     meta = models.ManyToManyField(Meta,blank=True)
     class Meta:
         verbose_name = 'Acción de programa operativo'
@@ -121,3 +122,17 @@ class LogActividad(models.Model):
     actividad = models.ForeignKey(Actividad, on_delete=models.PROTECT)
     estado = models.CharField(choices=opcionesEstado,max_length=30,default='p')
     created = models.DateTimeField(auto_now_add=True)    
+
+class GastoAnualAsignado(models.Model):
+    programaOperativo = models.ForeignKey(ProgramaOperativo,on_delete=models.PROTECT,
+    verbose_name="Programa operativo")
+    cantidad = models.FloatField(verbose_name="Cantidad asignada")
+    periodoGobierno = models.ForeignKey(PeriodoGobierno,on_delete=models.PROTECT,
+    verbose_name="Gasto asignado al periodo")
+    class Meta:
+        verbose_name = "Gasto anual asignado"
+        verbose_name_plural = "Gastos anuales asignados"
+    def __str__(self):
+        return self.programaOperativo.nombre
+    
+

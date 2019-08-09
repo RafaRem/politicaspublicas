@@ -49,3 +49,14 @@ class PeriodoGobiernoAdmin(admin.ModelAdmin):
 @admin.register(Meta)
 class MetaAdmin(admin.ModelAdmin):
     list_display = ['id', 'descripcion']
+
+@admin.register(Indicador)
+class IndicadorAdmin(admin.ModelAdmin):
+    list_display = ['id','nombre','tipo']
+    list_display_links = ['nombre']
+
+@admin.register(Variable)
+class VariableAdmin(admin.ModelAdmin):
+    list_display = ['id', 'nombre','tipo','indicador']
+    list_display_links = ['nombre','tipo','indicador']
+
