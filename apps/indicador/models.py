@@ -104,8 +104,9 @@ class Periodo(models.Model):
 
 class PeriodoGobierno(models.Model):
     descripcion = models.CharField(max_length=300,verbose_name="Descripción del periodo")
-    fehcaInicial = models.DateField(verbose_name="Fecha de inicio del periodo")
+    fechaInicial = models.DateField(verbose_name="Fecha de inicio del periodo")
     fechaFinal = models.DateField(verbose_name="Fecha fianl del periodo")
+    permitirCambios = models.BooleanField(default=True,verbose_name="¿Permitir cambios?")
     class Meta:
         verbose_name= 'Periodo de gobierno'
         verbose_name_plural = 'Periodos de gobierno'
@@ -138,7 +139,6 @@ class Indicador(models.Model):
     def __str__(self):
         return self.nombre
     
-
 class Variable(models.Model):
     opcionesTipo = (
         ('p','Porcentual'),

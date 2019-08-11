@@ -129,6 +129,7 @@ class GastoAnualAsignado(models.Model):
     cantidad = models.FloatField(verbose_name="Cantidad asignada")
     periodoGobierno = models.ForeignKey(PeriodoGobierno,on_delete=models.PROTECT,
     verbose_name="Gasto asignado al periodo")
+    permitirModificar = models.BooleanField(verbose_name="¿Permitir modificar?",default=True)
     class Meta:
         verbose_name = "Gasto anual asignado"
         verbose_name_plural = "Gastos anuales asignados"

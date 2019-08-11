@@ -36,6 +36,7 @@ class Dependencia(models.Model):
     tipo = models.CharField(max_length=30, choices=opcionesTipo, blank=True)
     adscrita = models.ForeignKey(Raiz,blank=True, null=True, on_delete=models.PROTECT)
     estado = models.CharField(max_length=30,choices=opcionesEstado,default='a')
+    tieneDepartamentos = models.BooleanField(verbose_name='¿Tiene departamentos?',default=True)
     class Meta:
         verbose_name = 'Dependencia'
         verbose_name_plural='Dependencias'

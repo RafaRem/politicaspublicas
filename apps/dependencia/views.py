@@ -7,6 +7,7 @@ from django.contrib import messages
 """Models"""
 from apps.programaOperativo.models import ProgramaOperativo
 from apps.dependencia.models import Departamento
+from apps.indicador.models import PeriodoGobierno
 
 
 # Create your views here.
@@ -19,9 +20,16 @@ class ProgramasOperativosList(LoginRequiredMixin,View):
         departamentos = Departamento.objects.filter(dependencia=request.user.profile.dependencia)
         departamentos = departamentos.order_by('nombre')
         departamentos = serializers.serialize('json',departamentos)
+        faltaPorAsignar = False
+        for programaOperativo in programasOperativos:
+            if not programaOperativo.departamento:
+                faltaPorAsignar = True
+                break
         return {
             'programasOperativos':programasOperativos,
-            'departamentos':departamentos
+            'departamentos':departamentos,
+            'tieneDepartamentos':request.user.profile.dependencia.tieneDepartamentos,
+            'faltaPorAsignar':faltaPorAsignar
         }
     def get(self,request):
         return render(request,'dependencias/programasoperativos.html',self.get_context(request))
@@ -39,3 +47,13 @@ class ProgramasOperativosList(LoginRequiredMixin,View):
         messages.success(request,'Departamentos cambiados con éxito')
         return render(request,'dependencias/programasoperativos.html',self.get_context(request))        
     
+class PresupuestoAnualList(LoginRequiredMixin,View):
+    def obtenerContexto(self):
+        periodos = PeriodoGobierno.objects.all()
+        return {
+            'periodos':periodos
+        }
+    def get(self,request,idProgramaOperativo):
+        contexto = self.obtenerContexto()
+        contexto['programaOperativo'] = ProgramaOperativo.objects.get(pk=idProgramaOperativo)
+        return render(request,'dependencias/presupuestoAnual.html',contexto)

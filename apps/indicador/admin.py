@@ -44,7 +44,7 @@ class PeriodoAdmin(admin.ModelAdmin):
 
 @admin.register(PeriodoGobierno)
 class PeriodoGobiernoAdmin(admin.ModelAdmin):
-    list_display = ['descripcion','fehcaInicial','fechaFinal']
+    list_display = ['descripcion','fechaInicial','fechaFinal']
 
 @admin.register(Meta)
 class MetaAdmin(admin.ModelAdmin):
