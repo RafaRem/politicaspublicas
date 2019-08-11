@@ -133,6 +133,7 @@ class GastoAnualAsignado(models.Model):
     class Meta:
         verbose_name = "Gasto anual asignado"
         verbose_name_plural = "Gastos anuales asignados"
+        unique_together = ['programaOperativo', 'periodoGobierno']
     def __str__(self):
         return self.programaOperativo.nombre
     

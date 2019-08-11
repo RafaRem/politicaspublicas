@@ -5,7 +5,7 @@ from django.shortcuts import render, redirect, reverse
 from django.core import serializers
 from django.contrib import messages
 """Models"""
-from apps.programaOperativo.models import ProgramaOperativo
+from apps.programaOperativo.models import ProgramaOperativo,GastoAnualAsignado
 from apps.dependencia.models import Departamento
 from apps.indicador.models import PeriodoGobierno
 
@@ -48,12 +48,63 @@ class ProgramasOperativosList(LoginRequiredMixin,View):
         return render(request,'dependencias/programasoperativos.html',self.get_context(request))        
     
 class PresupuestoAnualList(LoginRequiredMixin,View):
-    def obtenerContexto(self):
+    def obtenerContexto(self,idProgramaOperativo):
+        programaOperativo = ProgramaOperativo.objects.get(pk=idProgramaOperativo)
         periodos = PeriodoGobierno.objects.all()
+        presupuestosPeriodo = []
+        #se hará de la siguiente manera para hacer un if en el template 
+        #en caso de que no haya sido asignado
+        faltaAsignar = False
+        for periodo in periodos:
+            try:
+                gastoAnualAsignado = GastoAnualAsignado.objects.get(
+                programaOperativo=programaOperativo,
+                periodoGobierno=periodo)
+            except:
+                #Si no existe, esta variable será necesaria para poder asignar
+                faltaAsignar = True
+                gastoAnualAsignado = {
+                    'permitirModificar':True
+                }
+
+            presupuestosPeriodo.append({
+                'periodo':periodo,
+                'presupuesto':gastoAnualAsignado
+            })
         return {
-            'periodos':periodos
+            'presupuestosPeriodo':presupuestosPeriodo,
+            'programaOperativo':programaOperativo,
+            'faltaAsignar':faltaAsignar
         }
     def get(self,request,idProgramaOperativo):
-        contexto = self.obtenerContexto()
-        contexto['programaOperativo'] = ProgramaOperativo.objects.get(pk=idProgramaOperativo)
+        contexto = self.obtenerContexto(idProgramaOperativo)
+        return render(request,'dependencias/presupuestoAnual.html',contexto)
+    def post(self,request,idProgramaOperativo):
+        valoresPresupuesto = request.POST.getlist('valoresPresupuesto')
+        for valorPresupuesto in valoresPresupuesto:
+            #la posición 0 es el id del periodo, la 1 es la cantidad
+            valores = valorPresupuesto.split('|')
+            programaOperativo = ProgramaOperativo.objects.get(pk=idProgramaOperativo)
+            periodo = PeriodoGobierno.objects.get(pk=valores[0])
+            try:
+                gastoAnual = GastoAnualAsignado.objects.get(
+                programaOperativo=programaOperativo,
+                periodoGobierno=periodo
+                )
+                gastoAnual.programaOperativo = programaOperativo
+                gastoAnual.cantidad = valores[1]
+                gastoAnual.periodoGobierno = periodo
+                gastoAnual.permitirModificar = False
+            except :
+                gastoAnual = GastoAnualAsignado.objects.create(
+                programaOperativo=programaOperativo,
+                cantidad=valores[1],
+                periodoGobierno=periodo,
+                permitirModificar=False
+                )
+            messages.success(request,'Programa presupuestado para el periodo '+periodo.descripcion+
+            '. Si se desea modificar, ponerse en contacto con la Dirección de Planeación e Innovación Gubernamental')
+        
+            gastoAnual.save()
+        contexto = self.obtenerContexto(idProgramaOperativo)
         return render(request,'dependencias/presupuestoAnual.html',contexto)

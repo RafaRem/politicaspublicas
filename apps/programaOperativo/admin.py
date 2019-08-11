@@ -57,3 +57,11 @@ class LogActividadAdmin(admin.ModelAdmin):
         return obj.actividad.id
     getActividadId.short_description = 'ID'
     getActividadId.admin_order_field = 'actividad__id'
+
+@admin.register(GastoAnualAsignado)
+class GastoAnualAsignadoAdmin(admin.ModelAdmin):
+    list_display = ['programaOperativo','get_dependencia', 'periodoGobierno']
+    def get_dependencia(self,obj):
+        return obj.programaOperativo.dependencia.nombre
+    get_dependencia.short_description = 'Dependencia'
+    get_dependencia.admin_order_field = 'programaoperativo__dependencia__nombre'

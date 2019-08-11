@@ -41,28 +41,32 @@ Presupuesto anual
     {% endif %}
     <h2 class="text-center">{{programaOperativo.nombre}}</h2>
   <div class="row">
-        {% for periodo in periodos %}
+        {% for presupuestoPeriodo in presupuestosPeriodo %}
         <div class="col-xl-4 col-sm-6 mb-3 animated fadeIn">
             <div class="card text-dorado eje5 o-hidden h-100">
               <div class="card-body">
                 <div class="mr-5">
-                  <h5>{{periodo.descripcion}}</h5>
+                  <h4>{{presupuestoPeriodo.periodo.descripcion}}</h4>
                   <div class="mitad-h3">
-                    Desde {{periodo.fechaInicial}} hasta {{periodo.fechaFinal}}
+                    Desde {{presupuestoPeriodo.periodo.fechaInicial}} hasta {{presupuestoPeriodo.periodo.fechaFinal}}
                   </div>
+                  {% if not presupuestoPeriodo.presupuesto.permitirModificar %}
+                    <h5 class="text-center">
+                        <strong>Presupuesto:</strong>
+                        {{presupuestoPeriodo.presupuesto.cantidad}}$</h5>
+                  {% endif %}
                 </div>
               </div>
+              {% if presupuestoPeriodo.presupuesto.permitirModificar %}
               <div class="form-group">
-                    <input type="email" class="form-control input-presupuesto" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Presupuesto asignado">
+                    <input type="text" class="form-control input-presupuesto" 
+                    id="input_{{presupuestoPeriodo.periodo.id}}" 
+                    value="{{presupuestoPeriodo.presupuesto.cantidad}}"
+                    placeholder="Presupuesto asignado">
                   </div>
-              <a class="card-footer text-white clearfix small z-1" 
-              href="#">
-                  <span class="float-left">Guardar</span>
-                  <span class="float-right">
-                    <i class="fas fa-angle-right"></i>
-                  </span>
-                </a>
-
+                {% endif %}
+              
+              
             </div>
           </div>
         {% endfor %}
@@ -70,10 +74,14 @@ Presupuesto anual
   <form action="" method="POST" id="id_form">
     {% csrf_token %}
   </form>
+  {% if faltaAsignar %}
   <div class="justify-content-center d-flex">
-      <button id="id_guardar_cambios" class="btn guinda">
-        <i class="fas fa-check-circle"></i>&nbsp; Guardar cambios</button>
-    </div>
+        <button id="id_guardar_cambios" class="btn guinda">
+          <i class="fas fa-check-circle"></i>&nbsp; Guardar cambios</button>
+      </div>
+  {% endif %}
+  
+ 
 
 
 </div>
@@ -86,7 +94,20 @@ Presupuesto anual
     <script>
       $(document).ready(()=>{
         $('.input-presupuesto').mask('00000000.00', {reverse: true});
-
+        $('#id_guardar_cambios').click(()=>{
+            var inputs = document.querySelectorAll('.input-presupuesto')
+            for (let i = 0; i < inputs.length; i++) {
+              const input = inputs[i];
+              let idPeriodoSplit = input.id.split('_');
+              let valorInput = idPeriodoSplit[1] + '|' + input.value
+              if(input.value > 0){
+                $('#id_form').append(`
+                <input type="text" hidden=true name="valoresPresupuesto" value="${valorInput}">
+                `);
+              }
+            }
+            $('#id_form').submit();
+        });
       });
     </script>
 {%endblock%}
