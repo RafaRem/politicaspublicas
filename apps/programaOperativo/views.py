@@ -24,7 +24,28 @@ from django.db.models import Q,Count
 from apps.programaOperativo.serializers import AccionesSerializer
 from rest_framework.renderers import JSONRenderer
 
+def filtroProgramasOperativos(id_objetivo=0,id_dependencia=0):
+    consulta = Q(estado='a')
+    programasOperativos = []
+    if id_dependencia > 0:
+        dependencia = Dependencia.objects.get(pk=id_dependencia)
+        consulta &= Q(dependencia=id_dependencia)
+    #Hacemos la consulta, se deja al final el filtro por objetivo por complejidad
+    programas = ProgramaOperativo.objects.filter(consulta)    
+    if id_objetivo > 0:
+        programasOperativos = []
+        for programa in programas:
+            acciones = programa.acciones.all()
+            for accion in acciones:
+                if id_objetivo == accion.objetivo.id:
+                    programasOperativos.append(programa)
+        programasOperativos = list(set(programasOperativos))
+        return programasOperativos
+    return programas
+
 def filtroAcciones(id_dependencia=0,id_objetivo=0,id_eje="",id_programaOperativo=0):
+    #TO-DO: 
+    #FALTA TERMINAR
     consulta = Q()
     if id_objetivo>0:
         objetivo = Objetivo.objects.get(pk=id_objetivo)
@@ -32,11 +53,7 @@ def filtroAcciones(id_dependencia=0,id_objetivo=0,id_eje="",id_programaOperativo
     if id_eje!="":
         consulta&=Q(objetivo__ejeTransversal=id_eje)
     acciones =  Acciones.objects.filter(consulta)
-    #hasta aquí comenzamos a hacerlo casi manual
-    if id_programaOperativo>0:
-        accionesDePo = ProgramaOperativo.acciones.all()
-    
-    pass
+    #hasta aquí comenzamos a hacerlo casi manual        
 
 def filtroActividades(id_dependencia=0,estado="",id_objetivo=0,id_eje="",id_programaOperativo=0):
     #No se aplicará filtros si los parametros son iguales 0 o ""
@@ -57,24 +74,7 @@ def filtroActividades(id_dependencia=0,estado="",id_objetivo=0,id_eje="",id_prog
     actividades = Actividad.objects.filter(consulta)        
     return actividades
 
-def filtroProgramasOperativos(id_objetivo=0,id_dependencia=0):
-    consulta = Q(estado='a')
-    programasOperativos = []
-    if id_dependencia > 0:
-        dependencia = Dependencia.objects.get(pk=id_dependencia)
-        consulta &= Q(dependencia=id_dependencia)
-    #Hacemos la consulta, se deja al final el filtro por objetivo por complejidad
-    programas = ProgramaOperativo.objects.filter(consulta)    
-    if id_objetivo > 0:
-        programasOperativos = []
-        for programa in programas:
-            acciones = programa.acciones.all()
-            for accion in acciones:
-                if id_objetivo == accion.objetivo.id:
-                    programasOperativos.append(programa)
-        programasOperativos = list(set(programasOperativos))
-        return programasOperativos
-    return programas
+
 
 
 

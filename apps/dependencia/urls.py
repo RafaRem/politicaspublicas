@@ -7,4 +7,6 @@ urlpatterns = [
     name="dependencia_pos" ),
     path('dependencia/presupuesto-anual/<str:idProgramaOperativo>', PresupuestoAnualList.as_view(), 
     name="presupuestoAnual" ),
+    path('dependencia/acciones', AccionesDependencia.as_view(), 
+    name="accionesDependencia" )
 ]

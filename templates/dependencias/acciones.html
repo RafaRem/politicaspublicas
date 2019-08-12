@@ -1,0 +1,85 @@
+{%extends 'base/base.html'%}
+{%load staticfiles%}
+
+
+{% block title %}
+Acciones
+{% endblock %}
+
+{%block navTitle%}
+Acciones
+{%endblock%}
+{%block messages %}
+{% endblock%}
+{% block extracss %}
+    <style>
+        a.btn{
+            min-width: 100px;
+        }
+        table.dataTable tbody tr{
+            background: transparent !important;
+        }
+        span.badge{
+            min-width: 100px;
+        }
+        .badge-naranja{
+            background: #f26631;
+        }
+    </style>
+{% endblock %}
+
+{%block content%}
+    {% if messages %}
+        <ul class="messages">
+                {% for message in messages %}
+                <li{% if message.tags == "success" %} class="alert alert-success"
+            {%else%}
+            class="alert alert-danger"
+            {% endif %}>
+            {{ message }}</li>
+                {% endfor %}
+        </ul>
+    {% endif %}
+<table class="table table-responsive">
+    <thead>
+        <tr>
+            <th>Acción</th>
+            <th>Programa operativo</th>
+            {% for periodo in periodos %}
+                <th>{{periodo.nombre}}</th>
+                
+            {% endfor %}
+            <th>Acciones</th>
+
+        </tr>
+    </thead>
+    <tbody class="bg-transparent">
+        {% for accion_po in acciones_po %}
+            <tr>
+                <td scope="row">{{accion_po.accion.nombre}}</td>
+                <td>{{accion_po.programaOperativo.nombre}}</td>
+                {% for periodoGasto in accion_po.periodos %}
+                <td>{{periodoGasto}}</td>
+                
+                {% endfor %}
+                <td>           
+                    <a class="btn guinda btn-sm" href="{%url 'verAccion' idAccion=accion_po.accion.id%}">
+                        Gastos
+                      </a></td>
+            </tr>
+        {% endfor %}
+
+
+    </tbody>
+</table>
+
+{%endblock%}
+
+
+{% block extrascripts %}
+    <script>
+        $(document).ready( function () {
+            $('.table').DataTable();
+        } );
+    </script>
+{% endblock %}

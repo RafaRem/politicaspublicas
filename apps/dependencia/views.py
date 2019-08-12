@@ -5,10 +5,31 @@ from django.shortcuts import render, redirect, reverse
 from django.core import serializers
 from django.contrib import messages
 """Models"""
-from apps.programaOperativo.models import ProgramaOperativo,GastoAnualAsignado
-from apps.dependencia.models import Departamento
-from apps.indicador.models import PeriodoGobierno
+from apps.programaOperativo.models import ProgramaOperativo,GastoAnualAsignado,Acciones,DetallesGasto
+from apps.dependencia.models import Departamento,Dependencia
+from apps.indicador.models import PeriodoGobierno,Periodo
 
+def getAccionesDependencia(id_dependencia,periodos):
+    dependencia = Dependencia.objects.get(pk=id_dependencia)
+    acciones = []
+    programasOperativos = ProgramaOperativo.objects.filter(dependencia=dependencia, estado='a')
+    for programaOperativo in programasOperativos:
+        accionesPo = programaOperativo.acciones.all()
+        for accion in accionesPo:
+            gastos = DetallesGasto.objects.filter(accion=accion)
+            periodosDetalleGasto = []
+            for periodo in periodos:
+                gastos = DetallesGasto.objects.filter(accion=accion,periodo=periodo)
+                total = 0.0
+                for gasto in gastos:
+                    total += float(gasto.cantidad)
+                periodosDetalleGasto.append(total)
+            acciones.append({
+                'accion':accion,
+                'programaOperativo':programaOperativo,
+                'periodos':periodosDetalleGasto
+            })
+    return acciones
 
 # Create your views here.
 class ProgramasOperativosList(LoginRequiredMixin,View):
@@ -48,6 +69,7 @@ class ProgramasOperativosList(LoginRequiredMixin,View):
         return render(request,'dependencias/programasoperativos.html',self.get_context(request))        
     
 class PresupuestoAnualList(LoginRequiredMixin,View):
+    login_url = 'login'
     def obtenerContexto(self,idProgramaOperativo):
         programaOperativo = ProgramaOperativo.objects.get(pk=idProgramaOperativo)
         periodos = PeriodoGobierno.objects.all()
@@ -108,3 +130,13 @@ class PresupuestoAnualList(LoginRequiredMixin,View):
             gastoAnual.save()
         contexto = self.obtenerContexto(idProgramaOperativo)
         return render(request,'dependencias/presupuestoAnual.html',contexto)
+
+class AccionesDependencia(LoginRequiredMixin,View):
+    login_url = 'login'
+    def get(self,request):
+        periodos = Periodo.objects.filter(capturaHabilitada=True)
+        acciones_po = getAccionesDependencia(request.user.profile.dependencia.id,periodos)
+        return render(request,'dependencias/acciones.html',{
+            'acciones_po':acciones_po,
+            'periodos':periodos
+        })
