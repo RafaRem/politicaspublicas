@@ -13,10 +13,9 @@ class AccionesMetasView(View):
         arregloAcciones = []
         for accion in acciones:
             if accion.meta:
-                
-            arregloAcciones.append({
-                'accion':accion,
-                'periodos':[]
+                arregloAcciones.append({
+                    'accion':accion,
+                    'periodos':[]
             })
         #Aquí les va a decir si ya se capturó meta
     def get(self,request):
