@@ -1,0 +1,103 @@
+{%extends 'base/base.html'%}
+{%load staticfiles%}
+
+
+{% block title %}
+Metas
+{% endblock %}
+
+{%block navTitle%}
+Metas
+{%endblock%}
+{%block messages %}
+{% endblock%}
+{% block extracss %}
+    <style>
+        a.btn{
+            min-width: 100px;
+        }
+        table.dataTable tbody tr{
+            background: transparent !important;
+        }
+        span.badge{
+            min-width: 100px;
+        }
+        .badge-naranja{
+            background: #f26631;
+        }
+        .form-control{
+            font-family: sans-serif;
+          }
+    </style>
+{% endblock %}
+
+{%block content%}
+    {% if messages %}
+        <ul class="messages">
+                {% for message in messages %}
+                <li{% if message.tags == "success" %} class="alert alert-success"
+            {%else%}
+            class="alert alert-danger"
+            {% endif %}>
+            {{ message }}</li>
+                {% endfor %}
+        </ul>
+    {% endif %}
+    <h2 class="text-center">{{accion.nombre}}</h2>
+    <hr>
+    <div class="row">
+    {% for meta in metas %}
+    <div class="col-xl-4 col-sm-6 mb-3 animated fadeIn">
+        <div class="card text-dorado eje5 o-hidden h-100">
+          <div class="card-body">
+            <div class="mr-5">
+              <h4>{{meta.descripcion}}</h4>
+              <div class="mitad-h3">
+                {{meta.periodo.descripcion}}
+              </div>
+                <h5 class="text-center">
+                    <strong>Meta:</strong>
+                    {{meta.meta}}</h5>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+</div>
+<form method="POST">
+        <div class="form-group">
+                <input type="text" class="form-control" maxlength="150"
+                name="descripcion" required
+                value=""
+                placeholder="Descripción de la meta">
+              </div>
+    {% for periodo in periodos %}
+        <h4 class="text-center">{{periodo.descripcion}}</h4>
+        <hr>
+
+        <div class="form-group">
+            {% csrf_token %}
+            <input type="text" class="form-control numero" required
+            id="input_{{periodo.id}}"  name="meta"
+            value=""
+            placeholder="Cantidad en la meta">
+            </div>
+    {% endfor %}
+    <div class="d-flex justify-content-center mt-3">
+            <button type="submit" class="btn btn-primary guinda">
+                Agregar metas&nbsp;<i class="fas fa-check-circle"></i>
+            </button>
+            </div>
+</form>
+
+{%endblock%}
+
+
+{% block extrascripts %}
+    <script>
+        $(document).ready( function () {
+            $('.numero').mask('00000000', {reverse: true});
+
+        } );
+    </script>
+{% endblock %}

@@ -1,0 +1,84 @@
+{%extends 'base/base.html'%}
+{%load staticfiles%}
+
+
+{% block title %}
+Metas
+{% endblock %}
+
+{%block navTitle%}
+Metas
+{%endblock%}
+{%block messages %}
+{% endblock%}
+{% block extracss %}
+    <style>
+        a.btn{
+            min-width: 100px;
+        }
+        table.dataTable tbody tr{
+            background: transparent !important;
+        }
+        span.badge{
+            min-width: 100px;
+        }
+        .badge-naranja{
+            background: #f26631;
+        }
+    </style>
+{% endblock %}
+
+{%block content%}
+    {% if messages %}
+        <ul class="messages">
+                {% for message in messages %}
+                <li{% if message.tags == "success" %} class="alert alert-success"
+            {%else%}
+            class="alert alert-danger"
+            {% endif %}>
+            {{ message }}</li>
+                {% endfor %}
+        </ul>
+    {% endif %}
+    <h2 class="text-center">{{dependencia.nombre}}</h2>
+    <hr>
+<table class="table table-responsive">
+    <thead>
+        <tr>
+            <th>Acción</th>
+            {% for periodo in periodos %}
+                <th>{{periodo.descripcion}}</th>
+            {% endfor %}
+            <th>Acciones</th>
+
+        </tr>
+    </thead>
+    <tbody class="bg-transparent">
+        {% for accion in acciones %}
+            <tr>
+                <td scope="row">{{accion.nombre}}</td>
+                {% for periodo in periodos %}
+                <th>Ahorita lo pongo</th>
+                {% endfor %}
+                <td>           
+                    <a class="btn guinda btn-sm" href="{%url 'capturarMetasForm' idAccion=accion.id%}">
+                        Capturar
+                        </a></td>
+                </tr>
+        {% endfor %}
+
+
+
+    </tbody>
+</table>
+
+{%endblock%}
+
+
+{% block extrascripts %}
+    <script>
+        $(document).ready( function () {
+            $('.table').DataTable();
+        } );
+    </script>
+{% endblock %}

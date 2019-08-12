@@ -33,7 +33,10 @@ urlpatterns = [
     url(r'^',include(objetivosUrls)),
     url(r'^',include(dependenciasUrls)),
     path('enDesarrollo', RenderView.as_view(template_name='extras/enDesarrollo.html'),name='enDesarrollo'),
-    path('recursos', RenderView.as_view(template_name='extras/recursos.html'),name='recursos')
+    path('recursos', RenderView.as_view(template_name='extras/recursos.html'),name='recursos'),
+    path('capturar/metas', AccionesMetasView.as_view(),name='capturarMetasList'),
+    path('capturar/metas/<str:idAccion>', AccionesMetasForm.as_view(),name='capturarMetasForm')
+
     #url(r'^',include(ProgramUrls)),
     # url(r'^',include('apps.inmueble.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

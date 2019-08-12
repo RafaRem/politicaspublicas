@@ -17,7 +17,7 @@ from apps.programaOperativo.forms import ProgramaOperativoForm, ActividadesForm,
 """Modelos"""
 from apps.programaOperativo.models import ProgramaOperativo, Acciones, Actividad, DetallesGasto, LogActividad
 from apps.objetivo.models import Objetivo
-from apps.indicador.models import ConceptoGasto, ClasificacionGasto,Periodo
+from apps.indicador.models import ConceptoGasto, ClasificacionGasto,Periodo,PeriodoGobierno
 from apps.dependencia.models import Dependencia
 from django.db.models import Q,Count
 """Serializer"""
@@ -631,7 +631,7 @@ class MetasAdmin(LoginRequiredMixin,View):
             'dependencias':dependencias,
             'objetivos':objetivos
         }
-    def obtenerDatosDependencia(self,queue, id_dependencia=0):
+    def obtenerDatosDependencia(self,queue,periodoGobierno, id_dependencia=0):
         dependencia = Dependencia.objects.get(pk=id_dependencia)
         objetoDependencia = {
         'dependencia':dependencia.nombre,
@@ -652,30 +652,38 @@ class MetasAdmin(LoginRequiredMixin,View):
                 tieneMeta = False
                 porcentajeAccion = 0
                 claseSemaforo = 'danger'
-                if accion.meta:
-                    meta = 0
-                    try:
-                        meta = int(accion.meta)
-                    except:
-                        pass
-                    if meta:
-                        actividades = Actividad.objects.filter(accion=accion,estado='r')
-                        actividades =actividades.count()
-                        tieneMeta=True
-                        contadorAccionesConMeta += 1
-                        porcentajeAccion = (actividades / int(accion.meta)) * 100
-                        acumuladorPorcentajeAccion += porcentajeAccion
-                        if porcentajeAccion > 34 and porcentajeAccion < 85:
-                            claseSemaforo = 'warning'
-                        elif porcentajeAccion >= 85:
-                            claseSemaforo = 'success'
+                metas = accion.meta.filter(periodo=periodoGobierno,cualitativa=False)
 
+                # if accion.meta:
+                #     meta = 0
+                #     try:
+                #         meta = int(accion.meta)
+                #     except:
+                #         pass
+                #     if meta:
+                #         actividades = Actividad.objects.filter(accion=accion,estado='r')
+                #         actividades =actividades.count()
+                #         tieneMeta=True
+                #         contadorAccionesConMeta += 1
+                #         porcentajeAccion = (actividades / int(accion.meta)) * 100
+                #         acumuladorPorcentajeAccion += porcentajeAccion
+                #         if porcentajeAccion > 34 and porcentajeAccion < 85:
+                #             claseSemaforo = 'warning'
+                #         elif porcentajeAccion >= 85:
+                #             claseSemaforo = 'success'
+                if metas:
+                    for meta in metas:
+                        meta = int(meta.meta)
+                        actividades = Actividad.objects.filter(accion=accion,estado='r',
+                        fecha_fi__range=(periodoGobierno.fechaInicial,periodoGobierno.fechaFinal))
+                        print(actividades)
 
                 objetoPo['acciones'].append({
                         'id':accion.id,
                         'nombre':accion.nombre,
-                        'meta':accion.meta,
-                        'descripcionMeta':accion.descripcionMeta,
+                        'metas':[],
+                        # 'meta':accion.meta,
+                        # 'descripcionMeta':accion.descripcionMeta,
                         'totalActividades':actividades if tieneMeta else None,
                         'porcentajeAccion':round(porcentajeAccion,1),
                         'porcentajeEnteroAccion':int(round(porcentajeAccion,1)),
@@ -689,21 +697,22 @@ class MetasAdmin(LoginRequiredMixin,View):
 
         self.queue.put(objetoDependencia)
         return
-    def filtrarDependencias(self,id_dependencia=0):
+    def filtrarDependencias(self,periodoGobierno,id_dependencia=0):
         #ESTE ES EL MODELO DE OBJETO QUE OBTENDREMOS
         arreglosDependencia = []
         dependencias = []
         #se hará lo mismo en caso de ser individual o todas las dependencias
         if id_dependencia==0:
+            'hooli'
             dependencias = Dependencia.objects.filter(estado='a')
         else:
             dependencia = Dependencia.objects.get(pk=id_dependencia)
-            dependencias= dependencias.append(dependencia)
+            dependencias.append(dependencia)
         #lista de hilos de consulta
         threads = []
         for dependencia in dependencias:
             hiloDatosDependencia = threading.Thread(name='datosDependencia',
-            target=self.obtenerDatosDependencia,args=(self.queue,dependencia.id,))
+            target=self.obtenerDatosDependencia,args=(self.queue,periodoGobierno,dependencia.id,))
             threads.append(hiloDatosDependencia)
             hiloDatosDependencia.start()
         for thread in threads:
@@ -719,7 +728,8 @@ class MetasAdmin(LoginRequiredMixin,View):
         if request.user.profile.tipoUsuario == 'e':
             return redirect('index')
         contexto = self.obtenerContexto()
-        arreglosDependencias = self.filtrarDependencias()
+        periodoGobierno = PeriodoGobierno.objects.get(pk=1)
+        arreglosDependencias = self.filtrarDependencias(periodoGobierno,id_dependencia=26)
         # arreglosDependencias = json.dumps(arreglosDependencias)
         contexto ['arreglosDependencias'] = arreglosDependencias
         contexto ['tipoFiltro'] = 'dependencia'
