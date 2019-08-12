@@ -28,6 +28,10 @@ Metas
         .form-control{
             font-family: sans-serif;
           }
+        .flotando{
+            position: fixed;
+            z-index: 9999;
+        }
     </style>
 {% endblock %}
 
@@ -45,6 +49,12 @@ Metas
     {% endif %}
     <h2 class="text-center">{{accion.nombre}}</h2>
     <hr>
+    <div class="d-flex justify-content-end">
+            <a  href="{%url 'capturarMetasList'%}"
+            id="filtros" class="btn guinda flotando">
+                Listas &nbsp;<i class="fas fa-list"></i>
+            </a>
+        </div>
     <div class="row">
     {% for meta in metas %}
     <div class="col-xl-4 col-sm-6 mb-3 animated fadeIn">

@@ -10,6 +10,14 @@ class RenderView(TemplateView):
 class AccionesMetasView(View):
     def obtenerAcciones(self):
         acciones = Acciones.objects.all()
+        arregloAcciones = []
+        for accion in acciones:
+            if accion.meta:
+                
+            arregloAcciones.append({
+                'accion':accion,
+                'periodos':[]
+            })
         #Aquí les va a decir si ya se capturó meta
     def get(self,request):
         periodos = PeriodoGobierno.objects.all()
@@ -21,6 +29,7 @@ class AccionesMetasView(View):
 class AccionesMetasForm(View):
     def getContexto(self,accion):
         periodos = PeriodoGobierno.objects.all()
+        periodos = periodos.order_by('descripcion')
         metas = accion.meta.all()
         return {
             'accion':accion,
@@ -35,6 +44,7 @@ class AccionesMetasForm(View):
         accion = Acciones.objects.get(pk=idAccion)
         contexto = self.getContexto(accion)
         periodos = PeriodoGobierno.objects.all()
+        periodos = periodos.order_by('descripcion')
         descripcionMeta = request.POST.get('descripcion')
         metasForm = request.POST.getlist('meta')
         metas = []

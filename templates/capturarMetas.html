@@ -46,9 +46,7 @@ Metas
     <thead>
         <tr>
             <th>Acción</th>
-            {% for periodo in periodos %}
-                <th>{{periodo.descripcion}}</th>
-            {% endfor %}
+            <th>Tiene metas</th>
             <th>Acciones</th>
 
         </tr>
@@ -57,9 +55,12 @@ Metas
         {% for accion in acciones %}
             <tr>
                 <td scope="row">{{accion.nombre}}</td>
-                {% for periodo in periodos %}
-                <th>Ahorita lo pongo</th>
-                {% endfor %}
+                <td>
+                    {% if accion.meta.all %}
+                        <span class="badge badge-success">Con metas&nbsp;<i class="fa fa-check-circle"></i></span>                    
+                    {% endif %}
+                    
+                </td>
                 <td>           
                     <a class="btn guinda btn-sm" href="{%url 'capturarMetasForm' idAccion=accion.id%}">
                         Capturar
