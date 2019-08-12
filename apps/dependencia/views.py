@@ -14,7 +14,7 @@ def getGastoPeriodo(accion,periodo):
     total = 0.0
     for gasto in gastos:
         total += float(gasto.cantidad)
-    return total
+    return round(total,2) 
 
 def getAccionesDependencia(dependencia,periodos):
     acciones = []
@@ -162,6 +162,7 @@ class DependenciasAdmin(LoginRequiredMixin,View):
             for accion_po in acciones_po:
                 for i in range(0,len(periodos)):
                     totalGastoDependencia[i] += float(accion_po['periodos'][i]['gasto'])
+                    totalGastoDependencia[i] = round(totalGastoDependencia[i],2)
             dpendencias_periodosGasto.append({
                 'dependencia':dependencia,
                 'gastos':totalGastoDependencia

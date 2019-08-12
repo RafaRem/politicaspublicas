@@ -114,7 +114,7 @@ class PeriodoGobierno(models.Model):
         return self.descripcion
 
 class Meta(models.Model):
-    descripcion = models.CharField(max_length=300,verbose_name="Descripción del periodo")
+    descripcion = models.CharField(max_length=300,verbose_name="Descripción de la meta")
     descendente = models.BooleanField(default=False,verbose_name="¿Es descendente?")
     cualitativa = models.BooleanField(default=False,verbose_name="¿Es cualitativa?")
     noPublica = models.BooleanField(default=False, verbose_name="¿No es pública?")
