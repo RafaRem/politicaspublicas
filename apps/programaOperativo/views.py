@@ -74,10 +74,6 @@ def filtroActividades(id_dependencia=0,estado="",id_objetivo=0,id_eje="",id_prog
     actividades = Actividad.objects.filter(consulta)        
     return actividades
 
-
-
-
-
 def corregirAcciones(request):
     """Script to correct actions from the database, it gets just the number"""
     acciones = Acciones.objects.all()

@@ -3,11 +3,11 @@
 
 
 {% block title %}
-Acciones
+Dependencias
 {% endblock %}
 
 {%block navTitle%}
-Acciones
+Dependencias
 {%endblock%}
 {%block messages %}
 {% endblock%}
@@ -40,34 +40,31 @@ Acciones
                 {% endfor %}
         </ul>
     {% endif %}
-    <h2 class="text-center">{{dependencia.nombre}}</h2>
-    <hr>
 <table class="table table-responsive">
     <thead>
         <tr>
-            <th>Acción</th>
-            <th>Programa operativo</th>
+            <th>ID</th>
+            <th>Dependencia</th>
             {% for periodo in periodos %}
-                <th>{{periodo.nombre}}</th>
-                
+            <th>Gasto en {{periodo.nombre}}</th>
+            
             {% endfor %}
             <th>Acciones</th>
 
         </tr>
     </thead>
     <tbody class="bg-transparent">
-        {% for accion_po in acciones_po %}
+        {% for dpendencia_periodoGasto in dpendencias_periodosGasto %}
             <tr>
-                <td scope="row">{{accion_po.accion.nombre}}</td>
-                <td>{{accion_po.programaOperativo.nombre}}</td>
-                {% for periodoGasto in accion_po.periodos %}
-                <td>{{periodoGasto.gasto}}</td>
-                
+                <td scope="row">{{dpendencia_periodoGasto.dependencia.id}}</td>
+                <td>{{dpendencia_periodoGasto.dependencia.nombre}}</td>
+                {% for gasto in dpendencia_periodoGasto.gastos %}
+                    <td>{{gasto}}$</td>
                 {% endfor %}
-                <td>           
-                    <a class="btn guinda btn-sm" href="{%url 'verAccion' idAccion=accion_po.accion.id%}">
+                <td>
+                    <a class="btn guinda btn-sm" href="{%url 'accionesDependencia' idDependencia=dpendencia_periodoGasto.dependencia.id%}">
                         Gastos
-                      </a></td>
+                      </a></td></td>
             </tr>
         {% endfor %}
 

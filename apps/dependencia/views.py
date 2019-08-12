@@ -9,8 +9,14 @@ from apps.programaOperativo.models import ProgramaOperativo,GastoAnualAsignado,A
 from apps.dependencia.models import Departamento,Dependencia
 from apps.indicador.models import PeriodoGobierno,Periodo
 
-def getAccionesDependencia(id_dependencia,periodos):
-    dependencia = Dependencia.objects.get(pk=id_dependencia)
+def getGastoPeriodo(accion,periodo):
+    gastos = DetallesGasto.objects.filter(accion=accion,periodo=periodo)
+    total = 0.0
+    for gasto in gastos:
+        total += float(gasto.cantidad)
+    return total
+
+def getAccionesDependencia(dependencia,periodos):
     acciones = []
     programasOperativos = ProgramaOperativo.objects.filter(dependencia=dependencia, estado='a')
     for programaOperativo in programasOperativos:
@@ -19,11 +25,10 @@ def getAccionesDependencia(id_dependencia,periodos):
             gastos = DetallesGasto.objects.filter(accion=accion)
             periodosDetalleGasto = []
             for periodo in periodos:
-                gastos = DetallesGasto.objects.filter(accion=accion,periodo=periodo)
-                total = 0.0
-                for gasto in gastos:
-                    total += float(gasto.cantidad)
-                periodosDetalleGasto.append(total)
+                periodosDetalleGasto.append({
+                    'gasto':getGastoPeriodo(accion,periodo),
+                    'periodo':periodo
+                })
             acciones.append({
                 'accion':accion,
                 'programaOperativo':programaOperativo,
@@ -133,10 +138,35 @@ class PresupuestoAnualList(LoginRequiredMixin,View):
 
 class AccionesDependencia(LoginRequiredMixin,View):
     login_url = 'login'
-    def get(self,request):
+    def get(self,request,idDependencia):
+        dependencia = Dependencia.objects.get(pk=idDependencia)
+        if request.user.profile.tipoUsuario == 'e' and str(request.user.profile.dependencia.id) != idDependencia:
+            return redirect('index')            
         periodos = Periodo.objects.filter(capturaHabilitada=True)
-        acciones_po = getAccionesDependencia(request.user.profile.dependencia.id,periodos)
+        acciones_po = getAccionesDependencia(dependencia,periodos)
         return render(request,'dependencias/acciones.html',{
             'acciones_po':acciones_po,
-            'periodos':periodos
+            'periodos':periodos,
+            'dependencia':dependencia
+        })
+
+class DependenciasAdmin(LoginRequiredMixin,View):
+    login_url = 'login'
+    def get(self,request):
+        periodos = Periodo.objects.all() #[30,30,30]
+        dependencias = Dependencia.objects.filter(estado='a')
+        dpendencias_periodosGasto = []
+        for dependencia in dependencias:
+            acciones_po = getAccionesDependencia(dependencia,periodos)
+            totalGastoDependencia = [0.0] * len(periodos)
+            for accion_po in acciones_po:
+                for i in range(0,len(periodos)):
+                    totalGastoDependencia[i] += float(accion_po['periodos'][i]['gasto'])
+            dpendencias_periodosGasto.append({
+                'dependencia':dependencia,
+                'gastos':totalGastoDependencia
+            })
+        return render(request,'dependencias/admin/Dependencias.html',{
+              'periodos':periodos,
+              'dpendencias_periodosGasto':dpendencias_periodosGasto
         })

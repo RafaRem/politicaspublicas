@@ -7,6 +7,9 @@ urlpatterns = [
     name="dependencia_pos" ),
     path('dependencia/presupuesto-anual/<str:idProgramaOperativo>', PresupuestoAnualList.as_view(), 
     name="presupuestoAnual" ),
-    path('dependencia/acciones', AccionesDependencia.as_view(), 
-    name="accionesDependencia" )
+    path('dependencia/acciones/<str:idDependencia>', AccionesDependencia.as_view(), 
+    name="accionesDependencia" ),
+    path('dependencia/admin/list', DependenciasAdmin.as_view(), 
+    name="dependenciasAdmin" ),
+    
 ]

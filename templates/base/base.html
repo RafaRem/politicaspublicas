@@ -137,6 +137,7 @@
               <a class="dropdown-item" href="{%url 'listActividadesAdmin'%}">Actividades</a>
               <a class="dropdown-item" id="id_reporte_actividades" class="graficas" href="{%url 'reporteActividadesAdmin'%}">Reportes</a>
               <a class="dropdown-item" class="graficas" href="{%url 'productividadAdmin'%}">Productividad</a>
+              <a class="dropdown-item" class="graficas" href="{%url 'dependenciasAdmin'%}">Dependencias</a>
               <a class="dropdown-item" class="graficas" href="{%url 'enDesarrollo'%}">Metas</a>            
             </div>
           </li>
@@ -166,7 +167,8 @@
             <div class="dropdown-menu" aria-labelledby="pagesDropdown">
               <!-- <h6 class="dropdown-header">Actividades</h6> -->
               <a class="dropdown-item" href="{%url 'dependencia_pos'%}">Programas operativos</a>
-              <a class="dropdown-item" href="{%url 'accionesDependencia'%}">Acciones</a>
+              <a class="dropdown-item" 
+              href="{%url 'accionesDependencia' idDependencia=request.user.profile.dependencia.id%}">Acciones</a>
               <a class="dropdown-item" href="{%url 'enDesarrollo'%}">Departamentos</a>
 
             </div>
