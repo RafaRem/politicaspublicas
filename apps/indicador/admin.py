@@ -49,6 +49,8 @@ class PeriodoGobiernoAdmin(admin.ModelAdmin):
 @admin.register(Meta)
 class MetaAdmin(admin.ModelAdmin):
     list_display = ['id', 'descripcion']
+    search_fields = ['nombre']
+
 
 @admin.register(Indicador)
 class IndicadorAdmin(admin.ModelAdmin):
