@@ -116,7 +116,6 @@ class PeriodoGobierno(models.Model):
 class Meta(models.Model):
     descripcion = models.CharField(max_length=300,verbose_name="Descripción de la meta")
     descendente = models.BooleanField(default=False,verbose_name="¿Es descendente?")
-    cualitativa = models.BooleanField(default=False,verbose_name="¿Es cualitativa?")
     noPublica = models.BooleanField(default=False, verbose_name="¿No es pública?")
     meta = models.IntegerField(verbose_name="Meta de número de actividades")
     periodo = models.ForeignKey(PeriodoGobierno,on_delete=models.PROTECT,verbose_name="Periodo de gobierno")

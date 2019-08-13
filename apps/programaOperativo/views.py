@@ -653,7 +653,7 @@ class MetasAdmin(LoginRequiredMixin,View):
                 tieneMeta = False
                 porcentajeAccion = 0
                 claseSemaforo = 'danger'
-                metas = accion.meta.filter(periodo=periodoGobierno,cualitativa=False)
+                metas = accion.meta.filter(periodo=periodoGobierno)
                 arregloMetas = []
                 if metas:
                     contadorAccionesConMeta += 1
