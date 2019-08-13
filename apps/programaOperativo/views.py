@@ -314,7 +314,8 @@ class ActividadFormView(LoginRequiredMixin,View):
             and
             ((request.user.profile.dependencia.id != 14) and (request.user.profile.dependencia.id != 23)
             and (request.user.profile.dependencia.id != 12) and (request.user.profile.dependencia.id != 1)
-             and (request.user.profile.dependencia.id != 22) and (request.user.profile.dependencia.id != 21))):
+             and (request.user.profile.dependencia.id != 22) and (request.user.profile.dependencia.id != 21)
+             and (request.user.profile.dependencia.id != 11))):
                 messages.error(request,'La captura anterior al 30 de junio de 2019 está inhabilitada')
                 return redirect('nuevaActividad')
             save = datos.save()
@@ -674,8 +675,9 @@ class MetasAdmin(LoginRequiredMixin,View):
                 if metas:
                     for meta in metas:
                         meta = int(meta.meta)
+                        #obtenemos las actividades del periodo de gobierno que son válidas
                         actividades = Actividad.objects.filter(accion=accion,estado='r',
-                        fecha_fi__range=(periodoGobierno.fechaInicial,periodoGobierno.fechaFinal))
+                        fecha_fi__range=(periodoGobierno.fechaInicial,periodoGobierno.fechaFinal)).count()
                         print(actividades)
 
                 objetoPo['acciones'].append({
