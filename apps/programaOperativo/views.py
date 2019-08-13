@@ -654,36 +654,37 @@ class MetasAdmin(LoginRequiredMixin,View):
                 porcentajeAccion = 0
                 claseSemaforo = 'danger'
                 metas = accion.meta.filter(periodo=periodoGobierno,cualitativa=False)
-
-                # if accion.meta:
-                #     meta = 0
-                #     try:
-                #         meta = int(accion.meta)
-                #     except:
-                #         pass
-                #     if meta:
-                #         actividades = Actividad.objects.filter(accion=accion,estado='r')
-                #         actividades =actividades.count()
-                #         tieneMeta=True
-                #         contadorAccionesConMeta += 1
-                #         porcentajeAccion = (actividades / int(accion.meta)) * 100
-                #         acumuladorPorcentajeAccion += porcentajeAccion
-                #         if porcentajeAccion > 34 and porcentajeAccion < 85:
-                #             claseSemaforo = 'warning'
-                #         elif porcentajeAccion >= 85:
-                #             claseSemaforo = 'success'
+                arregloMetas = []
                 if metas:
+                    contadorAccionesConMeta += 1
+                    contadorMetas = 0
+                    acumuladorMetas = 0
                     for meta in metas:
-                        meta = int(meta.meta)
-                        #obtenemos las actividades del periodo de gobierno que son válidas
-                        actividades = Actividad.objects.filter(accion=accion,estado='r',
-                        fecha_fi__range=(periodoGobierno.fechaInicial,periodoGobierno.fechaFinal)).count()
-                        print(actividades)
-
+                        if meta.meta>0:
+                            contadorMetas += 1
+                            #obtenemos las actividades del periodo de gobierno que son válidas
+                            actividades = Actividad.objects.filter(accion=accion,estado='r',
+                            fecha_fi__range=(periodoGobierno.fechaInicial,periodoGobierno.fechaFinal)).count()
+                            tieneMeta = True
+                            porcentajeMeta = (actividades / meta.meta) * 100
+                            porcentajeMeta = round(porcentajeMeta,2)
+                            acumuladorMetas += porcentajeMeta
+                            arregloMetas.append({
+                                'descripcion':meta.descripcion,
+                                'porcentajeMeta':porcentajeMeta
+                            })
+                    porcentajeAccion = acumuladorMetas / contadorMetas if contadorMetas > 0 else 0
+                    acumuladorPorcentajeAccion += porcentajeAccion
+                    if porcentajeAccion > 34 and porcentajeAccion < 85:
+                        claseSemaforo = 'warning'
+                    elif porcentajeAccion >= 85:
+                        claseSemaforo = 'success'
+                else:
+                    continue
                 objetoPo['acciones'].append({
                         'id':accion.id,
                         'nombre':accion.nombre,
-                        'metas':[],
+                        'metas':arregloMetas,
                         # 'meta':accion.meta,
                         # 'descripcionMeta':accion.descripcionMeta,
                         'totalActividades':actividades if tieneMeta else None,
@@ -692,10 +693,11 @@ class MetasAdmin(LoginRequiredMixin,View):
                         'claseSemaforo':claseSemaforo
                 })
                 pass
-            porcentajePo = (acumuladorPorcentajeAccion / contadorAccionesConMeta) if contadorAccionesConMeta else 0
-            objetoPo['porcentajePo'] = int(round(porcentajePo,0))
-            objetoDependencia['pos'].append(objetoPo)
-            pass
+            #porcentaje total del programa operativo
+            if contadorAccionesConMeta > 0:
+                porcentajePo = (acumuladorPorcentajeAccion / contadorAccionesConMeta)
+                objetoPo['porcentajePo'] = round(porcentajePo,2)
+                objetoDependencia['pos'].append(objetoPo)
 
         self.queue.put(objetoDependencia)
         return
@@ -731,7 +733,7 @@ class MetasAdmin(LoginRequiredMixin,View):
             return redirect('index')
         contexto = self.obtenerContexto()
         periodoGobierno = PeriodoGobierno.objects.get(pk=1)
-        arreglosDependencias = self.filtrarDependencias(periodoGobierno,id_dependencia=26)
+        arreglosDependencias = self.filtrarDependencias(periodoGobierno)
         # arreglosDependencias = json.dumps(arreglosDependencias)
         contexto ['arreglosDependencias'] = arreglosDependencias
         contexto ['tipoFiltro'] = 'dependencia'
