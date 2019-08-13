@@ -667,7 +667,8 @@ class MetasAdmin(LoginRequiredMixin,View):
                             fecha_fi__range=(periodoGobierno.fechaInicial,periodoGobierno.fechaFinal)).count()
                             tieneMeta = True
                             porcentajeMeta = (actividades / meta.meta) * 100
-                            porcentajeMeta = round(porcentajeMeta,2) if porcentajeMeta <= 100 else 100.0
+                            #aquí le pones el tope al porcentaje
+                            porcentajeMeta = round(porcentajeMeta,2) #if porcentajeMeta <= 100 else 100.0
                             acumuladorMetas += porcentajeMeta
                             arregloMetas.append({
                                 'descripcion':meta.descripcion,
