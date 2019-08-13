@@ -70,6 +70,17 @@ Metas
                     {{meta.meta}}</h5>
             </div>
           </div>
+          <form method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="eliminarMeta" value="{{meta.id}}">
+                <div class="justify-content-center d-flex mb-2">
+                        <button class="btn guinda" type="submit">
+                                Eliminar
+                                </button>
+                </div>
+
+          </form>
+
         </div>
       </div>
     {% endfor %}
@@ -87,7 +98,7 @@ Metas
 
         <div class="form-group">
             {% csrf_token %}
-            <input type="text" class="form-control numero" required
+            <input type="text" class="form-control numero"
             id="input_{{periodo.id}}"  name="meta"
             value=""
             placeholder="Cantidad en la meta">

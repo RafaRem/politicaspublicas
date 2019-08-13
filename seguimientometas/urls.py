@@ -24,6 +24,7 @@ from apps.users import urls as usersUrls
 from apps.programaOperativo import urls as posUrls
 from apps.objetivo import urls as objetivosUrls
 from apps.dependencia import urls as dependenciasUrls
+from apps.indicador import urls as indicadoresUrls
 from seguimientometas.views import *
 
 urlpatterns = [
@@ -32,10 +33,9 @@ urlpatterns = [
     url(r'^',include(posUrls)),
     url(r'^',include(objetivosUrls)),
     url(r'^',include(dependenciasUrls)),
+    url(r'^',include(indicadoresUrls)),
     path('enDesarrollo', RenderView.as_view(template_name='extras/enDesarrollo.html'),name='enDesarrollo'),
     path('recursos', RenderView.as_view(template_name='extras/recursos.html'),name='recursos'),
-    path('capturar/metas', AccionesMetasView.as_view(),name='capturarMetasList'),
-    path('capturar/metas/<str:idAccion>', AccionesMetasForm.as_view(),name='capturarMetasForm')
 
     #url(r'^',include(ProgramUrls)),
     # url(r'^',include('apps.inmueble.urls')),
