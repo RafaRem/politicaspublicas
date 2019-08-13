@@ -3,29 +3,31 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.mixins import LoginRequiredMixin
 """Modelos"""
 from apps.indicador.models import PeriodoGobierno, Meta
-from apps.programaOperativo.models import Acciones
+from apps.programaOperativo.models import Acciones,ProgramaOperativo
 
 # Create your views here.
 class AccionesMetasView(LoginRequiredMixin,View):
     login_url = 'login'
     def obtenerAcciones(self):
-        acciones = Acciones.objects.all()
-        arregloAcciones = []
-        for accion in acciones:
-            if accion.meta:
-                arregloAcciones.append({
+        acciones = []
+        programasOperativos = ProgramaOperativo.objects.filter(estado='a')
+        for programaOperativo in programasOperativos:
+            accionesPo = programaOperativo.acciones.all()
+            for accion in accionesPo:
+                acciones.append({
                     'accion':accion,
-                    'periodos':[]
-            })
+                    'programaOperativo':programaOperativo,
+                })
+        return acciones
         #Aquí les va a decir si ya se capturó meta
     def get(self,request):
         if request.user.profile.tipoUsuario == 'e':
             return redirect('index')
         periodos = PeriodoGobierno.objects.all()
-        acciones = Acciones.objects.all()
+        acciones_po = self.obtenerAcciones()
         return render(request,'indicadores/metas/capturarMetas.html',{
             'periodos':periodos,
-            'acciones':acciones
+            'acciones_po':acciones_po
         })
 
 class AccionesMetasForm(LoginRequiredMixin,View):

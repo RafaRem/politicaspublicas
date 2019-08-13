@@ -45,6 +45,7 @@ Metas
 <table class="table table-responsive">
     <thead>
         <tr>
+            <th>Programa operativo</th>
             <th>Acción</th>
             <th>Tiene metas</th>
             <th>Acciones</th>
@@ -52,17 +53,18 @@ Metas
         </tr>
     </thead>
     <tbody class="bg-transparent">
-        {% for accion in acciones %}
+        {% for accione_po in acciones_po %}
             <tr>
-                <td scope="row">{{accion.nombre}}</td>
+                <td scope="row">{{accione_po.programaOperativo.nombre}}</td>
+                <td scope="row">{{accione_po.accion.nombre}}</td>
                 <td>
-                    {% if accion.meta.all %}
+                    {% if accione_po.accion.meta.all %}
                         <span class="badge badge-success">Con metas&nbsp;<i class="fa fa-check-circle"></i></span>                    
                     {% endif %}
                     
                 </td>
                 <td>           
-                    <a class="btn guinda btn-sm" href="{%url 'capturarMetasForm' idAccion=accion.id%}">
+                    <a class="btn guinda btn-sm" href="{%url 'capturarMetasForm' idAccion=accione_po.accion.id%}">
                         Capturar
                         </a></td>
                 </tr>
