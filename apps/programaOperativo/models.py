@@ -20,7 +20,6 @@ class Acciones(models.Model):
     meta = models.ManyToManyField(Meta,blank=True)
     publica = models.BooleanField(default=True, verbose_name='¿Es una acción pública?')
     cualitatica = models.BooleanField(default=False,verbose_name='¿Es una acción cualitativa?')
-    multiplicador = models.IntegerField(default=1)
     class Meta:
         verbose_name = 'Acción de programa operativo'
         verbose_name_plural = 'Acciones de programas operativos'
@@ -82,6 +81,7 @@ class Actividad(models.Model):
     observaciones = models.CharField(max_length=800,blank=True, null=True)
     fechaRegistrada = models.DateTimeField(auto_now_add=True)
     fechaActualizada = models.DateTimeField(auto_now=True)
+    multiplicador = models.IntegerField(default=1)
     class Meta:
         verbose_name = 'Actividad'
         verbose_name_plural = 'Actividades'
