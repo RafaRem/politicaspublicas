@@ -462,17 +462,20 @@ class ListActividadesAdmin(LoginRequiredMixin,View):
         if request.user.profile.tipoUsuario == 'e':
             return redirect('index')
         dependencias = self.obtenerDependencias()
+        programasOperativos = ProgramaOperativo.objects.filter(estado='a').order_by('nombre') 
         # dependencias = Dependencia.objects.filter(estado='a')
         # dependencias = dependencias.order_by('nombre')
         objetivos = Objetivo.objects.filter(estado='a')
         objetivos = objetivos.order_by('nombre')
         return render(request,'programasOperativos/actividades/admin/listActividadesAdmin.html',{
             'dependencias':dependencias,
-            'objetivos':objetivos
+            'objetivos':objetivos,
+            'programasOperativos':programasOperativos
         })
     def post(self,request):
         if request.user.profile.tipoUsuario == 'e':
             return redirect('index')
+        programasOperativos = ProgramaOperativo.objects.filter(estado='a').order_by('nombre')
         dependencias = self.obtenerDependencias()
         objetivos = Objetivo.objects.filter(estado='a')
         objetivos = objetivos.order_by('nombre')
@@ -480,7 +483,8 @@ class ListActividadesAdmin(LoginRequiredMixin,View):
             id_dependencia=int(request.POST.get('dependencia') if request.POST.get('dependencia') else 0),
             id_eje=request.POST.get('eje'),
             id_objetivo=int(request.POST.get('objetivo') if request.POST.get('objetivo') else 0),
-            estado=request.POST.get('estado')
+            estado=request.POST.get('estado'),
+            id_programaOperativo=int(request.POST.get('programaOperativo') if request.POST.get('programaOperativo') else 0)
         )
         arrayActividades = []
         for actividad in actividades:
@@ -490,7 +494,8 @@ class ListActividadesAdmin(LoginRequiredMixin,View):
             'dependencias':dependencias,
             'objetivos':objetivos,
             'actividades':actividades,
-            'arrayActividades':arrayActividades
+            'arrayActividades':arrayActividades,
+            'programasOperativos':programasOperativos
         })
 
 class VerActividadAdmin(LoginRequiredMixin,View):
