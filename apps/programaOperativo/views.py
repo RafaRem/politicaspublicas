@@ -495,20 +495,65 @@ class ListActividadesAdmin(LoginRequiredMixin,View):
 
 class VerActividadAdmin(LoginRequiredMixin,View):
     login_url = 'login'
-    def get(self, request,idActividad):
+    def obtenerContexto(self, idActividad):
         actividad = Actividad.objects.get(pk=idActividad)
-        return render(request,'programasOperativos/actividades/admin/verActividadAdmin.html',{
-            'actividad':actividad
-        })
+        accion = actividad.accion
+        periodoGobierno = PeriodoGobierno.objects.filter(fechaInicial__lte=actividad.fecha_in, fechaFinal__gte=actividad.fecha_in).first()
+        metas = actividad.accion.meta.all()
+        tieneMeta = False
+        porcentajeAccion = 0
+        claseSemaforo = 'danger'
+        metas = actividad.accion.meta.filter(periodo=periodoGobierno)
+        arregloMetas = []
+        if metas:
+            contadorMetas = 0
+            acumuladorMetas = 0
+            for meta in metas:
+                if meta.meta>0:
+                    contadorMetas += 1
+                    #obtenemos las actividades del periodo de gobierno que son válidas
+                    actividades = Actividad.objects.filter(accion=accion,estado='r',
+                    fecha_fi__range=(periodoGobierno.fechaInicial,periodoGobierno.fechaFinal))
+                    contadorActividades = 0
+                    for actividad in actividades:
+                        contadorActividades += actividad.multiplicador
+                    tieneMeta = True
+                    porcentajeMeta = (contadorActividades / meta.meta) * 100
+                    #aquí le pones el tope al porcentaje
+                    porcentajeMeta = round(porcentajeMeta,0) #if porcentajeMeta <= 100 else 100.0
+                    porcentajeMeta = int(porcentajeMeta)
+                    acumuladorMetas += porcentajeMeta
+            porcentajeAccion = acumuladorMetas / contadorMetas if contadorMetas > 0 else 0
+            if porcentajeAccion > 34 and porcentajeAccion < 85:
+                claseSemaforo = 'warning'
+            elif porcentajeAccion >= 85:
+                claseSemaforo = 'success'
+        return {
+            'actividad':actividad,
+            'tieneMeta':tieneMeta,
+            'porcentajeMeta':porcentajeAccion,
+            'claseSemaforo':claseSemaforo
+                }
+    def get(self, request,idActividad):
+        contexto = self.obtenerContexto(idActividad)
+        return render(request,'programasOperativos/actividades/admin/verActividadAdmin.html',contexto)
     def post(self, request,idActividad):
         actividad = Actividad.objects.get(pk=idActividad)
-        actividad.observaciones = request.POST.get('observaciones')
-        actividad.estado = request.POST.get('estado')
-        actividad.save(usuario=request.user.id,estado=request.POST.get('estado'))
-        messages.success(request,'Cambio realizado con éxito')
-        return render(request,'programasOperativos/actividades/admin/verActividadAdmin.html',{
-            'actividad':actividad
-        })
+        if request.POST.get('cualitativa'):
+            accion = actividad.accion
+            accion.cualitativa = True
+            accion.save()
+        else:
+            metas = actividad.accion.meta.all()
+            if not metas and not actividad.accion.cualitativa:
+                messages.error(request,'Se necesita definir si la acción es cualitativa o si tiene metas')
+            else:
+                actividad.observaciones = request.POST.get('observaciones')
+                actividad.estado = request.POST.get('estado')
+                actividad.save(usuario=request.user.id,estado=request.POST.get('estado'))
+                messages.success(request,'Cambio realizado con éxito')
+        contexto = self.obtenerContexto(idActividad)
+        return render(request,'programasOperativos/actividades/admin/verActividadAdmin.html',contexto)
 
 class ReporteActividadesAdmin(LoginRequiredMixin,View):
     login_url = 'login'
@@ -664,9 +709,12 @@ class MetasAdmin(LoginRequiredMixin,View):
                             contadorMetas += 1
                             #obtenemos las actividades del periodo de gobierno que son válidas
                             actividades = Actividad.objects.filter(accion=accion,estado='r',
-                            fecha_fi__range=(periodoGobierno.fechaInicial,periodoGobierno.fechaFinal)).count()
+                            fecha_fi__range=(periodoGobierno.fechaInicial,periodoGobierno.fechaFinal))
+                            contadorActividades = 0
+                            for actividad in actividades:
+                                contadorActividades += actividad.multiplicador
                             tieneMeta = True
-                            porcentajeMeta = (actividades / meta.meta) * 100
+                            porcentajeMeta = (contadorActividades / meta.meta) * 100
                             #aquí le pones el tope al porcentaje
                             porcentajeMeta = round(porcentajeMeta,2) #if porcentajeMeta <= 100 else 100.0
                             acumuladorMetas += porcentajeMeta

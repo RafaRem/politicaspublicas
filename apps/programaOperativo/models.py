@@ -19,7 +19,7 @@ class Acciones(models.Model):
     indicador = models.ManyToManyField(Indicador, blank=True)
     meta = models.ManyToManyField(Meta,blank=True)
     publica = models.BooleanField(default=True, verbose_name='¿Es una acción pública?')
-    cualitatica = models.BooleanField(default=False,verbose_name='¿Es una acción cualitativa?')
+    cualitativa = models.BooleanField(default=False,verbose_name='¿Es una acción cualitativa?')
     class Meta:
         verbose_name = 'Acción de programa operativo'
         verbose_name_plural = 'Acciones de programas operativos'
