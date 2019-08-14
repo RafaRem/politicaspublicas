@@ -74,7 +74,7 @@ class Actividad(models.Model):
     fecha_fi = models.DateField(verbose_name="Día en el que se finaliza")
     latitud = models.CharField(max_length=300, blank=True, null=True)
     longitud = models.CharField(max_length=300, blank=True, null=True)
-    accion = models.ForeignKey(Acciones, on_delete=models.PROTECT, 
+    accion = models.ForeignKey(Acciones, on_delete=models.PROTECT,  
     verbose_name="Acción a la que corresponde")
     created = models.DateTimeField(auto_now_add=True)    
     estado = models.CharField(choices=opcionesEstado,max_length=30,default='p')
