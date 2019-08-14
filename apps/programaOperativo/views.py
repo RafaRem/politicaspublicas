@@ -521,21 +521,22 @@ class VerActividadAdmin(LoginRequiredMixin,View):
                     porcentajeMeta = (contadorActividades / meta.meta) * 100
                     #aquí le pones el tope al porcentaje
                     porcentajeMeta = round(porcentajeMeta,0) #if porcentajeMeta <= 100 else 100.0
-                    porcentajeMeta = int(porcentajeMeta)
                     acumuladorMetas += porcentajeMeta
             porcentajeAccion = acumuladorMetas / contadorMetas if contadorMetas > 0 else 0
+            porcentajeAccion = int(porcentajeAccion)
             if porcentajeAccion > 34 and porcentajeAccion < 85:
                 claseSemaforo = 'warning'
             elif porcentajeAccion >= 85:
                 claseSemaforo = 'success'
         return {
-            'actividad':actividad,
             'tieneMeta':tieneMeta,
             'porcentajeMeta':porcentajeAccion,
             'claseSemaforo':claseSemaforo
                 }
     def get(self, request,idActividad):
+        actividad = Actividad.objects.get(pk=idActividad)
         contexto = self.obtenerContexto(idActividad)
+        contexto['actividad'] = actividad
         return render(request,'programasOperativos/actividades/admin/verActividadAdmin.html',contexto)
     def post(self, request,idActividad):
         actividad = Actividad.objects.get(pk=idActividad)
@@ -543,16 +544,17 @@ class VerActividadAdmin(LoginRequiredMixin,View):
             accion = actividad.accion
             accion.cualitativa = True
             accion.save()
-        else:
+        if request.POST.get('estado'):
             metas = actividad.accion.meta.all()
             if not metas and not actividad.accion.cualitativa:
                 messages.error(request,'Se necesita definir si la acción es cualitativa o si tiene metas')
             else:
                 actividad.observaciones = request.POST.get('observaciones')
                 actividad.estado = request.POST.get('estado')
-                actividad.save(usuario=request.user.id,estado=request.POST.get('estado'))
+                actividad.save()
                 messages.success(request,'Cambio realizado con éxito')
         contexto = self.obtenerContexto(idActividad)
+        contexto['actividad'] = actividad
         return render(request,'programasOperativos/actividades/admin/verActividadAdmin.html',contexto)
 
 class ReporteActividadesAdmin(LoginRequiredMixin,View):

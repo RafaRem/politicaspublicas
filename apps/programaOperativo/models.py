@@ -56,7 +56,8 @@ class Actividad(models.Model):
         ('p','Programada'),
         ('t','Por revisar'),
         ('i','Inactiva'),
-        ('r','Válida'),
+        ('r','Principal'),
+        ('s','Secundaria'),
         ('n', 'No válida')
     )
     user = models.ForeignKey(User, on_delete= models.PROTECT)
