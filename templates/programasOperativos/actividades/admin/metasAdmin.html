@@ -12,32 +12,41 @@ Metas
 {%block messages %}
 {% endblock%}
 {% block extracss %}
-    <style>
-        a.btn{
-            min-width: 100px;
-        }
-        table.dataTable tbody tr{
-            background: transparent !important;
-        }
-        span.badge{
-            min-width: 100px;
-        }
-        .badge-naranja{
-            background: #f26631;
-        }
-        #filtros{
-            position: fixed;
-            z-index: 200;
-        }
-        .guinda.active{
-            background-color: rgb(96, 2, 12) !important;
-            border-color: rgb(96, 2, 12) !important;
-        }
-        #groupEjes,#groupObjetivos{
-            display: none;
-        }
+<style>
+    a.btn{
+        min-width: 100px;
+    }
+    table.dataTable tbody tr{
+        background: transparent !important;
+    }
+    span.badge{
+        min-width: 100px;
+    }
+    .badge-naranja{
+        background: #f26631;
+    }
+    #filtros{
+        position: fixed;
+        z-index: 200;
+    }
+    .guinda.active{
+        background-color: rgb(96, 2, 12) !important;
+        border-color: rgb(96, 2, 12) !important;
+    }
+    #groupEjes,#groupObjetivos{
+        display: none;
+    }
+    .accion{
+        font-family: sans-serif;
+        color: white;
+
+    }
+    .accion:hover{
+        font-family: sans-serif;
+        color: white;
         
-    </style>
+    }
+</style>
 {% endblock %}
 
 {%block content%}
@@ -75,7 +84,10 @@ Metas
                                     <h5 class="text-center">{{po.porcentajePo}}%</h5>
                                     <br>
                                     {% for accion in po.acciones %}
-                                    {{accion.nombre}}
+                                    <a id="accion_{{accion.id}}" href="#" class="accion" data-toggle="tooltip" data-placement="bottom" 
+                                    title="Actividades de la acción" name="accion_{{accion.id}}"
+                                    >{{accion.nombre}}</a>
+                                    
                                     <div class="progress">
                                             <div class="progress-bar bg-{{accion.claseSemaforo}}" role="progressbar" style="width: {{accion.porcentajeEnteroAccion}}%" aria-valuenow="{{accion.porcentajeAccion}}" aria-valuemin="0" aria-valuemax="100">{{accion.porcentajeAccion}}%</div>
                                           </div>
@@ -98,8 +110,9 @@ Metas
             {% endfor %}
 
         </div>
- 
-            
+        <form id="form_verActividades" method="POST">
+                {% csrf_token %}
+        </form>            
     </div>
 
 
@@ -180,19 +193,17 @@ Metas
     </div>
 
 
-
 {%endblock%}
 
 
 {% block extrascripts %}
-<script src="https://code.highcharts.com/highcharts-more.js"></script>
-<script src="https://code.highcharts.com/modules/solid-gauge.js"></script>
     <script>
         
         $(document).ready(()=>{
             //var arreglosDependencias = '{{arreglosDependencias|escapejs}}';
             //arreglosDependencias = JSON.parse(arreglosDependencias);
             //console.log(arreglosDependencias)
+            $('[data-toggle="tooltip"]').tooltip();
             $("#grupoRadios").on('click',()=>{
                 setTimeout(()=>{
                     if($('#optionDependencia').is(':checked')) { 
@@ -241,6 +252,15 @@ Metas
                     }                 
                 }*/
             }
+            $('.accion').click((event)=>{
+                event.preventDefault();
+                let id = event.target.id.split('_');
+                id = id[1];
+                $('#form_verActividades').append(`
+                <input name="accion" value="${id}" hidden type="text">
+                `);
+                $('#form_verActividades').submit();
+            });
         });
 
     </script>

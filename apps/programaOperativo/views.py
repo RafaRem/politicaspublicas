@@ -796,10 +796,27 @@ class MetasAdmin(LoginRequiredMixin,View):
         objetivos = Objetivo.objects.filter(estado='a')
         return render(request,'programasOperativos/actividades/admin/metasAdmin.html',contexto)
     def post(self,request):
+        if request.POST.get('accion'):
+            programasOperativos = ProgramaOperativo.objects.filter(estado='a').order_by('nombre')
+            dependencias = ListActividadesAdmin.obtenerDependencias(self)
+            objetivos = Objetivo.objects.filter(estado='a')
+            objetivos = objetivos.order_by('nombre')
+            accion = Acciones.objects.get(pk=request.POST.get('accion'))
+            actividades = Actividad.objects.filter(accion=accion)
+            arrayActividades = []
+            for actividad in actividades:
+                arrayActividades.append(actividad.id)
+            arrayActividades = json.dumps(arrayActividades)
+            return render(request,'programasOperativos/actividades/admin/listActividadesAdmin.html',{
+                'dependencias':dependencias,
+                'objetivos':objetivos,
+                'actividades':actividades,
+                'arrayActividades':arrayActividades,
+                'programasOperativos':programasOperativos
+            })
         if request.user.profile.tipoUsuario == 'e':
             return redirect('index')
         if request.POST.get('options') == 'dependencias':
-
             resultado = self.filtrarDependencias()
             filtroProgramasOperativos()
         eje = request.POST.get('eje')
