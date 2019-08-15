@@ -58,8 +58,12 @@ Metas
                 <td scope="row">{{accione_po.programaOperativo.nombre}}</td>
                 <td scope="row">{{accione_po.accion.nombre}}</td>
                 <td>
-                    {% if accione_po.accion.meta.all %}
+                    {% if accione_po.accion.cualitativa %}
+                    <span class="badge badge-success">Cualitativa&nbsp;<i class="fa fa-check-circle"></i></span>
+                    {% elif accione_po.accion.meta.all %}
                         <span class="badge badge-success">Con metas&nbsp;<i class="fa fa-check-circle"></i></span>                    
+                    {% else %}
+                    <span class="badge badge-danger">&nbsp;<i class="fa fa-times">Falta capturar</i></span>                    
                     {% endif %}
                     
                 </td>
