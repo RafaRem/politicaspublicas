@@ -64,9 +64,15 @@ AQUÍ VAN LAS FLECHAS DE ANTES Y DESPUES
 <h2 class="text-center">
 {{actividad.nombre}}
 </h2>
+<br>
+<h5 class="text-center">
+    {{actividad.descripcion}}
+</h5>
+
 <hr>
-<h3 class="text-center">Metas</h3>
 <div id="id_meta">
+    <h3 class="text-center">{{cantidadMeta}}&nbsp;{{descripcionMeta}}</h3>
+
     {% if tieneMeta %}
 
     {% elif actividad.accion.cualitativa %}
@@ -87,133 +93,150 @@ AQUÍ VAN LAS FLECHAS DE ANTES Y DESPUES
     {% endif %}
 </div>
 <hr>
-<div class="container bg-transparent">
 
-        <table class="table">
-                <tbody>
-                  <tr>
-                    <th scope="row">
-                        <h5 class="text-center">
-                            <strong>Subido por
-                            </strong>
-                        </h5>
-                    </th>
-                    <td>
-                        <h5 class="text-center">
-                                {{actividad.user.username}}, {{actividad.user.profile.dependencia.nombre}}
-                        </h5>
-                    </td>
-                  </tr>
-                  <tr>
-                    <th scope="row">
-                            <h5 class="text-center">
-                                    <strong>Programa operativo:</strong>
-                                </h5>
-                    </th>
-                    <td>
-                        <h5 class="text-center">
-                        {{actividad.programaoperativo.nombre}}
-                        </h5>
-                    </td>
-                  </tr>
-                  <tr>
-                    <th scope="row">
-                        <h5 class="text-center"><strong>Acción:</strong> </h5>
-                    </th>
-                    <td>
-                        <h5 class="text-center">
-                            {{actividad.accion.nombre}}
-                        </h5>
-                    </td>
-                  </tr>
-                  <tr>
+        <div class="justify-content-center d-flex">
+            <h2>
+            {% if actividad.estado == 'r' %}
+            <span class="badge badge-success">Válida&nbsp;<i class="fa fa-check-circle"></i></span>
+            {%elif actividad.estado == 's' %}
+            <span class="badge badge-info">Secundaria&nbsp;<i class="far fa-check-circle"></i></span>
+
+            {%elif actividad.estado == 'p' %}
+            <span class="badge badge-naranja">Pendiente&nbsp;<i class="fas fa-exclamation-circle"></i></span>
+            {%elif actividad.estado == 'n' %}
+            <span class="badge badge-danger">No válido&nbsp;<i class="fa fa-times-circle"></i></span>
+            {%else%}
+            <span class="badge badge-warning">En revisión&nbsp;<i class="fas fa-clock"></i></span>
+            {% endif %}
+        </h2>
+        </div>
+
+<hr>
+<div class="container bg-transparent">
+    <div class="justify-content-center d-flex m-4">
+        <button class="btn guinda" type="button" data-toggle="collapse" data-target="#detalles" aria-expanded="false" aria-controls="collapseExample">
+            Ver detalles&nbsp;<i class="fas fa-chevron-circle-down"></i>
+        </button>
+    </div>
+
+    <div class="collapse bg-transparent" id="detalles">
+        <div class="card card-body bg-transparent">
+            <table class="table">
+                    <tbody>
+                        <tr>
                         <th scope="row">
                             <h5 class="text-center">
-                                <strong>Descripción</strong>
+                                <strong>Subido por
+                                </strong>
                             </h5>
                         </th>
                         <td>
                             <h5 class="text-center">
-                                {{actividad.descripcion}}
-                            </h5>
-                        </td>
-                      </tr>
-                    <tr>
-                        <th scope="row">
-                            <h5 class="text-center">
-                                <strong>Personas involucradas en la actividad:</strong>
-                            </h5>
-                        </th>
-                        <td>
-                            <h5 class="text-center">
-                                {{actividad.personasInvolucradas}}
+                                    {{actividad.user.username}}, {{actividad.user.profile.dependencia.nombre}}
                             </h5>
                         </td>
                         </tr>
-                    <tr>
+                        <tr>
                         <th scope="row">
-                            <h5 class="text-center">
-                                <strong>Beneficiarios:</strong>
-                            </h5>
+                                <h5 class="text-center">
+                                        <strong>Programa operativo:</strong>
+                                    </h5>
                         </th>
                         <td>
                             <h5 class="text-center">
-                                {{actividad.beneficiarios}}
+                            {{actividad.programaoperativo.nombre}}
                             </h5>
                         </td>
                         </tr>
-                    <tr>
+                        <tr>
                         <th scope="row">
-                            <h5 class="text-center">
-                                <strong>Actividad desde:</strong>
-                            </h5>
+                            <h5 class="text-center"><strong>Acción:</strong> </h5>
                         </th>
                         <td>
                             <h5 class="text-center">
-                                {{actividad.fecha_in}}
+                                {{actividad.accion.nombre}}
                             </h5>
                         </td>
                         </tr>
-                    <tr>
-                        <th scope="row">
-                            <h5 class="text-center">
-                                <strong>Hasta:</strong>
-                            </h5>
-                        </th>
-                        <td>
-                            <h5 class="text-center">
-                                {{actividad.fecha_fi}}
-                            </h5>
-                        </td>
-                        </tr>
-                    <tr>
+
+                        <tr>
                             <th scope="row">
                                 <h5 class="text-center">
-                                    <strong>Estado:</strong>
+                                    <strong>Personas involucradas en la actividad:</strong>
                                 </h5>
                             </th>
                             <td>
                                 <h5 class="text-center">
-                                        {% if actividad.estado == 'r' %}
-                                        <span class="badge badge-success">Válida&nbsp;<i class="fa fa-check-circle"></i></span>
-                                        {%elif actividad.estado == 's' %}
-                                        <span class="badge badge-info">Secundaria&nbsp;<i class="far fa-check-circle"></i></span>
-
-                                        {%elif actividad.estado == 'p' %}
-                                        <span class="badge badge-naranja">Pendiente&nbsp;<i class="fas fa-exclamation-circle"></i></span>
-                                        {%elif actividad.estado == 'n' %}
-                                        <span class="badge badge-danger">No válido&nbsp;<i class="fa fa-times-circle"></i></span>
-                                        {%else%}
-                                        <span class="badge badge-warning">En revisión&nbsp;<i class="fas fa-clock"></i></span>
-                                        {% endif %}
+                                    {{actividad.personasInvolucradas}}
                                 </h5>
                             </td>
                             </tr>
-                        
-                </tbody>
-              </table>
-    <div id="map"></div>
+                        <tr>
+                            <th scope="row">
+                                <h5 class="text-center">
+                                    <strong>Beneficiarios:</strong>
+                                </h5>
+                            </th>
+                            <td>
+                                <h5 class="text-center">
+                                    {{actividad.beneficiarios}}
+                                </h5>
+                            </td>
+                            </tr>
+                        <tr>
+                            <th scope="row">
+                                <h5 class="text-center">
+                                    <strong>Actividad desde:</strong>
+                                </h5>
+                            </th>
+                            <td>
+                                <h5 class="text-center">
+                                    {{actividad.fecha_in}}
+                                </h5>
+                            </td>
+                            </tr>
+                        <tr>
+                            <th scope="row">
+                                <h5 class="text-center">
+                                    <strong>Hasta:</strong>
+                                </h5>
+                            </th>
+                            <td>
+                                <h5 class="text-center">
+                                    {{actividad.fecha_fi}}
+                                </h5>
+                            </td>
+                            </tr>
 
+                            
+                    </tbody>
+                    </table>
+        </div>
+    </div>
+
+    <div class="justify-content-center d-flex m-4">
+            <button class="btn guinda" type="button" data-toggle="collapse" data-target="#evidencia" aria-expanded="false" aria-controls="collapseExample">
+                Evidencia&nbsp;<i class="fas fa-chevron-circle-down"></i>
+            </button>
+        </div>
+    
+        <div class="collapse bg-transparent" id="evidencia">
+            <div class="card card-body bg-transparent">
+                    <div id="map"></div>
+
+                    <hr>
+                    
+                
+                    <div class="d-flex justify-content-center">
+                        <embed src="/media/{{actividad.evidencia}}" width="600" height="500" alt="pdf" pluginspage="http://www.adobe.com/products/acrobat/readstep2.html">
+                    </div>
+                    <div class="d-flex justify-content-center mt-2">
+                        <a id="evidencia" class="btn guinda m-2" href="/media/{{actividad.evidencia}}" target="_blank">Ver evidencia</a>
+                    </div>
+            </div>
+        </div>
+
+  
     <hr>
     <h3 class="text-center font-weight-bold">Observaciones</h3>
     {% if actividad.observaciones %}
@@ -223,17 +246,6 @@ AQUÍ VAN LAS FLECHAS DE ANTES Y DESPUES
         <h4 class="text-center">Sin observaciones</h4>
 
     {% endif %}
-    <hr>
-    
-
-    <div class="d-flex justify-content-center">
-        <embed src="/media/{{actividad.evidencia}}" width="600" height="500" alt="pdf" pluginspage="http://www.adobe.com/products/acrobat/readstep2.html">
-    </div>
-    <div class="d-flex justify-content-center mt-2">
-        <a id="evidencia" class="btn guinda m-2" href="/media/{{actividad.evidencia}}" target="_blank">Ver evidencia</a>
-    </div>
-    <hr>
-
     <form action="" id="frm_actividad" method="POST">
         {% csrf_token %}
         <div class="form-group">

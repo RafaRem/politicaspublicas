@@ -508,6 +508,8 @@ class VerActividadAdmin(LoginRequiredMixin,View):
         tieneMeta = False
         porcentajeAccion = 0
         claseSemaforo = 'danger'
+        descripcionMeta = ''
+        cantidadMeta = 0
         metas = actividad.accion.meta.filter(periodo=periodoGobierno)
         arregloMetas = []
         if metas:
@@ -524,6 +526,8 @@ class VerActividadAdmin(LoginRequiredMixin,View):
                         contadorActividades += actividad.multiplicador
                     tieneMeta = True
                     porcentajeMeta = (contadorActividades / meta.meta) * 100
+                    descripcionMeta = meta.descripcion
+                    cantidadMeta = meta.meta
                     #aquí le pones el tope al porcentaje
                     porcentajeMeta = round(porcentajeMeta,0) #if porcentajeMeta <= 100 else 100.0
                     acumuladorMetas += porcentajeMeta
@@ -536,7 +540,9 @@ class VerActividadAdmin(LoginRequiredMixin,View):
         return {
             'tieneMeta':tieneMeta,
             'porcentajeMeta':porcentajeAccion,
-            'claseSemaforo':claseSemaforo
+            'claseSemaforo':claseSemaforo,
+            'descripcionMeta':descripcionMeta,
+            'cantidadMeta':cantidadMeta
                 }
     def get(self, request,idActividad):
         actividad = Actividad.objects.get(pk=idActividad)
@@ -802,7 +808,8 @@ class MetasAdmin(LoginRequiredMixin,View):
             objetivos = Objetivo.objects.filter(estado='a')
             objetivos = objetivos.order_by('nombre')
             accion = Acciones.objects.get(pk=request.POST.get('accion'))
-            actividades = Actividad.objects.filter(accion=accion)
+            actividades = Actividad.objects.filter(Q(estado='r') | Q(estado='s'))
+            actividades = actividades.filter(accion=accion)
             arrayActividades = []
             for actividad in actividades:
                 arrayActividades.append(actividad.id)
