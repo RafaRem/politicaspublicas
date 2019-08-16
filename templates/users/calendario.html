@@ -44,7 +44,7 @@
                       {% endfor %}
                     </select>
                     </div>
-                    <div>
+                    <div> 
                     <label for="srh2">Estatus</label>
                     <select name="srh2" class="container col-lg-9 col-md-12">
                         <option value="" >Todos</option>
@@ -132,11 +132,10 @@
                   //Aquí empieza
                   eventClick: function(info, event, element) 
                   {
-
-                      Swal.fire(
-                        info.event.title
-                        
-                      )
+                      console.log(info);
+                       Swal.fire(
+                                        
+                                 )
                         
                         
                         
@@ -148,6 +147,7 @@
                       events: [
                   {% for i,j in actividad %}
                   {
+                      id: "{{ i.id}}",
                       title: "{{ i.nombre}}",
                       start: '{{ i.fecha_in|date:"Y-m-d" }}',
                       end: '{{i.fecha_fi|date:"Y-m-d" }}',

@@ -132,71 +132,18 @@ def CalendarView(request):
         if (srch or srch2 or srch3 or srch4):
             actividades = Actividad.objects.all()
 
-            
-        
             if srch:
                 actividades = filtroActividades(id_dependencia=int(srch))
-                # po = []
-                # dep = Dependencia.objects.get(pk=srch)  
-                # proper = ProgramaOperativo.objects.filter(dependencia=dep) 
-                # for i in proper:
-                #     po += [i]
-
-
-                # actividades = Actividad.objects.filter(programaoperativo__in=po)      
+     
             if srch2:
                 actividades = filtroActividades(estado=srch2)
                 
-
-
             if srch3:
                 actividades = filtroActividades(id_objetivo=int(srch3))
-                # act = []
-                # depd = []
-                # obje = Objetivo.objects.get(pk=srch3)
-                # depen = Dependencia.objects.filter(objetivo=obje)   
-                # for j in depen:
-                #     depd+= [j] 
-                
-                # proper2 = ProgramaOperativo.objects.filter(dependencia__in=depd)      
-    
-                # for x in proper2: 
-                #     act+= [x]   
-
-                # actividades = actividades.filter(programaoperativo__in=act)
-            
 
             if srch4:
                 actividades = filtroActividades(id_eje=srch4)
-                # obje2=[]
-                # act2 = []
-                # po2 = []
-                # obeje = Objetivo.objects.filter(ejeTransversal=srch4)
-                # for i in obeje:
-                #     obje2+=[i]
-
-                # print("Objetivos", obje2)
-                # dependencia = Dependencia.objects.filter(objetivo__in=obje2) 
-                
-                # for k in dependencia:
-                #     po2+=[k]
-
-                # print("Dependencia", po2)
-                
-                # proper3 = ProgramaOperativo.objects.filter(dependencia__in=po2)  
-                # print("Programa", proper3)           
-                # for a in proper3:
-                #     act2+= [a]
-
-
-            #     actividades = actividades.filter(programaoperativo__in=act2)     
-
-
-
-
-
-
-            # actividades = actividades.filter(Q(estado__icontains=srch2))     
+    
 
             for i in actividades:
                 if (date_object.date() > i.fecha_in):
@@ -286,10 +233,10 @@ class CharData(LoginRequiredMixin,APIView):
         fechaini='2019-05-30'
         labels = ['IMDA', 'IMAC', 'SEDECO', 'IMJU']
         default_items = [nom,apepat,apemat,ed]
-        title= 'Prueba'
+        title= CalendarView()
         data ={
         "nombre": nomb,
-        "descri": desc,
+        "titulo": title,
         "programa": programa,
         "pres": preje,
         "fecha":fechaini
