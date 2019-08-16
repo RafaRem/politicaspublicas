@@ -45,10 +45,15 @@ class AccionesMetasForm(LoginRequiredMixin,View):
         if request.user.profile.tipoUsuario == 'e':
             return redirect('index')
         accion = Acciones.objects.get(pk=idAccion)
+
         contexto = self.getContexto(accion)
         return render(request,'indicadores/metas/capturarMetasForm.html',contexto)
     def post(self,request,idAccion):
         accion = Acciones.objects.get(pk=idAccion)
+        if request.POST.get('cualitativa'):
+            accion.cualitativa = True
+            accion.save()
+            return redirect('capturarMetasList')
         contexto = self.getContexto(accion)
         periodos = PeriodoGobierno.objects.all()
         periodos = periodos.order_by('descripcion')
@@ -65,3 +70,7 @@ class AccionesMetasForm(LoginRequiredMixin,View):
             meta.delete()
         return render(request,'indicadores/metas/capturarMetasForm.html',contexto)
   
+class FichaAccion(LoginRequiredMixin,View):
+    login_url = 'login'
+    def get(self,request, idAccion):
+        return render(request,'indicadores/fichaAccion.html')

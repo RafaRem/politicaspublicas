@@ -70,16 +70,19 @@ Metas
                     {{meta.meta}}</h5>
             </div>
           </div>
+          <div class="justify-content-center d-flex mb-2">
+
           <form method="POST">
                 {% csrf_token %}
                 <input type="hidden" name="eliminarMeta" value="{{meta.id}}">
-                <div class="justify-content-center d-flex mb-2">
                         <button class="btn guinda" type="submit">
                                 Eliminar
                                 </button>
-                </div>
 
           </form>
+
+        </div>
+
 
         </div>
       </div>
@@ -108,8 +111,18 @@ Metas
             <button type="submit" class="btn btn-primary guinda">
                 Agregar metas&nbsp;<i class="fas fa-check-circle"></i>
             </button>
+            &nbsp;&nbsp;
+
             </div>
 </form>
+<br>
+<div class="justify-content-center d-flex">
+        <form id="form_cualitativa" action="" method="POST">
+                {% csrf_token %}
+                <input class="btn guinda btn-sm" name="cualitativa" type="submit" value="Cualitativa">
+            </form>  
+</div>
+
 
 {%endblock%}
 
@@ -120,5 +133,6 @@ Metas
             $('.numero').mask('00000000', {reverse: true});
 
         } );
+
     </script>
 {% endblock %}
