@@ -53,7 +53,7 @@ Tus actividades
         <tr>
             <td scope="row">{{actividad.nombre}}</td>
             <td>
-                {% if actividad.estado == 'r' or  actividad.estado == 't'%}
+                {% if actividad.estado == 'r' or  actividad.estado == 't' or actividad.estado == 's'%}
                 <a class="btn btn-primary btn-sm guinda" 
                 href="{%url 'verActividad' idActividad=actividad.id%}">Ver</a>
                 {%elif actividad.estado == 'n'%}
