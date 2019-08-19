@@ -347,7 +347,7 @@ class TerminarActividadFormView(LoginRequiredMixin,View):
     def get(self,request,idActividad):
         """validar si ya subió información no pueda acceder"""
         actividad = Actividad.objects.get(pk=idActividad)
-        form = TerminarActividadesForm()
+        form = TerminarActividadesForm(instance=actividad)
         # if request.user.profile.dependencia.tipo == 'd':
         #     conceptosGasto = ConceptoGasto.objects.filter(tipoDependencia='d')
         # else:
