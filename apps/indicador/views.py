@@ -55,6 +55,7 @@ def obtenerPorcentajeAccion(accion,periodoGobierno):
     cantidadMeta = 0
     metas = accion.meta.filter(periodo=periodoGobierno)
     arregloMetas = []
+    contadorActividades = 0
     if metas:
         contadorMetas = 0
         acumuladorMetas = 0
@@ -64,7 +65,6 @@ def obtenerPorcentajeAccion(accion,periodoGobierno):
                 #obtenemos las actividades del periodo de gobierno que son válidas
                 actividades = Actividad.objects.filter(accion=accion,estado='r',
                 fecha_fi__range=(periodoGobierno.fechaInicial,periodoGobierno.fechaFinal))
-                contadorActividades = 0
                 for actividad in actividades:
                     contadorActividades += actividad.multiplicador
                 tieneMeta = True
@@ -164,16 +164,35 @@ class FichaAccion(LoginRequiredMixin,View):
         puntos = json.dumps(puntos)
         gasto = getGastoPeriodo(accion,configuracion.periodoGobierno.id)
         numeroActividades = actividades.count()
-        promedioGastoActividad = gasto / numeroActividades
+        if numeroActividades>0:
+            promedioGastoActividad = gasto / numeroActividades
+        else:
+            promedioGastoActividad = 0
         totalBeneficiarios = obtenerTotalBenefieciarios(actividades)
         totalInvolucrados = obtenerTotalInvolucrados(actividades)
-        promedioBeneficiariosActividad = round(totalBeneficiarios / numeroActividades,0)
-        promedioInvolucradosActividad = round(totalInvolucrados / numeroActividades,0)
-        promedioGastoBeneficairio = round(gasto / totalBeneficiarios,0)
+        if numeroActividades>0:
+            promedioBeneficiariosActividad = round(totalBeneficiarios / numeroActividades,0) 
+        else:
+            promedioBeneficiariosActividad = 0
+        if numeroActividades>0:
+            promedioInvolucradosActividad = round(totalInvolucrados / numeroActividades,0)
+        else:
+            promedioInvolucradosActividad = 0
+        if totalBeneficiarios>0:
+            promedioGastoBeneficairio = round(gasto / totalBeneficiarios,0)
+        else:
+            promedioGastoBeneficairio = 0
         porcentajeAccion = 0
         claseSemaforo = 'danger'
         if accion.cualitativa:
-            porcentajeAccion = 'info'
+            claseSemaforo = 'info'
+            meta = {
+                'tieneMeta':False,
+                'porcentajeMeta':100,
+                'claseSemaforo':claseSemaforo,
+                'descripcionMeta':'meta cualitativa',
+                'cantidadMeta':''
+             }
         elif accion.meta.all():
             resultadoAccion = obtenerPorcentajeAccion(accion,configuracion.periodoGobierno)
             if resultadoAccion['porcentajeAccion'] > 34 and resultadoAccion['porcentajeAccion'] < 85:
@@ -188,6 +207,7 @@ class FichaAccion(LoginRequiredMixin,View):
                 'descripcionMeta':meta.descripcion,
                 'cantidadMeta':resultadoAccion['contadorActividades']
             }
+
         return render(request,'indicadores/fichaAccion.html',{
             'accion':accion,
             'puntos':puntos,
@@ -201,6 +221,26 @@ class FichaAccion(LoginRequiredMixin,View):
             'meta':meta,
             'gasto':gasto
         })
+
+class FichasAdmin(LoginRequiredMixin,View):
+    login_url = 'login'
+    def get(self,request):
+        #TO:DO quitar cuando se haga genérico
+        #TO:DO definir cabeceras base y hacerlo dinámico, dependendiendo de lo que elija
+        programasOperativos = ProgramaOperativo.objects.filter(estado='a')
+        acciones_po = []
+        for programaOperativo in programasOperativos:
+            accionesPo = programaOperativo.acciones.all()
+            for accion in accionesPo:
+                acciones_po.append({
+                    'accion':accion,
+                    'programaOperativo':programaOperativo,
+                })
+        return render(request,'indicadores/admin/fichasAdmin.html',{
+            'acciones_po':acciones_po
+        })
+    def post(self,request):
+        return render(request,'indicadores/admin/fichasAdmin.html')
 
 class Configuraciones(LoginRequiredMixin,View):
     login_url = 'login'

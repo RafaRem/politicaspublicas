@@ -512,6 +512,7 @@ class VerActividadAdmin(LoginRequiredMixin,View):
         if metas:
             contadorMetas = 0
             acumuladorMetas = 0
+            tieneMeta = True
             for meta in metas:
                 if meta.meta>0:
                     contadorMetas += 1
@@ -521,7 +522,6 @@ class VerActividadAdmin(LoginRequiredMixin,View):
                     contadorActividades = 0
                     for actividad in actividades:
                         contadorActividades += actividad.multiplicador
-                    tieneMeta = True
                     porcentajeMeta = (contadorActividades / meta.meta) * 100
                     descripcionMeta = meta.descripcion
                     cantidadMeta = meta.meta

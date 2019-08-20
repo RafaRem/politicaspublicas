@@ -201,11 +201,22 @@ Acción
 {% block extrascripts %}
 <script>
         $(document).ready(()=>{
+          cualitativa = '{{accion.cualitativa}}'
+          console.log(cualitativa)
+          if (cualitativa =='True'){
+            $('#id_meta').append(`
+            <div class="progress" style="height: 30px;">
+                <div class="progress-bar bg-{{meta.claseSemaforo}} progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="{{meta.porcentajeMeta}}" aria-valuemin="0" aria-valuemax="100" style="width: {{meta.porcentajeMeta}}%"></div>
+            </div>
+            `);
+          }else{
             $('#id_meta').append(`
             <div class="progress" style="height: 30px;">
                 <div class="progress-bar bg-{{meta.claseSemaforo}} progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="{{meta.porcentajeMeta}}" aria-valuemin="0" aria-valuemax="100" style="width: {{meta.porcentajeMeta}}%">{{meta.porcentajeMeta}}%</div>
             </div>
-        `);
+            `);
+          }
+
         });
 
         // This example requires the Visualization library. Include the libraries=visualization

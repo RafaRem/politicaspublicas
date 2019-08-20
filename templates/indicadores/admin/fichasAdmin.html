@@ -1,0 +1,91 @@
+{%extends 'base/base.html'%}
+{%load staticfiles%}
+
+
+{% block title %}
+Metas
+{% endblock %}
+
+{%block navTitle%}
+Metas
+{%endblock%}
+{%block messages %}
+{% endblock%}
+{% block extracss %}
+    <style>
+        a.btn{
+            min-width: 100px;
+        }
+        table.dataTable tbody tr{
+            background: transparent !important;
+        }
+        span.badge{
+            min-width: 100px;
+        }
+        .badge-naranja{
+            background: #f26631;
+        }
+    </style>
+{% endblock %}
+
+{%block content%}
+    {% if messages %}
+        <ul class="messages">
+                {% for message in messages %}
+                <li{% if message.tags == "success" %} class="alert alert-success"
+            {%else%}
+            class="alert alert-danger"
+            {% endif %}>
+            {{ message }}</li>
+                {% endfor %}
+        </ul>
+    {% endif %}
+    <h2 class="text-center">{{dependencia.nombre}}</h2>
+    <hr>
+<table class="table table-responsive">
+    <thead>
+        <tr>
+            <th>Programa operativo</th>
+            <th>Acción</th>
+            <th>Tiene metas</th>
+            <th>Acciones</th>
+
+        </tr>
+    </thead>
+    <tbody class="bg-transparent">
+        {% for accione_po in acciones_po %}
+            <tr>
+                <td scope="row">{{accione_po.programaOperativo.nombre}}</td>
+                <td scope="row">{{accione_po.accion.nombre}}</td>
+                <td>
+                    {% if accione_po.accion.cualitativa %}
+                    <span class="badge badge-warning">Cualitativa&nbsp;<i class="fa fa-check-circle"></i></span>
+                    {% elif accione_po.accion.meta.all %}
+                        <span class="badge badge-success">Con metas&nbsp;<i class="fa fa-check-circle"></i></span>                    
+                    {% else %}
+                    <span class="badge badge-danger">&nbsp;<i class="fa fa-times">Falta capturar</i></span>                    
+                    {% endif %}
+                </td>
+                <td>           
+                    <a class="btn guinda btn-sm" href="{%url 'fichaAccion' idAccion=accione_po.accion.id%}">
+                        Ver ficha
+                        </a>
+                    </td>
+                </tr>
+        {% endfor %}
+
+
+
+    </tbody>
+</table>
+
+{%endblock%}
+
+
+{% block extrascripts %}
+    <script>
+        $(document).ready( function () {
+            $('.table').DataTable();
+        } );
+    </script>
+{% endblock %}
