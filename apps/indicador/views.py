@@ -69,16 +69,17 @@ def obtenerPorcentajeAccion(accion,periodoGobierno):
                     contadorActividades += actividad.multiplicador
                 tieneMeta = True
                 porcentajeMeta = (contadorActividades / meta.meta) * 100
-                print(porcentajeMeta)
                 descripcionMeta = meta.descripcion
                 cantidadMeta = meta.meta
                 #aquí le pones el tope al porcentaje
                 porcentajeMeta = round(porcentajeMeta,0) #if porcentajeMeta <= 100 else 100.0
                 acumuladorMetas += porcentajeMeta
         porcentajeAccion = acumuladorMetas / contadorMetas if contadorMetas > 0 else 0
-        print(porcentajeAccion)
         porcentajeAccion = int(porcentajeAccion)
-    return porcentajeAccion
+    return {
+        'porcentajeAccion':porcentajeAccion,
+        'contadorActividades':contadorActividades
+        }
 
 def obtenerTotalBenefieciarios(actividades):
     total = 0
@@ -174,18 +175,18 @@ class FichaAccion(LoginRequiredMixin,View):
         if accion.cualitativa:
             porcentajeAccion = 'info'
         elif accion.meta.all():
-            porcentajeAccion = obtenerPorcentajeAccion(accion,configuracion.periodoGobierno)
-            if porcentajeAccion > 34 and porcentajeAccion < 85:
+            resultadoAccion = obtenerPorcentajeAccion(accion,configuracion.periodoGobierno)
+            if resultadoAccion['porcentajeAccion'] > 34 and resultadoAccion['porcentajeAccion'] < 85:
                 claseSemaforo = 'warning'
-            elif porcentajeAccion >= 85:
+            elif resultadoAccion['porcentajeAccion'] >= 85:
                 claseSemaforo = 'success'
             meta = accion.meta.filter(periodo=configuracion.periodoGobierno).first()
             meta = {
                 'tieneMeta':True,
-                'porcentajeMeta':porcentajeAccion,
+                'porcentajeMeta':resultadoAccion['porcentajeAccion'],
                 'claseSemaforo':claseSemaforo,
                 'descripcionMeta':meta.descripcion,
-                'cantidadMeta':meta.meta
+                'cantidadMeta':resultadoAccion['contadorActividades']
             }
         return render(request,'indicadores/fichaAccion.html',{
             'accion':accion,
