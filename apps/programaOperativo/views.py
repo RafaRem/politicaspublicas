@@ -17,7 +17,7 @@ from apps.programaOperativo.forms import ProgramaOperativoForm, ActividadesForm,
 """Modelos"""
 from apps.programaOperativo.models import ProgramaOperativo, Acciones, Actividad, DetallesGasto, LogActividad
 from apps.objetivo.models import Objetivo
-from apps.indicador.models import ConceptoGasto, ClasificacionGasto,Periodo,PeriodoGobierno
+from apps.indicador.models import ConceptoGasto, ClasificacionGasto,Periodo,PeriodoGobierno, Configuracion
 from apps.dependencia.models import Dependencia
 from django.db.models import Q,Count
 """Serializer"""
@@ -312,10 +312,7 @@ class ActividadFormView(LoginRequiredMixin,View):
             junio = datetime.datetime.strptime('2019-06-30','%Y-%m-%d')
             if((fecha_final <= junio or fecha_inicial <= junio)
             and
-            ((request.user.profile.dependencia.id != 14) and (request.user.profile.dependencia.id != 23)
-            and (request.user.profile.dependencia.id != 12) and (request.user.profile.dependencia.id != 1)
-             and (request.user.profile.dependencia.id != 22) and (request.user.profile.dependencia.id != 21)
-             and (request.user.profile.dependencia.id != 11))):
+            ((request.user.profile.dependencia.id != 14))):
                 messages.error(request,'La captura anterior al 30 de junio de 2019 está inhabilitada')
                 return redirect('nuevaActividad')
             save = datos.save()
@@ -562,6 +559,7 @@ class VerActividadAdmin(LoginRequiredMixin,View):
             else:
                 actividad.observaciones = request.POST.get('observaciones')
                 actividad.estado = request.POST.get('estado')
+                actividad.multiplicador = request.POST.get('multiplicador')
                 actividad.save()
                 messages.success(request,'Cambio realizado con éxito')
         contexto = self.obtenerContexto(idActividad)
@@ -794,8 +792,9 @@ class MetasAdmin(LoginRequiredMixin,View):
         if request.user.profile.tipoUsuario == 'e':
             return redirect('index')
         contexto = self.obtenerContexto()
-        periodoGobierno = PeriodoGobierno.objects.get(pk=1)
-        arreglosDependencias = self.filtrarDependencias(periodoGobierno)
+        #TO:DO esto tiene que ser cambiado por una tabla de configuraciones
+        configuracion = Configuracion.objects.get(pk=1)
+        arreglosDependencias = self.filtrarDependencias(configuracion.periodoGobierno)
         # arreglosDependencias = json.dumps(arreglosDependencias)
         contexto ['arreglosDependencias'] = arreglosDependencias
         contexto ['tipoFiltro'] = 'dependencia'

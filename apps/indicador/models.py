@@ -155,3 +155,7 @@ class Variable(models.Model):
         unique_together = ['indicador','tipo']
     def __str__(self):
         return self.nombre
+
+class Configuracion(models.Model):
+    periodoGobierno = models.ForeignKey(PeriodoGobierno, blank=True, null=True,
+    on_delete=models.PROTECT, verbose_name="Periodo de gobierno a graficar")

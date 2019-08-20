@@ -1,0 +1,47 @@
+{% extends "base/base.html" %}
+{% load staticfiles %}
+
+
+{%block title%}
+Configuraciones
+{%endblock%}
+{%block navTitle%}
+Configuraciones
+{%endblock%}
+
+{% block extracss %}
+
+{% endblock %}
+
+{% load crispy_forms_tags %}
+
+
+
+{% block content %}
+
+<div class="container bg-transparent">
+  {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+        <li{% if message.tags == "success" %} class="alert alert-success"
+      {%else%}
+      class="alert alert-danger"
+      {% endif %}>
+      {{ message }}</li>
+        {% endfor %}
+    </ul>
+  {% endif %}
+  <form method="post" id="id_form_actividad">
+      {% csrf_token %}
+      {{ form|crispy }}
+      <div class="d-flex justify-content-center mt-5">
+          <button type="submit" class="btn btn-primary guinda">
+            Guardar &nbsp;<i class="fas fa-check"></i>
+          </button>
+        </div>
+  </form>
+
+</div>
+
+
+{% endblock content %}

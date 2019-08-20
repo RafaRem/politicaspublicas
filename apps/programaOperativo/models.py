@@ -140,5 +140,3 @@ class GastoAnualAsignado(models.Model):
         unique_together = ['programaOperativo', 'periodoGobierno']
     def __str__(self):
         return self.programaOperativo.nombre
-    
-
