@@ -292,6 +292,7 @@ AQUÍ VAN LAS FLECHAS DE ANTES Y DESPUES
 
 {% block extrascripts %}
 <script>
+
     $(document).ready(()=>{
         var idActividad = "{{actividad.id}}";
         $('.numero').mask('00000000', {reverse: true});
@@ -308,9 +309,15 @@ AQUÍ VAN LAS FLECHAS DE ANTES Y DESPUES
                 </div>
             `);
         }
-
-
-        $('#id_anterior').click(()=>{
+        function siguiente(){
+            const index = arrayActividades.indexOf(idActividad)
+            if(index == arrayActividades.length - 1){
+                window.location = `/programasOperativos/actividad/admin/ver/actividad/${arrayActividades[0]}`;
+            }else{
+                window.location = `/programasOperativos/actividad/admin/ver/actividad/${arrayActividades[index + 1]}`;
+            }
+        }
+        function anterior(){
             const index = arrayActividades.indexOf(idActividad)
             console.log(`/programasOperativos/actividad/admin/ver/actividad/${String(arrayActividades[index - 1])}`);
             if(index == 0){
@@ -319,14 +326,12 @@ AQUÍ VAN LAS FLECHAS DE ANTES Y DESPUES
                 window.location = `/programasOperativos/actividad/admin/ver/actividad/${String(arrayActividades[index - 1])}`;
             }
         
+        }
+        $('#id_anterior').click(()=>{
+            anterior();
         });
         $('#id_siguiente').click(()=>{
-            const index = arrayActividades.indexOf(idActividad)
-            if(index == arrayActividades.length - 1){
-                window.location = `/programasOperativos/actividad/admin/ver/actividad/${arrayActividades[0]}`;
-            }else{
-                window.location = `/programasOperativos/actividad/admin/ver/actividad/${arrayActividades[index + 1]}`;
-            }
+            siguiente();
 
         });
 
@@ -347,7 +352,24 @@ AQUÍ VAN LAS FLECHAS DE ANTES Y DESPUES
             inputEstado.value = 'i';
             $('#frm_actividad').submit();
         })
-
+        document.onkeyup = function(e) {
+            /*secundaria 83
+            principal 80
+            siguiente 39
+            atras 37*/
+            e.preventDefault();
+            if (e.altKey && e.ctrlKey && e.which == 83) {
+                inputEstado.value = 's';
+                $('#frm_actividad').submit();
+            } else if (e.altKey && e.ctrlKey && e.which == 80) {
+                inputEstado.value = 'r';
+                $('#frm_actividad').submit();
+            } else if (e.which == 39) {
+                siguiente();
+            } else if (e.which == 37) {
+                anterior();
+            }
+          };
     });
 </script>
 <script>
