@@ -6,7 +6,7 @@ from django.db.models import Q,Count
 """funciones de otras vistas"""
 from apps.dependencia.views import getGastoPeriodo
 """Modelos"""
-from apps.indicador.models import PeriodoGobierno, Meta, Configuracion
+from apps.indicador.models import PeriodoGobierno, Meta, Configuracion, Periodo
 from apps.programaOperativo.models import Acciones,ProgramaOperativo,Actividad
 from apps.objetivo.models import Objetivo
 from apps.dependencia.models import Dependencia
@@ -163,10 +163,13 @@ class FichaAccion(LoginRequiredMixin,View):
         #los puntos son de geolicalización
         puntos = obtenerGeoPuntosActividades(actividades)
         puntos = json.dumps(puntos)
-        gasto = getGastoPeriodo(accion,configuracion.periodoGobierno.id)
+        periodosGasto = Periodo.objects.filter(fechaFinal__range=(configuracion.periodoGobierno.fechaInicial,configuracion.periodoGobierno.fechaFinal))
+        gasto = 0
+        for periodoGasto in periodosGasto:
+            gasto += getGastoPeriodo(accion,periodoGasto)
         numeroActividades = actividades.count()
         if numeroActividades>0:
-            promedioGastoActividad = gasto / numeroActividades
+            promedioGastoActividad = round(gasto / numeroActividades,2)
         else:
             promedioGastoActividad = 0
         totalBeneficiarios = obtenerTotalBenefieciarios(actividades)
@@ -242,11 +245,13 @@ class FichaProgramaOperativo(LoginRequiredMixin,View):
         puntos = json.dumps(puntos)
         acciones = programaOperativo.acciones.all()
         gasto = 0
+        periodosGasto = Periodo.objects.filter(fechaFinal__range=(configuracion.periodoGobierno.fechaInicial,configuracion.periodoGobierno.fechaFinal))
         for accion in acciones:
-            gasto += getGastoPeriodo(accion,configuracion.periodoGobierno.id)
+            for periodoGasto in periodosGasto:
+                gasto += getGastoPeriodo(accion,periodoGasto)
         numeroActividades = actividades.count()
         if numeroActividades>0:
-            promedioGastoActividad = gasto / numeroActividades
+            promedioGastoActividad = round(gasto / numeroActividades,2)
         else:
             promedioGastoActividad = 0
         totalBeneficiarios = obtenerTotalBenefieciarios(actividades)
