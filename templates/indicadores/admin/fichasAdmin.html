@@ -48,15 +48,19 @@ Metas
             <th>Programa operativo</th>
             <th>Acción</th>
             <th>Tiene metas</th>
-            <th>Acciones</th>
 
         </tr>
     </thead>
     <tbody class="bg-transparent">
         {% for accione_po in acciones_po %}
             <tr>
-                <td scope="row">{{accione_po.programaOperativo.nombre}}</td>
-                <td scope="row">{{accione_po.accion.nombre}}</td>
+                <td scope="row">
+                    
+                <a href="{%url 'fichaPrograma' idPrograma=accione_po.programaOperativo.id%}">{{accione_po.programaOperativo.nombre}}</a>
+                </td>
+                <td scope="row">
+                    <a href="{%url 'fichaAccion' idAccion=accione_po.accion.id%}">{{accione_po.accion.nombre}}</a>
+                    </td>
                 <td>
                     {% if accione_po.accion.cualitativa %}
                     <span class="badge badge-warning">Cualitativa&nbsp;<i class="fa fa-check-circle"></i></span>
@@ -66,11 +70,6 @@ Metas
                     <span class="badge badge-danger">&nbsp;<i class="fa fa-times">Falta capturar</i></span>                    
                     {% endif %}
                 </td>
-                <td>           
-                    <a class="btn guinda btn-sm" href="{%url 'fichaAccion' idAccion=accione_po.accion.id%}">
-                        Ver ficha
-                        </a>
-                    </td>
                 </tr>
         {% endfor %}
 

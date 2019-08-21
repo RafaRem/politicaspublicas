@@ -6,6 +6,7 @@ urlpatterns = [
     path('indicador/capturar/metas', AccionesMetasView.as_view(),name='capturarMetasList'),
     path('indicador/capturar/metas/<str:idAccion>', AccionesMetasForm.as_view(),name='capturarMetasForm'),
     path('indicador/fichas/accion/<str:idAccion>', FichaAccion.as_view(),name='fichaAccion'),
+    path('indicador/fichas/programa/<str:idPrograma>', FichaProgramaOperativo.as_view(),name='fichaPrograma'),
     path('indicador/configuraciones', Configuraciones.as_view(),name='configuraciones'),
     path('indicador/admin/fichas', FichasAdmin.as_view(),name='fichasAdmin'),
 
