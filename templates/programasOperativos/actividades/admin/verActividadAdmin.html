@@ -358,10 +358,10 @@ AQUÍ VAN LAS FLECHAS DE ANTES Y DESPUES
             siguiente 39
             atras 37*/
             e.preventDefault();
-            if (e.altKey && e.ctrlKey && e.which == 83) {
+            if (e.shiftKey && e.which == 83) {
                 inputEstado.value = 's';
                 $('#frm_actividad').submit();
-            } else if (e.altKey && e.ctrlKey && e.which == 80) {
+            } else if (e.shiftKey && e.which == 80) {
                 inputEstado.value = 'r';
                 $('#frm_actividad').submit();
             } else if (e.which == 39) {
