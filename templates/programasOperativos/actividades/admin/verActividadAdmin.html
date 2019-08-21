@@ -358,14 +358,15 @@ AQUÍ VAN LAS FLECHAS DE ANTES Y DESPUES
         })
         document.onkeyup = function(e) {
             /*secundaria 83
-            principal 80
+            principal 65
             siguiente 39
             atras 37*/
+            console.log(e.which)
             e.preventDefault();
             if (e.shiftKey && e.which == 83) {
                 inputEstado.value = 's';
                 $('#frm_actividad').submit();
-            } else if (e.shiftKey && e.which == 80) {
+            } else if (e.shiftKey && e.which == 65) {
                 inputEstado.value = 'r';
                 $('#frm_actividad').submit();
             } else if (e.which == 39) {
