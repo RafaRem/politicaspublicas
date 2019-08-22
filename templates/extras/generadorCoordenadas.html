@@ -1,0 +1,126 @@
+{% extends "base/base.html" %}
+{%load staticfiles%}
+
+{% block navTitle %}
+Función en desarrollo
+{% endblock %}
+
+{% block extracss %}
+<style>
+        /* Always set the map height explicitly to define the size of the div
+         * element that contains the map. */
+        #map {
+          height: 400px;
+          /*display: none;*/
+        }
+        /* Optional: Makes the sample page fill the window. */
+        html, body {
+          height: 100%;
+          margin: 0;
+          padding: 0;
+        }
+      </style>
+{% endblock %}
+
+{% block content %}
+    <div class="container bg-transparent">
+            <div id="div_id_descripcion" class="form-group"> 
+                <label for="id_descripcion" class="col-form-label  requiredField">
+                    Ingresa los lugares<span class="asteriskField">*</span> 
+                </label> 
+                <div class=""> 
+                    <textarea id="nombres" name="descripcion" cols="400" rows="10" maxlength="1000000" class="textarea form-control" required="" id="id_descripcion"></textarea> 
+                </div> 
+                <div class="justify-content-center d-flex mt-2">
+                    <button id="id_generar" type="button" class="btn guinda">Generar coordenadas</button>
+                </div>
+            </div>
+            {% if generados %}
+            <table id="id_tabla_coordenadas">
+                    <thead>
+                        <th>Latitud</th>
+                        <th>Longitud</th>
+                    </thead>
+                    <tbody>
+
+                    </tbody>
+                </table>
+            {% endif %}
+
+    </div>
+    <form id="form_lugares" method="post">
+        {%csrf_token%}
+    </form>
+{% endblock %}
+
+
+
+{%block extrascripts%}
+<script>
+        // This example requires the Places library. Include the libraries=places
+        // parameter when you first load the API. For example:
+        // <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places">
+        var map;
+        var service;
+        var infowindow;
+
+        $(document).ready(()=>{
+            var generados = '{{generados}}'
+            var jsonsLugares = '{{jsonsLugares|escapejs}}';
+            if (generados == 'True'){
+                jsonsLugares = JSON.parse(jsonsLugares);
+                console.log(jsonsLugares)
+                for (let i = 0; i < jsonsLugares.length; i++) {
+                    const lugar = jsonsLugares[i];
+                    if(lugar.candidates.length == 1)
+                    {
+                        $('#id_tabla_coordenadas').find('tbody')
+                        .append(`
+                        <tr>
+                            <td>${lugar.candidates[0].geometry.location.lat}</td>
+                            <td>${lugar.candidates[0].geometry.location.lng}</td>
+                        </tr>
+                        `);
+                    }else{
+                        $('#id_tabla_coordenadas').find('tbody')
+                        .append(`
+                        <tr>
+                            <td>manual</td>
+                            <td>manual</td>
+                        </tr>
+                        `);
+                    }
+                }
+
+            }
+
+            $('#id_generar').click(async ()=>{
+                var lines = $('#nombres').val().split('\n');
+                let resultados = [];
+                for(var i = 0;i < lines.length;i++){
+                    //code here using lines[i] which will give you each line
+                    const linea = lines[i];
+                    const words =  linea.split('	');
+                    let lugar = 'H. Ayuntamiento de Ahome'
+                    if (words.length == 2){
+                        lugar = words[1] + ', ahome, sinaloa';
+                    }else if (words.length == 1){
+                        lugar = words[0] + ', ahome, sinaloa';
+                    }
+                    $('#form_lugares').append(`
+                        <input value="${lugar}" name="lugares" type="text">
+                    `);
+                                            /*arreglo =  await obtenerCoordenadas(lugar).then((data)=>{
+                        console.log(data)
+                    })*/
+                    
+                        
+                }
+                $('#form_lugares').submit()
+            });
+
+            })
+      </script>
+      <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key={{api_key}}&libraries=places"></script>
+      <script src="https://apis.google.com/js/api.js" type="text/javascript"></script>
+{%endblock%}

@@ -45,6 +45,7 @@ Metas
 <table class="table table-responsive">
     <thead>
         <tr>
+            <th>Dependencia</th>
             <th>Programa operativo</th>
             <th>Acción</th>
             <th>Tiene metas</th>
@@ -54,6 +55,9 @@ Metas
     <tbody class="bg-transparent">
         {% for accione_po in acciones_po %}
             <tr>
+                <td scope="row">
+                    <a href="{%url 'fichaDependencia' idDependencia=accione_po.programaOperativo.dependencia.id%}">{{accione_po.programaOperativo.dependencia.nombre}}</a>
+                </td>
                 <td scope="row">
                     
                 <a href="{%url 'fichaPrograma' idPrograma=accione_po.programaOperativo.id%}">{{accione_po.programaOperativo.nombre}}</a>

@@ -1,0 +1,181 @@
+{%extends 'base/base.html'%}
+{%load staticfiles%}
+
+
+{% block title %}
+Dependencia
+{% endblock %}
+
+{%block navTitle%}
+Dependencia
+{%endblock%}
+{%block messages %}
+{% endblock%}
+{% block extracss %}
+<style>
+        /* Always set the map height explicitly to define the size of the div
+         * element that contains the map. */
+        #map {
+          height: 400px;
+        }
+
+        #floating-panel {
+          position: absolute;
+          top: 10px;
+          left: 25%;
+          z-index: 5;
+          background-color: #fff;
+          padding: 5px;
+          border: 1px solid #999;
+          text-align: center;
+          font-family: 'Roboto','sans-serif';
+          line-height: 30px;
+          padding-left: 10px;
+        }
+        #floating-panel {
+          border: 1px solid #999;
+          left: 25%;
+          padding: 5px;
+          top: 10px;
+          z-index: 999;
+        }
+        .progress-bar{
+            color: black;
+            font-weight: bold;
+        }
+</style>
+{% endblock %}
+
+{%block content%}
+    {% if messages %}
+        <ul class="messages">
+                {% for message in messages %}
+                <li{% if message.tags == "success" %} class="alert alert-success"
+            {%else%}
+            class="alert alert-danger"
+            {% endif %}>
+            {{ message }}</li>
+                {% endfor %}
+        </ul>
+    {% endif %}
+    <h2 class="text-center">{{dependencia.nombre}}</h2>
+    <hr>
+    <h3 class="text-center"><strong>Total actividades:</strong>{{numeroActividades}}</h3>
+    <hr>
+    <div class="container bg-transparent">
+        <div id="id_meta_po">
+
+        </div>
+
+        <hr>
+        <div id="map"></div>
+        <hr>
+        <div id="id_metas" class="row">
+
+        </div>
+        <hr>
+        <h4 class="text-center"><strong>Costo promedio de las actividades:</strong>&nbsp; ${{promedioGastoActividad}}</h4>
+        <h4 class="text-center"><strong>Costo promedio por beneficiario:</strong>&nbsp; ${{promedioGastoBeneficairio}}</h4>
+        <h4 class="text-center"><strong>Total de beneficiarios:</strong>&nbsp; {{totalBeneficiarios}}</h4>
+        <h4 class="text-center"><strong>Promedio de beneficiarios por actividad:</strong>&nbsp; {{promedioBeneficiariosActividad}}</h4>
+        <h4 class="text-center"><strong>Promedio de involucrados por actividad:</strong>&nbsp; {{promedioInvolucradosActividad}}</h4>
+        <h4 class="text-center"><strong>Gasto total:</strong>&nbsp; ${{gasto}}</h4>
+        <h4 class="text-center font-weight-bold">Población objetivo</h4>
+    </div>
+
+
+{%endblock%}
+
+
+{% block extrascripts %}
+<script>
+        $(document).ready(()=>{
+            metas = '{{metas|escapejs}}'
+            metas = JSON.parse(metas);
+            let tieneAccionCuantitativa = false
+            for (let i = 0; i < metas.length; i++) {
+                const meta = metas[i];
+                if (!meta.tieneMeta){
+                  $('#id_metas').append(`
+                      <div class="col-xl-6 col-sm-12">
+                          <h5 class="text-center">${meta.accion} con ${meta.descripcionMeta}</h5>
+                            <div class="progress" style="height: 30px;">
+                                <div class="progress-bar bg-${meta.claseSemaforo} progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="${meta.porcentajeMeta}" aria-valuemin="0" aria-valuemax="100" style="width: ${meta.porcentajeMeta}%"></div>
+                            </div>
+                      </div>
+                  `);
+                }else{
+                    tieneAccionCuantitativa = true
+                    $('#id_metas').append(`
+                    <div class="col-xl-6 col-sm-12">
+                            <h5 class="text-center">${meta.accion} con ${meta.cantidadMeta} ${meta.descripcionMeta}</h5>
+                            <div class="progress" style="height: 30px;">
+                                <div class="progress-bar bg-${meta.claseSemaforo} progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="${meta.porcentajeMeta}" aria-valuemin="0" aria-valuemax="100" style="width: ${meta.porcentajeMeta}%">${meta.porcentajeMeta}%</div>
+                            </div>
+                        </div>
+                    `);
+                }
+            }
+            if (tieneAccionCuantitativa){
+                $('#id_meta_po').append(`
+                <div class="col-12">
+                        <div class="progress" style="height: 30px;">
+                            <div class="progress-bar bg-{{claseSemaforo}} progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="{{enteroPorcentajeDireccion}}" aria-valuemin="0" aria-valuemax="100" style="width: {{enteroPorcentajeDireccion}}%">{{porcentajeDireccion}}%</div>
+                        </div>
+                    </div>
+                `);
+            }else{
+                $('#id_meta_po').append(`
+                <h5 class="text-center">Sin acciones cuantificables</h5>
+                    <div class="progress" style="height: 30px;">
+                        <div class="progress-bar bg-info progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%"></div>
+                    </div>
+            `);
+            }
+ 
+
+
+        });
+
+        // This example requires the Visualization library. Include the libraries=visualization
+        // parameter when you first load the API. For example:
+        // <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=visualization">
+
+            var map, heatmap;
+    
+            function initMap() {
+                var puntos = '{{puntos|escapejs}}';
+                puntos = JSON.parse(puntos);
+                puntos = getPoints(puntos);
+                map = new google.maps.Map(document.getElementById('map'), {
+                fullscreenControl:false,
+                center: {lat: 25.7904657, lng: -108.985882},
+                zoom: 10,
+                disableDefaultUI: true,
+                mapTypeId: 'roadmap'
+                });
+        
+                heatmap = new google.maps.visualization.HeatmapLayer({
+                data: puntos,
+                map: map
+                });
+                google.maps.event.addListener(map, 'click', function(event) {
+                    alert('Lat: ' + event.latLng.lat() + ' Lng: ' + event.latLng.lng());
+                });
+            }
+
+            // Heatmap data: 500 Points
+            function getPoints(puntos) {
+                let points = [];
+                for (let i = 0; i < puntos.length; i++) {
+                    const punto = puntos[i];
+                    points.push(new google.maps.LatLng(punto[0], punto[1]));
+                }
+                return points;
+                }
+</script>
+<script async defer
+    src="https://maps.googleapis.com/maps/api/js?key={{api_key}}&libraries=visualization&callback=initMap">
+</script>
+
+{% endblock %}

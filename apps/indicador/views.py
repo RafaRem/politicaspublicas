@@ -167,6 +167,7 @@ class FichaAccion(LoginRequiredMixin,View):
         gasto = 0
         for periodoGasto in periodosGasto:
             gasto += getGastoPeriodo(accion,periodoGasto)
+        gasto = round(gasto,2)
         numeroActividades = actividades.count()
         if numeroActividades>0:
             promedioGastoActividad = round(gasto / numeroActividades,2)
@@ -225,7 +226,6 @@ class FichaAccion(LoginRequiredMixin,View):
             'promedioGastoActividad':promedioGastoActividad,
             'promedioGastoBeneficairio':promedioGastoBeneficairio,
             'totalBeneficiarios':totalBeneficiarios,
-            'totalInvolucrados':totalInvolucrados,
             'promedioBeneficiariosActividad':promedioBeneficiariosActividad,
             'promedioInvolucradosActividad':promedioInvolucradosActividad,
             'meta':meta,
@@ -250,6 +250,7 @@ class FichaProgramaOperativo(LoginRequiredMixin,View):
             for periodoGasto in periodosGasto:
                 gasto += getGastoPeriodo(accion,periodoGasto)
         numeroActividades = actividades.count()
+        gasto = round(gasto,2)
         if numeroActividades>0:
             promedioGastoActividad = round(gasto / numeroActividades,2)
         else:
@@ -274,6 +275,7 @@ class FichaProgramaOperativo(LoginRequiredMixin,View):
         for accion in acciones:
             porcentajeAccion = 0
             claseSemaforo = 'danger'
+            #si la accion es cualitativa se hace un semáforo azul
             if accion.cualitativa:
                 claseSemaforo = 'info'
                 metas.append({
@@ -320,11 +322,99 @@ class FichaProgramaOperativo(LoginRequiredMixin,View):
             'promedioGastoActividad':promedioGastoActividad,
             'promedioGastoBeneficairio':promedioGastoBeneficairio,
             'totalBeneficiarios':totalBeneficiarios,
-            'totalInvolucrados':totalInvolucrados,
             'promedioBeneficiariosActividad':promedioBeneficiariosActividad,
             'promedioInvolucradosActividad':promedioInvolucradosActividad,
             'porcentajePo':porcentajePo,
             'enteroPorcentajePo':enteroPorcentajePo,
+            'claseSemaforo':claseSemaforo,
+            'metas':metas,
+            'gasto':gasto
+        })
+
+class FichaDependencia(LoginRequiredMixin,View):
+    login_url = 'login'
+    def get(self,request, idDependencia):
+        dependencia = Dependencia.objects.get(pk=idDependencia)
+        configuracion = Configuracion.objects.get(pk=1)
+        actividades = obtenerActividades(
+            idDependencia=int(idDependencia)
+        )
+        #los puntos son de geolicalización
+        puntos = obtenerGeoPuntosActividades(actividades)
+        puntos = json.dumps(puntos)
+        programasOperativos = ProgramaOperativo.objects.filter(dependencia=dependencia)
+        acciones = []
+        for programaOperativo in programasOperativos:
+            accionesPo = programaOperativo.acciones.all()
+            for accion in accionesPo:
+                acciones.append(accion)
+        gasto = 0
+        periodosGasto = Periodo.objects.filter(fechaFinal__range=(configuracion.periodoGobierno.fechaInicial,configuracion.periodoGobierno.fechaFinal))
+        for accion in acciones:
+            for periodoGasto in periodosGasto:
+                gasto += getGastoPeriodo(accion,periodoGasto)
+        numeroActividades = actividades.count()
+        gasto = round(gasto,2)
+        promedioGastoActividad = round(gasto / numeroActividades,2) if numeroActividades>0 else 0
+        totalBeneficiarios = obtenerTotalBenefieciarios(actividades)
+        totalInvolucrados = obtenerTotalInvolucrados(actividades)
+        promedioBeneficiariosActividad = round(totalBeneficiarios / numeroActividades,0)  if numeroActividades>0 else 0
+        promedioInvolucradosActividad = round(totalInvolucrados / numeroActividades,0) if numeroActividades>0 else 0
+        promedioGastoBeneficairio = round(gasto / totalBeneficiarios,0) if totalBeneficiarios>0 else 0
+        metas = []
+        acumuladorMetas = 0
+        contadorMetas = 0
+        for accion in acciones:
+            porcentajeAccion = 0
+            claseSemaforo = 'danger'
+            #si la accion es cualitativa se hace un semáforo azul
+            if accion.cualitativa:
+                claseSemaforo = 'info'
+                metas.append({
+                'accion':accion.nombre,
+                'accion_id':accion.id,
+                'tieneMeta':False,
+                'porcentajeMeta':100,
+                'claseSemaforo':claseSemaforo,
+                'descripcionMeta':'meta cualitativa',
+                'cantidadMeta':''
+                })
+            else:
+                resultadoAccion = obtenerPorcentajeAccion(accion,configuracion.periodoGobierno)
+                contadorMetas += 1
+                acumuladorMetas += resultadoAccion['porcentajeAccion']
+                if resultadoAccion['porcentajeAccion'] > 34 and resultadoAccion['porcentajeAccion'] < 85:
+                    claseSemaforo = 'warning'
+                elif resultadoAccion['porcentajeAccion'] >= 85:
+                    claseSemaforo = 'success'
+                metas.append({
+                'accion':accion.nombre,
+                'accion_id':accion.id,
+                'tieneMeta':True,
+                'porcentajeMeta':resultadoAccion['porcentajeAccion'],
+                'claseSemaforo':claseSemaforo,
+                'descripcionMeta':resultadoAccion['descripcionMeta'],
+                'cantidadMeta':resultadoAccion['contadorActividades']
+                })
+        metas = json.dumps(metas)
+        porcentajeDireccion = round(acumuladorMetas / contadorMetas,2) if contadorMetas>0 else 0
+        enteroPorcentajeDireccion = int(porcentajeDireccion)
+        claseSemaforo = 'danger'
+        if porcentajeDireccion > 34 and porcentajeDireccion < 85:
+            claseSemaforo = 'warning'
+        elif porcentajeDireccion >= 85:
+            claseSemaforo = 'success'
+        return render(request,'indicadores/fichaDependencia.html',{
+            'dependencia':dependencia,
+            'puntos':puntos,
+            'numeroActividades':numeroActividades,
+            'promedioGastoActividad':promedioGastoActividad,
+            'promedioGastoBeneficairio':promedioGastoBeneficairio,
+            'totalBeneficiarios':totalBeneficiarios,
+            'promedioBeneficiariosActividad':promedioBeneficiariosActividad,
+            'promedioInvolucradosActividad':promedioInvolucradosActividad,
+            'porcentajeDireccion':porcentajeDireccion,
+            'enteroPorcentajeDireccion':enteroPorcentajeDireccion,
             'claseSemaforo':claseSemaforo,
             'metas':metas,
             'gasto':gasto
