@@ -61,8 +61,10 @@ Objetivo
         <h4 class="text-center"><strong>Gasto total:</strong>&nbsp; ${{gasto}}</h4>
     </div>
     <hr>
-    <h4 class="text-center font-weight-bold">Dependencias</h4>
-    <div id="id_acordeon_dependencias">
+    <div id="comparacion_actividades"></div>
+    <hr>
+    <h4 class="text-center font-weight-bold">Programas operativos</h4>
+    <div id="id_acordeon_pos">
 
           </div>
 
@@ -71,40 +73,35 @@ Objetivo
 
 
 {% block extrascripts %}
+
 <script>
         $(document).ready(()=>{
-            porcentajesDependencias = '{{porcentajesDependencias|escapejs}}'
-            porcentajesDependencias = JSON.parse(porcentajesDependencias);
-            console.log(porcentajesDependencias)
+            porcentajesProgramasOperativos = '{{porcentajesProgramasOperativos|escapejs}}'
+            porcentajesProgramasOperativos = JSON.parse(porcentajesProgramasOperativos);
+            console.log(porcentajesProgramasOperativos)
             let tieneAccionCuantitativa = false
-            for (let i = 0; i < porcentajesDependencias.length; i++) {
-                const porcentajeDependencia = porcentajesDependencias[i];
-                if (!porcentajeDependencia.tieneMetaCuantitativa){
-                    $('#id_acordeon_dependencias').append(`
-                    <div class="card bg-transparent">
-                            <div class="card-header bg-transparent" id="heading_accion_${porcentajeDependencia.dependencia.id}">
+            for (let i = 0; i < porcentajesProgramasOperativos.length; i++) {
+                const porcentajeProgramaOperativo = porcentajesProgramasOperativos[i];
+                if (!porcentajeProgramaOperativo.tieneMetaCuantitativa){
+                    $('#id_acordeon_pos').append(`
+                    <div class="card">
+                            <div class="card-header bg-transparent" id="heading_accion_${porcentajeProgramaOperativo.programaOperativo.id}">
                               <h5 class="mb-0">
-                                <button class="btn guinda collapsed" data-toggle="collapse" 
-                                data-target="#collapse_accion_${porcentajeDependencia.dependencia.id}" 
-                                aria-expanded="false" aria-controls="collapse_accion_${porcentajeDependencia.dependencia.id}">
-                                    ${porcentajeDependencia.dependencia.nombre}
+                                <button class="btn guinda collapsed" data-toggle="collapse" data-target="#collapse_accion_${porcentajeProgramaOperativo.programaOperativo.id}" aria-expanded="false" aria-controls="collapse_accion_${porcentajeProgramaOperativo.programaOperativo.id}">
+                                    ${porcentajeProgramaOperativo.programaOperativo.nombre}
                                 </button>
                               </h5>
                             </div>
-                            <div id="collapse_accion_${porcentajeDependencia.dependencia.id}" class="collapse" 
-                            aria-labelledby="heading_accion_${porcentajeDependencia.dependencia.id}" 
-                            data-parent="#id_acordeon_dependencias">
+                            <div id="collapse_accion_${porcentajeProgramaOperativo.programaOperativo.id}" class="collapse" aria-labelledby="heading_accion_${porcentajeProgramaOperativo.programaOperativo.id}" data-parent="#id_acordeon_pos">
                               <div class="card-body">   
                                     <div class="col-sm-12">
                                         <h5>Acción cualitativa</h5>
                                             <div class="progress" style="height: 30px;">
-                                                <div class="progress-bar bg-info progress-bar-striped progress-bar-animated" 
-                                                role="progressbar" aria-valuenow="${porcentajeDependencia.enteroPorcentajeDireccion}" 
-                                                aria-valuemin="0" aria-valuemax="100" style="width: ${porcentajeDependencia.enteroPorcentajeDireccion}%"></div>
+                                                <div class="progress-bar bg-${porcentajeProgramaOperativo.claseSemaforo} progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="${porcentajeProgramaOperativo.porcentajePo}" aria-valuemin="0" aria-valuemax="100" style="width: ${porcentajeProgramaOperativo.porcentajePo}%"></div>
                                             </div>
                                         </div>
                                         <div class="justify-content-center d-flex mt-2">
-                                                <a target="_blank" class="btn guinda" href"/indicador/fichas/dependencia/${porcentajeDependencia.dependencia.id}">Ficha</a>
+                                                <a target="_blank" class="btn guinda" href"/indicador/fichas/programa/${porcentajeProgramaOperativo.programaOperativo.id}">Ficha</a>
                                             </div>
                               </div>
                             </div>
@@ -115,26 +112,26 @@ Objetivo
                     )
                 }else{
                     tieneAccionCuantitativa = true
-                    $('#id_acordeon_dependencias').append(`
+                    $('#id_acordeon_pos').append(`
                     <div class="card bg-transparent">
-                            <div class="card-header" id="heading_accion_${porcentajeDependencia.dependencia.id}">
+                            <div class="card-header bg-transparent" id="heading_accion_${porcentajeProgramaOperativo.programaOperativo.id}">
                               <h5 class="mb-0">
-                                <button class="btn guinda collapsed" data-toggle="collapse" data-target="#collapse_accion_${porcentajeDependencia.dependencia.id}" aria-expanded="false" aria-controls="collapse_accion_${porcentajeDependencia.dependencia.id}">
-                                    ${porcentajeDependencia.dependencia.nombre}
+                                <button class="btn guinda collapsed" data-toggle="collapse" data-target="#collapse_accion_${porcentajeProgramaOperativo.programaOperativo.id}" aria-expanded="false" aria-controls="collapse_accion_${porcentajeProgramaOperativo.programaOperativo.id}">
+                                    ${porcentajeProgramaOperativo.programaOperativo.nombre}
                                 </button>
                               </h5>
                             </div>
-                            <div id="collapse_accion_${porcentajeDependencia.dependencia.id}" class="collapse" aria-labelledby="heading_accion_${porcentajeDependencia.dependencia.id}" data-parent="#id_acordeon_dependencias">
+                            <div id="collapse_accion_${porcentajeProgramaOperativo.programaOperativo.id}" class="collapse" aria-labelledby="heading_accion_${porcentajeProgramaOperativo.programaOperativo.id}" data-parent="#id_acordeon_pos">
                               <div class="card-body">
                                     <div class="col-sm-12">
-                                        <h5>${porcentajeDependencia.dependencia.nombre}</h5>
+                                        <h5>${porcentajeProgramaOperativo.programaOperativo.nombre}</h5>
                                             <div class="progress" style="height: 30px;">
-                                                <div class="progress-bar bg-${porcentajeDependencia.claseSemaforo} progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="${porcentajeDependencia.enteroPorcentajeDireccion}" aria-valuemin="0" aria-valuemax="100" style="width: ${porcentajeDependencia.enteroPorcentajeDireccion}%">${porcentajeDependencia.porcentajeDireccion}%</div>
+                                                <div class="progress-bar bg-${porcentajeProgramaOperativo.claseSemaforo} progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="${porcentajeProgramaOperativo.porcentajePo}" aria-valuemin="0" aria-valuemax="100" style="width: ${porcentajeProgramaOperativo.porcentajePo}%">${porcentajeProgramaOperativo.porcentajePo}%</div>
                                             </div>
                                         </div>
                                         <div class="justify-content-center d-flex mt-2">
                                                 <a target="_blank" 
-                                                class="btn guinda" href="/indicador/fichas/dependencia/${porcentajeDependencia.dependencia.id}">Ficha</a>
+                                                class="btn guinda" href="/indicador/fichas/programa/${porcentajeProgramaOperativo.programaOperativo.id}">Ficha</a>
                                             </div>
                                         
                               </div>
@@ -162,8 +159,53 @@ Objetivo
                     </div>
             `);
             }
- 
-
+            let comparacionActividades = '{{comparacionActividades|escapejs}}'
+            comparacionActividades = JSON.parse(comparacionActividades)
+            console.log(comparacionActividades)
+            Highcharts.chart('comparacion_actividades', {
+                chart: {
+                    type: 'packedbubble',
+                    backgroundColor:'rgba(255, 255, 255, 0.0)',
+                    height: '100%'
+                },
+                title: {
+                    text: 'Aporte de actividades por dependencia'
+                },
+                tooltip: {
+                    useHTML: true,
+                    pointFormat: '<b>{point.name}:</b> {point.value} Actividades'
+                },
+                plotOptions: {
+                    packedbubble: {
+                        minSize: '20%',
+                        maxSize: '100%',
+                        zMin: 0,
+                        zMax: 1000,
+                        layoutAlgorithm: {
+                            gravitationalConstant: 0.05,
+                            splitSeries: true,
+                            seriesInteraction: false,
+                            dragBetweenSeries: true,
+                            parentNodeLimit: true
+                        },
+                        dataLabels: {
+                            enabled: true,
+                            format: '{point.name}',
+                            filter: {
+                                property: 'y',
+                                operator: '>',
+                                value: 250
+                            },
+                            style: {
+                                color: 'black',
+                                textOutline: 'none',
+                                fontWeight: 'normal'
+                            }
+                        }
+                    }
+                },
+                series: comparacionActividades
+            });
 
         });
 

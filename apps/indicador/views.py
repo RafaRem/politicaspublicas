@@ -13,8 +13,6 @@ from apps.dependencia.models import Dependencia
 """Forms"""
 from apps.indicador.forms import ConfiguracionesForm
 
-
-
 def obtenerActividades(idAccion=0,idProgramaOperativo=0,idObjetivo=0,idDependencia=0,idEje=''):
     consulta = Q()
     consulta = Q(estado='r')
@@ -35,6 +33,29 @@ def obtenerActividades(idAccion=0,idProgramaOperativo=0,idObjetivo=0,idDependenc
         consulta &= Q(accion__objetivo__ejeTransversal=idEje)
     actividades = Actividad.objects.filter(consulta)
     return actividades
+
+def obtenerComparacionActividades(programasOperativos,filtrarPor):
+    """Opciones: 'd' = dependencias, 'o' = objetivo. programasOperativos es un arreglo de programas operativos a comparar"""
+    datos = []
+    if filtrarPor == 'd':
+        dependencias = []
+        for programaOperativo in programasOperativos:
+            dependencias.append(programaOperativo.dependencia)
+        dependencias = list(set(dependencias))
+        for dependencia in dependencias:
+            dictDependencia = {
+                'name':dependencia.nombre,
+                'data':[]
+            }
+            for programaOperativo in programasOperativos:
+                if programaOperativo.dependencia == dependencia:
+                    actividades = obtenerActividades(idProgramaOperativo=programaOperativo.id)
+                    dictDependencia['data'].append({
+                        'name':programaOperativo.nombre,
+                        'value':actividades.count()
+                    })
+            datos.append(dictDependencia)
+        return datos 
 
 def obtenerGeoPuntosActividades(actividades):
     puntos = []
@@ -205,7 +226,11 @@ class PorcentajesMetas():
         porcentajesAcciones = json.dumps(porcentajesAcciones)
         programaOperativo = {
             'id':programaOperativo.id,
-            'nombre':programaOperativo.nombre
+            'nombre':programaOperativo.nombre,
+            'dependencia':{
+                'id':programaOperativo.dependencia.id,
+                'nombre':programaOperativo.dependencia.nombre
+            }
         }
         return {
             'programaOperativo':programaOperativo,
@@ -296,31 +321,32 @@ class PorcentajesMetas():
             programasOperativos.append(programaOperativo)
             dependencias.append(programaOperativo.dependencia)
         dependencias = list(set(dependencias))
+        programasOperativos = list(set(programasOperativos))
         puntos = []
-        porcentajesDependencias = []
+        porcentajesProgramasOperativos = []
         numeroActividades = 0
         gasto = 0
         totalBeneficiarios = 0
         totalInvolucrados = 0
         promedioBeneficiariosActividad = 0
         acumuladorPorcentajesDependencias = 0
-        porcentajeDependencia = 0
+        porcentajeProgramaOperativo = 0
         promedioInvolucradosActividad = 0
         promedioGastoActividad = 0
         porcentajeObjetivo = 0
-        for dependencia in dependencias:
-            porcentajeDependencia= self.obtenerPorcentajeDependencia(dependencia.id)
-            porcentajeObjetivo = 100 if porcentajeDependencia['tieneMetaCuantitativa'] == False else 0
-            tieneMetaCuantitativa = True if porcentajeDependencia['tieneMetaCuantitativa'] else False
-            acumuladorPorcentajesDependencias += porcentajeDependencia['porcentajeDireccion']
-            puntos.extend(json.loads(porcentajeDependencia['puntos']))
-            numeroActividades += porcentajeDependencia['numeroActividades']
-            gasto += porcentajeDependencia['gasto']
-            totalBeneficiarios += porcentajeDependencia['totalBeneficiarios']
-            totalInvolucrados += porcentajeDependencia['totalInvolucrados']
-            porcentajesDependencias.append(porcentajeDependencia)
+        for programaOperativo in programasOperativos:
+            porcentajeProgramaOperativo= self.obtenerPorcentajeProgramaOperativo(programaOperativo.id)
+            porcentajeObjetivo = 100 if porcentajeProgramaOperativo['tieneMetaCuantitativa'] == False else 0
+            tieneMetaCuantitativa = True if porcentajeProgramaOperativo['tieneMetaCuantitativa'] else False
+            acumuladorPorcentajesDependencias += porcentajeProgramaOperativo['porcentajePo']
+            puntos.extend(json.loads(porcentajeProgramaOperativo['puntos']))
+            numeroActividades += porcentajeProgramaOperativo['numeroActividades']
+            gasto += porcentajeProgramaOperativo['gasto']
+            totalBeneficiarios += porcentajeProgramaOperativo['totalBeneficiarios']
+            totalInvolucrados += porcentajeProgramaOperativo['totalInvolucrados']
+            porcentajesProgramasOperativos.append(porcentajeProgramaOperativo)
         gasto = round(gasto,2)
-        porcentajeObjetivo = round(acumuladorPorcentajesDependencias / len(porcentajesDependencias),2) if len(porcentajesDependencias) > 0 else 0
+        porcentajeObjetivo = round(acumuladorPorcentajesDependencias / len(porcentajesProgramasOperativos),2) if len(porcentajesProgramasOperativos) > 0 else 0
         enteroPorcentajeObjetivo = int(porcentajeObjetivo)
         promedioGastoBeneficairio = round(gasto / totalBeneficiarios,2) if totalBeneficiarios >0 else 0
         if numeroActividades >0:
@@ -333,12 +359,13 @@ class PorcentajesMetas():
         elif porcentajeObjetivo >= 85:
             claseSemaforo = 'success'
         puntos = json.dumps(puntos)
-        porcentajesDependencias = json.dumps(porcentajesDependencias)
-
+        porcentajesProgramasOperativos = json.dumps(porcentajesProgramasOperativos)
         objetivo ={
             'nombre':objetivo.nombre,
             'id':objetivo.id
         }
+        comparacionActividades = obtenerComparacionActividades(programasOperativos,'d')
+        comparacionActividades = json.dumps(comparacionActividades)
         return {
             'objetivo':objetivo,
             'tieneMetaCuantitativa':tieneMetaCuantitativa,
@@ -352,14 +379,15 @@ class PorcentajesMetas():
             'porcentajeObjetivo':porcentajeObjetivo,
             'enteroPorcentajeObjetivo':enteroPorcentajeObjetivo,
             'claseSemaforo':claseSemaforo,
-            'porcentajesDependencias':porcentajesDependencias,#nota: este reemplazó a 'metas'
+            'porcentajesProgramasOperativos':porcentajesProgramasOperativos,#nota: este reemplazó a 'metas'
+            'comparacionActividades':comparacionActividades,
             'gasto':gasto
         }
     def obtenerPorcentajeEje(self):
         return ''
     def obtenerPorcentajePMD(self):
         return ''
-# Create your views here.
+
 class AccionesMetasView(LoginRequiredMixin,View):
     login_url = 'login'
     def obtenerAcciones(self):
