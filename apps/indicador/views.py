@@ -13,6 +13,8 @@ from apps.dependencia.models import Dependencia
 """Forms"""
 from apps.indicador.forms import ConfiguracionesForm
 
+
+
 def obtenerActividades(idAccion=0,idProgramaOperativo=0,idObjetivo=0,idDependencia=0,idEje=''):
     consulta = Q()
     consulta = Q(estado='r')
@@ -88,6 +90,275 @@ def obtenerTotalBenefieciarios(actividades):
         if actividad.beneficiarios:
             total += int(actividad.beneficiarios) 
     return total
+
+class PorcentajesMetas():
+    def obtenerPorcentajeAccion(self, idAccion):
+        accion = Acciones.objects.get(pk=idAccion)
+        configuracion = Configuracion.objects.get(pk=1)
+        actividades = obtenerActividades(
+            idAccion=int(idAccion)
+        )
+        #los puntos son de geolicalización
+        puntos = obtenerGeoPuntosActividades(actividades)
+        puntos = json.dumps(puntos)
+        periodosGasto = Periodo.objects.filter(fechaFinal__range=(configuracion.periodoGobierno.fechaInicial,configuracion.periodoGobierno.fechaFinal))
+        gasto = 0
+        for periodoGasto in periodosGasto:
+            gasto += getGastoPeriodo(accion,periodoGasto)
+        gasto = round(gasto,2)
+        numeroActividades = actividades.count()
+        promedioGastoActividad = round(gasto / numeroActividades,2) if numeroActividades>0 else 0
+        totalBeneficiarios = obtenerTotalBenefieciarios(actividades)
+        totalInvolucrados = obtenerTotalInvolucrados(actividades)
+        promedioBeneficiariosActividad = round(totalBeneficiarios / numeroActividades,0) if numeroActividades>0 else 0
+        promedioInvolucradosActividad = round(totalInvolucrados / numeroActividades,0) if numeroActividades>0 else 0
+        promedioGastoBeneficairio = round(gasto / totalBeneficiarios,0) if totalBeneficiarios>0 else 0
+        porcentajeAccion = 0
+        meta = {
+            'tieneMeta':False,
+            'porcentajeMeta':0,
+            'claseSemaforo':'danger',
+            'descripcionMeta':'Sin meta',
+            'cantidadMeta':''
+            }
+        claseSemaforo = 'danger'
+        if accion.cualitativa:
+            claseSemaforo = 'info'
+            meta = {
+                'tieneMeta':False,
+                'porcentajeMeta':100,
+                'claseSemaforo':claseSemaforo,
+                'descripcionMeta':'meta cualitativa',
+                'cantidadMeta':''
+             }
+        elif accion.meta.all():
+            resultadoAccion = obtenerPorcentajeAccion(accion,configuracion.periodoGobierno)
+            if resultadoAccion['porcentajeAccion'] > 34 and resultadoAccion['porcentajeAccion'] < 85:
+                claseSemaforo = 'warning'
+            elif resultadoAccion['porcentajeAccion'] >= 85:
+                claseSemaforo = 'success'
+            meta = accion.meta.filter(periodo=configuracion.periodoGobierno).first()
+            meta = {
+                'tieneMeta':True,
+                'porcentajeMeta':resultadoAccion['porcentajeAccion'],
+                'claseSemaforo':claseSemaforo,
+                'descripcionMeta':meta.descripcion,
+                'cantidadMeta':resultadoAccion['contadorActividades']
+            }
+        accion = {
+            'id':accion.id,
+            'nombre':accion.nombre
+        }
+        return {
+            'accion':accion,
+            'puntos':puntos,
+            'numeroActividades':numeroActividades,
+            'promedioGastoActividad':promedioGastoActividad,
+            'promedioGastoBeneficairio':promedioGastoBeneficairio,
+            'totalBeneficiarios':totalBeneficiarios,
+            'totalInvolucrados':totalInvolucrados,
+            'promedioBeneficiariosActividad':promedioBeneficiariosActividad,
+            'promedioInvolucradosActividad':promedioInvolucradosActividad,
+            'meta':meta,
+            'gasto':gasto
+        }
+    def obtenerPorcentajeProgramaOperativo(self, idPrograma):
+        programaOperativo = ProgramaOperativo.objects.get(pk=idPrograma)
+        acciones = programaOperativo.acciones.all()
+        puntos = []
+        porcentajesAcciones = []
+        numeroActividades = 0
+        gasto = 0
+        totalBeneficiarios = 0
+        totalInvolucrados = 0
+        promedioBeneficiariosActividad = 0
+        promedioInvolucradosActividad = 0
+        porcentajePo = 0
+        acumuladorPorcentajeAcciones = 0
+        promedioGastoActividad = 0
+        tieneMetaCuantitativa = False
+        for accion in acciones:
+            porcentajePo = 100 if accion.cualitativa == True else 0
+            porcentajeAccion = self.obtenerPorcentajeAccion(accion.id)
+            acumuladorPorcentajeAcciones += porcentajeAccion['meta']['porcentajeMeta']
+            puntos.extend(json.loads(porcentajeAccion['puntos']))
+            numeroActividades += porcentajeAccion['numeroActividades']
+            gasto += porcentajeAccion['gasto']
+            totalBeneficiarios += porcentajeAccion['totalBeneficiarios']
+            totalInvolucrados += porcentajeAccion['totalInvolucrados']
+            if porcentajeAccion['meta']['claseSemaforo'] != 'info':
+                tieneMetaCuantitativa = True
+            porcentajesAcciones.append(porcentajeAccion)
+        porcentajePo = round(acumuladorPorcentajeAcciones / len(porcentajesAcciones),2) if len(porcentajesAcciones) > 0 else 0
+        enteroPorcentajePo = int(porcentajePo)
+        promedioGastoBeneficairio = round(gasto / totalBeneficiarios,2) if totalBeneficiarios >0 else 0
+        if numeroActividades >0:
+            promedioBeneficiariosActividad = int(totalBeneficiarios / numeroActividades) 
+            promedioInvolucradosActividad = int(totalInvolucrados / numeroActividades)
+            promedioGastoActividad = round(gasto / numeroActividades,2)
+        claseSemaforo = 'danger'
+        if porcentajePo > 34 and porcentajePo < 85:
+            claseSemaforo = 'warning'
+        elif porcentajePo >= 85:
+            claseSemaforo = 'success'
+        puntos = json.dumps(puntos)
+        porcentajesAcciones = json.dumps(porcentajesAcciones)
+        programaOperativo = {
+            'id':programaOperativo.id,
+            'nombre':programaOperativo.nombre
+        }
+        return {
+            'programaOperativo':programaOperativo,
+            'tieneMetaCuantitativa':tieneMetaCuantitativa,
+            'porcentajesAcciones':porcentajesAcciones,#nota: este reemplazó a 'metas'
+            'puntos':puntos,
+            'numeroActividades':numeroActividades,
+            'promedioGastoActividad':promedioGastoActividad, 
+            'promedioGastoBeneficairio':promedioGastoBeneficairio, 
+            'totalBeneficiarios':totalBeneficiarios,
+            'totalInvolucrados':totalInvolucrados,
+            'promedioBeneficiariosActividad':promedioBeneficiariosActividad, 
+            'promedioInvolucradosActividad':promedioInvolucradosActividad, 
+            'porcentajePo':porcentajePo,
+            'enteroPorcentajePo':enteroPorcentajePo,
+            'claseSemaforo':claseSemaforo, #pendiente
+            'gasto':gasto
+        }
+    def obtenerPorcentajeDependencia(self, idDependencia):
+        dependencia = Dependencia.objects.get(pk=idDependencia)
+        programasOperativos = ProgramaOperativo.objects.filter(dependencia=dependencia)
+        puntos = []
+        porcentajesProgramasOperativos = []
+        numeroActividades = 0
+        gasto = 0
+        totalBeneficiarios = 0
+        totalInvolucrados = 0
+        promedioBeneficiariosActividad = 0
+        porcentajeDireccion = 0
+        acumuladorPorcentajesPos = 0
+        porcentajeProgramaOperativo = 0
+        promedioInvolucradosActividad = 0
+        promedioGastoActividad = 0
+        tieneMetaCuantitativa = False
+        for programaOperativo in programasOperativos:
+            porcentajeProgramaOperativo= self.obtenerPorcentajeProgramaOperativo(programaOperativo.id)
+            porcentajeDireccion = 100 if porcentajeProgramaOperativo['tieneMetaCuantitativa'] == False else 0
+            tieneMetaCuantitativa = True if porcentajeProgramaOperativo['tieneMetaCuantitativa'] else False
+            acumuladorPorcentajesPos += porcentajeProgramaOperativo['porcentajePo']
+            puntos.extend(json.loads(porcentajeProgramaOperativo['puntos']))
+            numeroActividades += porcentajeProgramaOperativo['numeroActividades']
+            gasto += porcentajeProgramaOperativo['gasto']
+            totalBeneficiarios += porcentajeProgramaOperativo['totalBeneficiarios']
+            totalInvolucrados += porcentajeProgramaOperativo['totalInvolucrados']
+            porcentajesProgramasOperativos.append(porcentajeProgramaOperativo)
+        porcentajeDireccion = round(acumuladorPorcentajesPos / len(porcentajesProgramasOperativos),2) if len(porcentajesProgramasOperativos) > 0 else 0
+        enteroPorcentajeDireccion = int(porcentajeDireccion)
+        promedioGastoBeneficairio = round(gasto / totalBeneficiarios,2) if totalBeneficiarios >0 else 0
+        if numeroActividades >0:
+            promedioBeneficiariosActividad = int(totalBeneficiarios / numeroActividades) 
+            promedioInvolucradosActividad = int(totalInvolucrados / numeroActividades)
+            promedioGastoActividad = round(gasto / numeroActividades,2)
+        claseSemaforo = 'danger'
+        if porcentajeDireccion > 34 and porcentajeDireccion < 85:
+            claseSemaforo = 'warning'
+        elif porcentajeDireccion >= 85:
+            claseSemaforo = 'success'
+        puntos = json.dumps(puntos)
+        porcentajesProgramasOperativos = json.dumps(porcentajesProgramasOperativos)
+        dependencia ={
+            'nombre':dependencia.nombre,
+            'id':dependencia.id
+        }
+        return {
+            'dependencia':dependencia,
+            'tieneMetaCuantitativa':tieneMetaCuantitativa,
+            'puntos':puntos,
+            'numeroActividades':numeroActividades,
+            'promedioGastoActividad':promedioGastoActividad,
+            'promedioGastoBeneficairio':promedioGastoBeneficairio,
+            'totalBeneficiarios':totalBeneficiarios,
+            'totalInvolucrados':totalInvolucrados,
+            'promedioBeneficiariosActividad':promedioBeneficiariosActividad,
+            'promedioInvolucradosActividad':promedioInvolucradosActividad,
+            'porcentajeDireccion':porcentajeDireccion,
+            'enteroPorcentajeDireccion':enteroPorcentajeDireccion,
+            'claseSemaforo':claseSemaforo,
+            'porcentajesProgramasOperativos':porcentajesProgramasOperativos,#nota: este reemplazó a 'metas'
+            'gasto':gasto
+        }
+    def obtenerPorcentajeObjetivo(self,idObjetivo):
+        objetivo = Objetivo.objects.get(pk=idObjetivo)
+        programasOperativos__acciones = ProgramaOperativo.acciones.through.objects.filter(acciones__objetivo=objetivo)
+        programasOperativos = []
+        dependencias = []
+        for po_accion in programasOperativos__acciones:
+            programaOperativo = ProgramaOperativo.objects.get(pk=po_accion.programaoperativo_id)
+            programasOperativos.append(programaOperativo)
+            dependencias.append(programaOperativo.dependencia)
+        dependencias = list(set(dependencias))
+        puntos = []
+        porcentajesDependencias = []
+        numeroActividades = 0
+        gasto = 0
+        totalBeneficiarios = 0
+        totalInvolucrados = 0
+        promedioBeneficiariosActividad = 0
+        acumuladorPorcentajesDependencias = 0
+        porcentajeDependencia = 0
+        promedioInvolucradosActividad = 0
+        promedioGastoActividad = 0
+        porcentajeObjetivo = 0
+        for dependencia in dependencias:
+            porcentajeDependencia= self.obtenerPorcentajeDependencia(dependencia.id)
+            porcentajeObjetivo = 100 if porcentajeDependencia['tieneMetaCuantitativa'] == False else 0
+            tieneMetaCuantitativa = True if porcentajeDependencia['tieneMetaCuantitativa'] else False
+            acumuladorPorcentajesDependencias += porcentajeDependencia['porcentajeDireccion']
+            puntos.extend(json.loads(porcentajeDependencia['puntos']))
+            numeroActividades += porcentajeDependencia['numeroActividades']
+            gasto += porcentajeDependencia['gasto']
+            totalBeneficiarios += porcentajeDependencia['totalBeneficiarios']
+            totalInvolucrados += porcentajeDependencia['totalInvolucrados']
+            porcentajesDependencias.append(porcentajeDependencia)
+        gasto = round(gasto,2)
+        porcentajeObjetivo = round(acumuladorPorcentajesDependencias / len(porcentajesDependencias),2) if len(porcentajesDependencias) > 0 else 0
+        enteroPorcentajeObjetivo = int(porcentajeObjetivo)
+        promedioGastoBeneficairio = round(gasto / totalBeneficiarios,2) if totalBeneficiarios >0 else 0
+        if numeroActividades >0:
+            promedioBeneficiariosActividad = int(totalBeneficiarios / numeroActividades) 
+            promedioInvolucradosActividad = int(totalInvolucrados / numeroActividades)
+            promedioGastoActividad = round(gasto / numeroActividades,2)
+        claseSemaforo = 'danger'
+        if porcentajeObjetivo > 34 and porcentajeObjetivo < 85:
+            claseSemaforo = 'warning'
+        elif porcentajeObjetivo >= 85:
+            claseSemaforo = 'success'
+        puntos = json.dumps(puntos)
+        porcentajesDependencias = json.dumps(porcentajesDependencias)
+
+        objetivo ={
+            'nombre':objetivo.nombre,
+            'id':objetivo.id
+        }
+        return {
+            'objetivo':objetivo,
+            'tieneMetaCuantitativa':tieneMetaCuantitativa,
+            'puntos':puntos,
+            'numeroActividades':numeroActividades,
+            'promedioGastoActividad':promedioGastoActividad,
+            'promedioGastoBeneficairio':promedioGastoBeneficairio,
+            'totalBeneficiarios':totalBeneficiarios,
+            'promedioBeneficiariosActividad':promedioBeneficiariosActividad,
+            'promedioInvolucradosActividad':promedioInvolucradosActividad,
+            'porcentajeObjetivo':porcentajeObjetivo,
+            'enteroPorcentajeObjetivo':enteroPorcentajeObjetivo,
+            'claseSemaforo':claseSemaforo,
+            'porcentajesDependencias':porcentajesDependencias,#nota: este reemplazó a 'metas'
+            'gasto':gasto
+        }
+    def obtenerPorcentajeEje(self):
+        return ''
+    def obtenerPorcentajePMD(self):
+        return ''
 # Create your views here.
 class AccionesMetasView(LoginRequiredMixin,View):
     login_url = 'login'
@@ -155,270 +426,29 @@ class AccionesMetasForm(LoginRequiredMixin,View):
 class FichaAccion(LoginRequiredMixin,View):
     login_url = 'login'
     def get(self,request, idAccion):
-        accion = Acciones.objects.get(pk=idAccion)
-        configuracion = Configuracion.objects.get(pk=1)
-        actividades = obtenerActividades(
-            idAccion=int(idAccion)
-        )
-        #los puntos son de geolicalización
-        puntos = obtenerGeoPuntosActividades(actividades)
-        puntos = json.dumps(puntos)
-        periodosGasto = Periodo.objects.filter(fechaFinal__range=(configuracion.periodoGobierno.fechaInicial,configuracion.periodoGobierno.fechaFinal))
-        gasto = 0
-        for periodoGasto in periodosGasto:
-            gasto += getGastoPeriodo(accion,periodoGasto)
-        gasto = round(gasto,2)
-        numeroActividades = actividades.count()
-        if numeroActividades>0:
-            promedioGastoActividad = round(gasto / numeroActividades,2)
-        else:
-            promedioGastoActividad = 0
-        totalBeneficiarios = obtenerTotalBenefieciarios(actividades)
-        totalInvolucrados = obtenerTotalInvolucrados(actividades)
-        if numeroActividades>0:
-            promedioBeneficiariosActividad = round(totalBeneficiarios / numeroActividades,0) 
-        else:
-            promedioBeneficiariosActividad = 0
-        if numeroActividades>0:
-            promedioInvolucradosActividad = round(totalInvolucrados / numeroActividades,0)
-        else:
-            promedioInvolucradosActividad = 0
-        if totalBeneficiarios>0:
-            promedioGastoBeneficairio = round(gasto / totalBeneficiarios,0)
-        else:
-            promedioGastoBeneficairio = 0
-        porcentajeAccion = 0
-        meta = {
-            'tieneMeta':False,
-            'porcentajeMeta':0,
-            'claseSemaforo':'danger',
-            'descripcionMeta':'Sin meta',
-            'cantidadMeta':''
-            }
-        claseSemaforo = 'danger'
-        if accion.cualitativa:
-            claseSemaforo = 'info'
-            meta = {
-                'tieneMeta':False,
-                'porcentajeMeta':100,
-                'claseSemaforo':claseSemaforo,
-                'descripcionMeta':'meta cualitativa',
-                'cantidadMeta':''
-             }
-        elif accion.meta.all():
-            resultadoAccion = obtenerPorcentajeAccion(accion,configuracion.periodoGobierno)
-            if resultadoAccion['porcentajeAccion'] > 34 and resultadoAccion['porcentajeAccion'] < 85:
-                claseSemaforo = 'warning'
-            elif resultadoAccion['porcentajeAccion'] >= 85:
-                claseSemaforo = 'success'
-            meta = accion.meta.filter(periodo=configuracion.periodoGobierno).first()
-            meta = {
-                'tieneMeta':True,
-                'porcentajeMeta':resultadoAccion['porcentajeAccion'],
-                'claseSemaforo':claseSemaforo,
-                'descripcionMeta':meta.descripcion,
-                'cantidadMeta':resultadoAccion['contadorActividades']
-            }
-        return render(request,'indicadores/fichaAccion.html',{
-            'accion':accion,
-            'puntos':puntos,
-            'numeroActividades':numeroActividades,
-            'promedioGastoActividad':promedioGastoActividad,
-            'promedioGastoBeneficairio':promedioGastoBeneficairio,
-            'totalBeneficiarios':totalBeneficiarios,
-            'promedioBeneficiariosActividad':promedioBeneficiariosActividad,
-            'promedioInvolucradosActividad':promedioInvolucradosActividad,
-            'meta':meta,
-            'gasto':gasto
-        })
+        contexto = PorcentajesMetas.obtenerPorcentajeAccion(self,idAccion=idAccion)
+        return render(request,'indicadores/fichaAccion.html',contexto)
 
 class FichaProgramaOperativo(LoginRequiredMixin,View):
     login_url = 'login'
     def get(self,request, idPrograma):
-        programaOperativo = ProgramaOperativo.objects.get(pk=idPrograma)
-        configuracion = Configuracion.objects.get(pk=1)
-        actividades = obtenerActividades(
-            idProgramaOperativo=int(idPrograma)
-        )
-        #los puntos son de geolicalización
-        puntos = obtenerGeoPuntosActividades(actividades)
-        puntos = json.dumps(puntos)
-        acciones = programaOperativo.acciones.all()
-        gasto = 0
-        periodosGasto = Periodo.objects.filter(fechaFinal__range=(configuracion.periodoGobierno.fechaInicial,configuracion.periodoGobierno.fechaFinal))
-        for accion in acciones:
-            for periodoGasto in periodosGasto:
-                gasto += getGastoPeriodo(accion,periodoGasto)
-        numeroActividades = actividades.count()
-        gasto = round(gasto,2)
-        if numeroActividades>0:
-            promedioGastoActividad = round(gasto / numeroActividades,2)
-        else:
-            promedioGastoActividad = 0
-        totalBeneficiarios = obtenerTotalBenefieciarios(actividades)
-        totalInvolucrados = obtenerTotalInvolucrados(actividades)
-        if numeroActividades>0:
-            promedioBeneficiariosActividad = round(totalBeneficiarios / numeroActividades,0) 
-        else:
-            promedioBeneficiariosActividad = 0
-        if numeroActividades>0:
-            promedioInvolucradosActividad = round(totalInvolucrados / numeroActividades,0)
-        else:
-            promedioInvolucradosActividad = 0
-        if totalBeneficiarios>0:
-            promedioGastoBeneficairio = round(gasto / totalBeneficiarios,0)
-        else:
-            promedioGastoBeneficairio = 0
-        metas = []
-        acumuladorMetas = 0
-        contadorMetas = 0
-        for accion in acciones:
-            porcentajeAccion = 0
-            claseSemaforo = 'danger'
-            #si la accion es cualitativa se hace un semáforo azul
-            if accion.cualitativa:
-                claseSemaforo = 'info'
-                metas.append({
-                'accion':accion.nombre,
-                'accion_id':accion.id,
-                'tieneMeta':False,
-                'porcentajeMeta':100,
-                'claseSemaforo':claseSemaforo,
-                'descripcionMeta':'meta cualitativa',
-                'cantidadMeta':''
-                })
-            else:
-                resultadoAccion = obtenerPorcentajeAccion(accion,configuracion.periodoGobierno)
-                contadorMetas += 1
-                acumuladorMetas += resultadoAccion['porcentajeAccion']
-                if resultadoAccion['porcentajeAccion'] > 34 and resultadoAccion['porcentajeAccion'] < 85:
-                    claseSemaforo = 'warning'
-                elif resultadoAccion['porcentajeAccion'] >= 85:
-                    claseSemaforo = 'success'
-                metas.append({
-                'accion':accion.nombre,
-                'accion_id':accion.id,
-                'tieneMeta':True,
-                'porcentajeMeta':resultadoAccion['porcentajeAccion'],
-                'claseSemaforo':claseSemaforo,
-                'descripcionMeta':resultadoAccion['descripcionMeta'],
-                'cantidadMeta':resultadoAccion['contadorActividades']
-                })
-        metas = json.dumps(metas)
-        if contadorMetas>0:
-            porcentajePo = round(acumuladorMetas / contadorMetas,2)
-        else:
-            porcentajePo = 0
-        enteroPorcentajePo = int(porcentajePo)
-        claseSemaforo = 'danger'
-        if porcentajePo > 34 and porcentajePo < 85:
-            claseSemaforo = 'warning'
-        elif porcentajePo >= 85:
-            claseSemaforo = 'success'
-        return render(request,'indicadores/fichaProgramaOperativo.html',{
-            'programaOperativo':programaOperativo,
-            'puntos':puntos,
-            'numeroActividades':numeroActividades,
-            'promedioGastoActividad':promedioGastoActividad,
-            'promedioGastoBeneficairio':promedioGastoBeneficairio,
-            'totalBeneficiarios':totalBeneficiarios,
-            'promedioBeneficiariosActividad':promedioBeneficiariosActividad,
-            'promedioInvolucradosActividad':promedioInvolucradosActividad,
-            'porcentajePo':porcentajePo,
-            'enteroPorcentajePo':enteroPorcentajePo,
-            'claseSemaforo':claseSemaforo,
-            'metas':metas,
-            'gasto':gasto
-        })
+        porcentajeMetas = PorcentajesMetas()
+        contexto = porcentajeMetas.obtenerPorcentajeProgramaOperativo(idPrograma)
+        return render(request,'indicadores/fichaProgramaOperativo.html',contexto)
 
 class FichaDependencia(LoginRequiredMixin,View):
     login_url = 'login'
     def get(self,request, idDependencia):
-        dependencia = Dependencia.objects.get(pk=idDependencia)
-        configuracion = Configuracion.objects.get(pk=1)
-        actividades = obtenerActividades(
-            idDependencia=int(idDependencia)
-        )
-        #los puntos son de geolicalización
-        puntos = obtenerGeoPuntosActividades(actividades)
-        puntos = json.dumps(puntos)
-        programasOperativos = ProgramaOperativo.objects.filter(dependencia=dependencia)
-        acciones = []
-        for programaOperativo in programasOperativos:
-            accionesPo = programaOperativo.acciones.all()
-            for accion in accionesPo:
-                acciones.append(accion)
-        gasto = 0
-        periodosGasto = Periodo.objects.filter(fechaFinal__range=(configuracion.periodoGobierno.fechaInicial,configuracion.periodoGobierno.fechaFinal))
-        for accion in acciones:
-            for periodoGasto in periodosGasto:
-                gasto += getGastoPeriodo(accion,periodoGasto)
-        numeroActividades = actividades.count()
-        gasto = round(gasto,2)
-        promedioGastoActividad = round(gasto / numeroActividades,2) if numeroActividades>0 else 0
-        totalBeneficiarios = obtenerTotalBenefieciarios(actividades)
-        totalInvolucrados = obtenerTotalInvolucrados(actividades)
-        promedioBeneficiariosActividad = round(totalBeneficiarios / numeroActividades,0)  if numeroActividades>0 else 0
-        promedioInvolucradosActividad = round(totalInvolucrados / numeroActividades,0) if numeroActividades>0 else 0
-        promedioGastoBeneficairio = round(gasto / totalBeneficiarios,0) if totalBeneficiarios>0 else 0
-        metas = []
-        acumuladorMetas = 0
-        contadorMetas = 0
-        for accion in acciones:
-            porcentajeAccion = 0
-            claseSemaforo = 'danger'
-            #si la accion es cualitativa se hace un semáforo azul
-            if accion.cualitativa:
-                claseSemaforo = 'info'
-                metas.append({
-                'accion':accion.nombre,
-                'accion_id':accion.id,
-                'tieneMeta':False,
-                'porcentajeMeta':100,
-                'claseSemaforo':claseSemaforo,
-                'descripcionMeta':'meta cualitativa',
-                'cantidadMeta':''
-                })
-            else:
-                resultadoAccion = obtenerPorcentajeAccion(accion,configuracion.periodoGobierno)
-                contadorMetas += 1
-                acumuladorMetas += resultadoAccion['porcentajeAccion']
-                if resultadoAccion['porcentajeAccion'] > 34 and resultadoAccion['porcentajeAccion'] < 85:
-                    claseSemaforo = 'warning'
-                elif resultadoAccion['porcentajeAccion'] >= 85:
-                    claseSemaforo = 'success'
-                metas.append({
-                'accion':accion.nombre,
-                'accion_id':accion.id,
-                'tieneMeta':True,
-                'porcentajeMeta':resultadoAccion['porcentajeAccion'],
-                'claseSemaforo':claseSemaforo,
-                'descripcionMeta':resultadoAccion['descripcionMeta'],
-                'cantidadMeta':resultadoAccion['contadorActividades']
-                })
-        metas = json.dumps(metas)
-        porcentajeDireccion = round(acumuladorMetas / contadorMetas,2) if contadorMetas>0 else 0
-        enteroPorcentajeDireccion = int(porcentajeDireccion)
-        claseSemaforo = 'danger'
-        if porcentajeDireccion > 34 and porcentajeDireccion < 85:
-            claseSemaforo = 'warning'
-        elif porcentajeDireccion >= 85:
-            claseSemaforo = 'success'
-        return render(request,'indicadores/fichaDependencia.html',{
-            'dependencia':dependencia,
-            'puntos':puntos,
-            'numeroActividades':numeroActividades,
-            'promedioGastoActividad':promedioGastoActividad,
-            'promedioGastoBeneficairio':promedioGastoBeneficairio,
-            'totalBeneficiarios':totalBeneficiarios,
-            'promedioBeneficiariosActividad':promedioBeneficiariosActividad,
-            'promedioInvolucradosActividad':promedioInvolucradosActividad,
-            'porcentajeDireccion':porcentajeDireccion,
-            'enteroPorcentajeDireccion':enteroPorcentajeDireccion,
-            'claseSemaforo':claseSemaforo,
-            'metas':metas,
-            'gasto':gasto
-        })
+        porcentajeMeta = PorcentajesMetas()
+        contexto = porcentajeMeta.obtenerPorcentajeDependencia(idDependencia)
+        return render(request,'indicadores/fichaDependencia.html',contexto)
+
+class FichaObjetivo(LoginRequiredMixin,View):
+    login_url = 'login'
+    def get(self,request, idObjetivo):
+        porcentajeMeta = PorcentajesMetas()
+        contexto = porcentajeMeta.obtenerPorcentajeObjetivo(idObjetivo)
+        return render(request,'indicadores/fichaObjetivo.html',contexto)
 
 class FichasAdmin(LoginRequiredMixin,View):
     login_url = 'login'

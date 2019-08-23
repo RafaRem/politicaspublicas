@@ -3,11 +3,11 @@
 
 
 {% block title %}
-Metas
+Fichas
 {% endblock %}
 
 {%block navTitle%}
-Metas
+Fichas en construcción
 {%endblock%}
 {%block messages %}
 {% endblock%}
@@ -45,6 +45,8 @@ Metas
 <table class="table table-responsive">
     <thead>
         <tr>
+            <th>Eje</th>
+            <th>Objetivo</th>
             <th>Dependencia</th>
             <th>Programa operativo</th>
             <th>Acción</th>
@@ -55,6 +57,13 @@ Metas
     <tbody class="bg-transparent">
         {% for accione_po in acciones_po %}
             <tr>
+                <td id="id_celda_ejes">
+                        <a href="#">{{accione_po.accion.objetivo.ejeTransversal}}</a>
+                </td>
+                    
+                <td>
+                    <a href="{%url 'fichaObjetivo' idObjetivo=accione_po.accion.objetivo.id%}">{{accione_po.accion.objetivo.nombre}}</a>
+                </td>
                 <td scope="row">
                     <a href="{%url 'fichaDependencia' idDependencia=accione_po.programaOperativo.dependencia.id%}">{{accione_po.programaOperativo.dependencia.nombre}}</a>
                 </td>

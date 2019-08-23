@@ -3,11 +3,11 @@
 
 
 {% block title %}
-Programa operativo
+Objetivo
 {% endblock %}
 
 {%block navTitle%}
-Programa operativo
+Objetivo
 {%endblock%}
 {%block messages %}
 {% endblock%}
@@ -17,27 +17,6 @@ Programa operativo
          * element that contains the map. */
         #map {
           height: 400px;
-        }
-
-        #floating-panel {
-          position: absolute;
-          top: 10px;
-          left: 25%;
-          z-index: 5;
-          background-color: #fff;
-          padding: 5px;
-          border: 1px solid #999;
-          text-align: center;
-          font-family: 'Roboto','sans-serif';
-          line-height: 30px;
-          padding-left: 10px;
-        }
-        #floating-panel {
-          border: 1px solid #999;
-          left: 25%;
-          padding: 5px;
-          top: 10px;
-          z-index: 999;
         }
         .progress-bar{
             color: black;
@@ -58,7 +37,7 @@ Programa operativo
                 {% endfor %}
         </ul>
     {% endif %}
-    <h2 class="text-center">{{programaOperativo.nombre}}</h2>
+    <h2 class="text-center">{{objetivo.nombre}}</h2>
     <hr>
     <h3 class="text-center"><strong>Total actividades:</strong>{{numeroActividades}}</h3>
     <hr>
@@ -70,7 +49,7 @@ Programa operativo
         <hr>
         <div id="map"></div>
         <hr>
-        <div id="id_porcentajesAcciones" class="row">
+        <div id="id_porcentajesDependencias" class="row">
 
         </div>
         <hr>
@@ -80,9 +59,10 @@ Programa operativo
         <h4 class="text-center"><strong>Promedio de beneficiarios por actividad:</strong>&nbsp; {{promedioBeneficiariosActividad}}</h4>
         <h4 class="text-center"><strong>Promedio de involucrados por actividad:</strong>&nbsp; {{promedioInvolucradosActividad}}</h4>
         <h4 class="text-center"><strong>Gasto total:</strong>&nbsp; ${{gasto}}</h4>
-        <h4 class="text-center font-weight-bold">Acciones y metas</h4>
     </div>
-    <div id="id_acordeon_acciones">
+    <hr>
+    <h4 class="text-center font-weight-bold">Dependencias</h4>
+    <div id="id_acordeon_dependencias">
 
           </div>
 
@@ -93,32 +73,38 @@ Programa operativo
 {% block extrascripts %}
 <script>
         $(document).ready(()=>{
-            porcentajesAcciones = '{{porcentajesAcciones|escapejs}}'
-            porcentajesAcciones = JSON.parse(porcentajesAcciones);
-            console.log(porcentajesAcciones)
+            porcentajesDependencias = '{{porcentajesDependencias|escapejs}}'
+            porcentajesDependencias = JSON.parse(porcentajesDependencias);
+            console.log(porcentajesDependencias)
             let tieneAccionCuantitativa = false
-            for (let i = 0; i < porcentajesAcciones.length; i++) {
-                const porcentajeAccion = porcentajesAcciones[i];
-                if (!porcentajeAccion.meta.tieneMeta){
-                    $('#id_acordeon_acciones').append(`
-                    <div class="card">
-                            <div class="card-header bg-transparent" id="heading_accion_${porcentajeAccion.accion.id}">
+            for (let i = 0; i < porcentajesDependencias.length; i++) {
+                const porcentajeDependencia = porcentajesDependencias[i];
+                if (!porcentajeDependencia.tieneMetaCuantitativa){
+                    $('#id_acordeon_dependencias').append(`
+                    <div class="card bg-transparent">
+                            <div class="card-header bg-transparent" id="heading_accion_${porcentajeDependencia.dependencia.id}">
                               <h5 class="mb-0">
-                                <button class="btn guinda collapsed" data-toggle="collapse" data-target="#collapse_accion_${porcentajeAccion.accion.id}" aria-expanded="false" aria-controls="collapse_accion_${porcentajeAccion.accion.id}">
-                                    ${porcentajeAccion.accion.nombre}
+                                <button class="btn guinda collapsed" data-toggle="collapse" 
+                                data-target="#collapse_accion_${porcentajeDependencia.dependencia.id}" 
+                                aria-expanded="false" aria-controls="collapse_accion_${porcentajeDependencia.dependencia.id}">
+                                    ${porcentajeDependencia.dependencia.nombre}
                                 </button>
                               </h5>
                             </div>
-                            <div id="collapse_accion_${porcentajeAccion.accion.id}" class="collapse" aria-labelledby="heading_accion_${porcentajeAccion.accion.id}" data-parent="#id_acordeon_acciones">
-                              <div class="card-body">
+                            <div id="collapse_accion_${porcentajeDependencia.dependencia.id}" class="collapse" 
+                            aria-labelledby="heading_accion_${porcentajeDependencia.dependencia.id}" 
+                            data-parent="#id_acordeon_dependencias">
+                              <div class="card-body">   
                                     <div class="col-sm-12">
                                         <h5>Acción cualitativa</h5>
                                             <div class="progress" style="height: 30px;">
-                                                <div class="progress-bar bg-${porcentajeAccion.meta.claseSemaforo} progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="${porcentajeAccion.meta.porcentajeMeta}" aria-valuemin="0" aria-valuemax="100" style="width: ${porcentajeAccion.meta.porcentajeMeta}%"></div>
+                                                <div class="progress-bar bg-info progress-bar-striped progress-bar-animated" 
+                                                role="progressbar" aria-valuenow="${porcentajeDependencia.enteroPorcentajeDireccion}" 
+                                                aria-valuemin="0" aria-valuemax="100" style="width: ${porcentajeDependencia.enteroPorcentajeDireccion}%"></div>
                                             </div>
                                         </div>
                                         <div class="justify-content-center d-flex mt-2">
-                                                <a class="btn guinda" href"/indicador/fichas/accion/${porcentajeAccion.accion.id}">Ficha</a>
+                                                <a target="_blank" class="btn guinda" href"/indicador/fichas/dependencia/${porcentajeDependencia.dependencia.id}">Ficha</a>
                                             </div>
                               </div>
                             </div>
@@ -129,25 +115,26 @@ Programa operativo
                     )
                 }else{
                     tieneAccionCuantitativa = true
-                    $('#id_acordeon_acciones').append(`
+                    $('#id_acordeon_dependencias').append(`
                     <div class="card bg-transparent">
-                            <div class="card-header" id="heading_accion_${porcentajeAccion.accion.id}">
+                            <div class="card-header" id="heading_accion_${porcentajeDependencia.dependencia.id}">
                               <h5 class="mb-0">
-                                <button class="btn guinda collapsed" data-toggle="collapse" data-target="#collapse_accion_${porcentajeAccion.accion.id}" aria-expanded="false" aria-controls="collapse_accion_${porcentajeAccion.accion.id}">
-                                    ${porcentajeAccion.accion.nombre}
+                                <button class="btn guinda collapsed" data-toggle="collapse" data-target="#collapse_accion_${porcentajeDependencia.dependencia.id}" aria-expanded="false" aria-controls="collapse_accion_${porcentajeDependencia.dependencia.id}">
+                                    ${porcentajeDependencia.dependencia.nombre}
                                 </button>
                               </h5>
                             </div>
-                            <div id="collapse_accion_${porcentajeAccion.accion.id}" class="collapse" aria-labelledby="heading_accion_${porcentajeAccion.accion.id}" data-parent="#id_acordeon_acciones">
+                            <div id="collapse_accion_${porcentajeDependencia.dependencia.id}" class="collapse" aria-labelledby="heading_accion_${porcentajeDependencia.dependencia.id}" data-parent="#id_acordeon_dependencias">
                               <div class="card-body">
                                     <div class="col-sm-12">
-                                        <h5>${porcentajeAccion.meta.cantidadMeta} ${porcentajeAccion.meta.descripcionMeta}</h5>
+                                        <h5>${porcentajeDependencia.dependencia.nombre}</h5>
                                             <div class="progress" style="height: 30px;">
-                                                <div class="progress-bar bg-${porcentajeAccion.meta.claseSemaforo} progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="${porcentajeAccion.meta.porcentajeMeta}" aria-valuemin="0" aria-valuemax="100" style="width: ${porcentajeAccion.meta.porcentajeMeta}%">${porcentajeAccion.meta.porcentajeMeta}%</div>
+                                                <div class="progress-bar bg-${porcentajeDependencia.claseSemaforo} progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="${porcentajeDependencia.enteroPorcentajeDireccion}" aria-valuemin="0" aria-valuemax="100" style="width: ${porcentajeDependencia.enteroPorcentajeDireccion}%">${porcentajeDependencia.porcentajeDireccion}%</div>
                                             </div>
                                         </div>
                                         <div class="justify-content-center d-flex mt-2">
-                                                <a class="btn guinda" href="/indicador/fichas/accion/${porcentajeAccion.accion.id}">Ficha</a>
+                                                <a target="_blank" 
+                                                class="btn guinda" href="/indicador/fichas/dependencia/${porcentajeDependencia.dependencia.id}">Ficha</a>
                                             </div>
                                         
                               </div>
@@ -163,7 +150,7 @@ Programa operativo
                 $('#id_porcentajeAccion_po').append(`
                 <div class="col-12">
                         <div class="progress" style="height: 30px;">
-                            <div class="progress-bar bg-{{claseSemaforo}} progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="{{enteroPorcentajePo}}" aria-valuemin="0" aria-valuemax="100" style="width: {{enteroPorcentajePo}}%">{{porcentajePo}}%</div>
+                            <div class="progress-bar bg-{{claseSemaforo}} progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="{{enteroPorcentajeObjetivo}}" aria-valuemin="0" aria-valuemax="100" style="width: {{enteroPorcentajeObjetivo}}%">{{porcentajeObjetivo}}%</div>
                         </div>
                     </div>
                 `);
