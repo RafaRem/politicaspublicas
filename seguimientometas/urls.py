@@ -36,7 +36,7 @@ urlpatterns = [
     url(r'^',include(indicadoresUrls)),
     path('enDesarrollo', RenderView.as_view(template_name='extras/enDesarrollo.html'),name='enDesarrollo'),
     path('recursos', RenderView.as_view(template_name='extras/recursos.html'),name='recursos'),
-    path('generadorCoordenadas', ObtenerCoordenadas.as_view(),name='recursos'),
+    path('generadorCoordenadas', ObtenerCoordenadas.as_view(),name='generadorCoordenadas'),
 
 
     #url(r'^',include(ProgramUrls)),
