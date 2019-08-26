@@ -1,4 +1,8 @@
 import json
+import random
+from django.core import serializers
+from datetime import datetime, timedelta
+from collections import OrderedDict
 from django.views.generic import TemplateView, View
 from django.shortcuts import render, redirect
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -12,6 +16,21 @@ from apps.objetivo.models import Objetivo
 from apps.dependencia.models import Dependencia
 """Forms"""
 from apps.indicador.forms import ConfiguracionesForm
+
+def obtenerMesesGobierno():
+    dates = ["2018-11-01", "2019-08-30"]
+    start, end = [datetime.strptime(_, "%Y-%m-%d") for _ in dates]
+    meses = []
+    mesesDict = OrderedDict(((start + timedelta(_)).strftime(r"%b-%y"), None) for _ in range((end - start).days)).keys()
+    for mes in mesesDict:
+        meses.append(mes)
+    return meses
+
+def obtenerDependenciasPos(programasOperativos):
+    dependencias = []
+    for programaOperativo in programasOperativos:
+        dependencias.append(programaOperativo.dependencia)
+    return list(set(dependencias))
 
 def obtenerActividades(idAccion=0,idProgramaOperativo=0,idObjetivo=0,idDependencia=0,idEje=''):
     consulta = Q()
@@ -38,24 +57,38 @@ def obtenerComparacionActividades(programasOperativos,filtrarPor):
     """Opciones: 'd' = dependencias, 'o' = objetivo. programasOperativos es un arreglo de programas operativos a comparar"""
     datos = []
     if filtrarPor == 'd':
-        dependencias = []
-        for programaOperativo in programasOperativos:
-            dependencias.append(programaOperativo.dependencia)
-        dependencias = list(set(dependencias))
+        dependencias = obtenerDependenciasPos(programasOperativos)
         for dependencia in dependencias:
-            dictDependencia = {
-                'name':dependencia.nombre,
-                'data':[]
-            }
+            contadorActividades = 0
             for programaOperativo in programasOperativos:
                 if programaOperativo.dependencia == dependencia:
                     actividades = obtenerActividades(idProgramaOperativo=programaOperativo.id)
-                    dictDependencia['data'].append({
-                        'name':programaOperativo.nombre,
-                        'value':actividades.count()
-                    })
-            datos.append(dictDependencia)
+                    contadorActividades += actividades.count()
+            random_number = random.randint(0,16777215)
+            hex_number = str(hex(random_number))
+            color ='#'+ hex_number[2:]
+            datos.append([dependencia.nombre, contadorActividades, color, dependencia.nombre])
         return datos 
+
+def obtenerComparacionActividadesMeses(arreglo,filtrarPor,xAxis,yAxis):
+    """Opciones: 'd' = dependencias, 'o' = objetivo. programasOperativos es un arreglo de programas operativos a comparar"""
+    resultado = []
+    #El arreglo por parametro contiene programasOperativos
+    for x,valx in enumerate(xAxis):
+        for y,valy in enumerate(yAxis):
+            fechaDesde = datetime.strptime(valy, r"%b-%y")
+            mesHasta = fechaDesde.month
+            if mesHasta == 12:
+                mesHasta = 1
+            else:
+                mesHasta += 1
+            fechaHasta = fechaDesde.replace(month=mesHasta)
+            if filtrarPor =='d':
+                actividades = Actividad.objects.filter(programaoperativo__dependencia=valx,
+                fecha_fi__gte=fechaDesde,fecha_fi__lte=fechaHasta)
+                resultado.append([x,y,actividades.count()])
+    return resultado
+
 
 def obtenerGeoPuntosActividades(actividades):
     puntos = []
@@ -312,6 +345,7 @@ class PorcentajesMetas():
             'gasto':gasto
         }
     def obtenerPorcentajeObjetivo(self,idObjetivo):
+        meses = obtenerMesesGobierno()
         objetivo = Objetivo.objects.get(pk=idObjetivo)
         programasOperativos__acciones = ProgramaOperativo.acciones.through.objects.filter(acciones__objetivo=objetivo)
         programasOperativos = []
@@ -322,6 +356,13 @@ class PorcentajesMetas():
             dependencias.append(programaOperativo.dependencia)
         dependencias = list(set(dependencias))
         programasOperativos = list(set(programasOperativos))
+        tablaCalorMesesActividades = obtenerComparacionActividadesMeses(programasOperativos,'d',dependencias,meses)
+        tablaCalorMesesActividades = json.dumps(tablaCalorMesesActividades)
+        tablaCalorDependencias = []
+        for dependencia in dependencias:
+            tablaCalorDependencias.append(dependencia.nombre)
+        tablaCalorDependencias = json.dumps(tablaCalorDependencias)
+        tablaCalorMeses = json.dumps(meses)
         puntos = []
         porcentajesProgramasOperativos = []
         numeroActividades = 0
@@ -381,10 +422,94 @@ class PorcentajesMetas():
             'claseSemaforo':claseSemaforo,
             'porcentajesProgramasOperativos':porcentajesProgramasOperativos,#nota: este reemplazó a 'metas'
             'comparacionActividades':comparacionActividades,
+            'tablaCalorMesesActividades':tablaCalorMesesActividades,
+            'tablaCalorDependencias': tablaCalorDependencias,
+            'tablaCalorMeses':tablaCalorMeses,
             'gasto':gasto
         }
-    def obtenerPorcentajeEje(self):
-        return ''
+    def obtenerPorcentajeEje(self,idEje):
+        meses = obtenerMesesGobierno()
+        objetivo = Objetivo.objects.get(pk=idObjetivo)
+        programasOperativos__acciones = ProgramaOperativo.acciones.through.objects.filter(acciones__objetivo=objetivo)
+        programasOperativos = []
+        dependencias = []
+        for po_accion in programasOperativos__acciones:
+            programaOperativo = ProgramaOperativo.objects.get(pk=po_accion.programaoperativo_id)
+            programasOperativos.append(programaOperativo)
+            dependencias.append(programaOperativo.dependencia)
+        dependencias = list(set(dependencias))
+        programasOperativos = list(set(programasOperativos))
+        tablaCalorMesesActividades = obtenerComparacionActividadesMeses(programasOperativos,'d',dependencias,meses)
+        tablaCalorMesesActividades = json.dumps(tablaCalorMesesActividades)
+        tablaCalorDependencias = []
+        for dependencia in dependencias:
+            tablaCalorDependencias.append(dependencia.nombre)
+        tablaCalorDependencias = json.dumps(tablaCalorDependencias)
+        tablaCalorMeses = json.dumps(meses)
+        puntos = []
+        porcentajesProgramasOperativos = []
+        numeroActividades = 0
+        gasto = 0
+        totalBeneficiarios = 0
+        totalInvolucrados = 0
+        promedioBeneficiariosActividad = 0
+        acumuladorPorcentajesDependencias = 0
+        porcentajeProgramaOperativo = 0
+        promedioInvolucradosActividad = 0
+        promedioGastoActividad = 0
+        porcentajeObjetivo = 0
+        for programaOperativo in programasOperativos:
+            porcentajeProgramaOperativo= self.obtenerPorcentajeProgramaOperativo(programaOperativo.id)
+            porcentajeObjetivo = 100 if porcentajeProgramaOperativo['tieneMetaCuantitativa'] == False else 0
+            tieneMetaCuantitativa = True if porcentajeProgramaOperativo['tieneMetaCuantitativa'] else False
+            acumuladorPorcentajesDependencias += porcentajeProgramaOperativo['porcentajePo']
+            puntos.extend(json.loads(porcentajeProgramaOperativo['puntos']))
+            numeroActividades += porcentajeProgramaOperativo['numeroActividades']
+            gasto += porcentajeProgramaOperativo['gasto']
+            totalBeneficiarios += porcentajeProgramaOperativo['totalBeneficiarios']
+            totalInvolucrados += porcentajeProgramaOperativo['totalInvolucrados']
+            porcentajesProgramasOperativos.append(porcentajeProgramaOperativo)
+        gasto = round(gasto,2)
+        porcentajeObjetivo = round(acumuladorPorcentajesDependencias / len(porcentajesProgramasOperativos),2) if len(porcentajesProgramasOperativos) > 0 else 0
+        enteroPorcentajeObjetivo = int(porcentajeObjetivo)
+        promedioGastoBeneficairio = round(gasto / totalBeneficiarios,2) if totalBeneficiarios >0 else 0
+        if numeroActividades >0:
+            promedioBeneficiariosActividad = int(totalBeneficiarios / numeroActividades) 
+            promedioInvolucradosActividad = int(totalInvolucrados / numeroActividades)
+            promedioGastoActividad = round(gasto / numeroActividades,2)
+        claseSemaforo = 'danger'
+        if porcentajeObjetivo > 34 and porcentajeObjetivo < 85:
+            claseSemaforo = 'warning'
+        elif porcentajeObjetivo >= 85:
+            claseSemaforo = 'success'
+        puntos = json.dumps(puntos)
+        porcentajesProgramasOperativos = json.dumps(porcentajesProgramasOperativos)
+        objetivo ={
+            'nombre':objetivo.nombre,
+            'id':objetivo.id
+        }
+        comparacionActividades = obtenerComparacionActividades(programasOperativos,'d')
+        comparacionActividades = json.dumps(comparacionActividades)
+        return {
+            'objetivo':objetivo,
+            'tieneMetaCuantitativa':tieneMetaCuantitativa,
+            'puntos':puntos,
+            'numeroActividades':numeroActividades,
+            'promedioGastoActividad':promedioGastoActividad,
+            'promedioGastoBeneficairio':promedioGastoBeneficairio,
+            'totalBeneficiarios':totalBeneficiarios,
+            'promedioBeneficiariosActividad':promedioBeneficiariosActividad,
+            'promedioInvolucradosActividad':promedioInvolucradosActividad,
+            'porcentajeObjetivo':porcentajeObjetivo,
+            'enteroPorcentajeObjetivo':enteroPorcentajeObjetivo,
+            'claseSemaforo':claseSemaforo,
+            'porcentajesProgramasOperativos':porcentajesProgramasOperativos,#nota: este reemplazó a 'metas'
+            'comparacionActividades':comparacionActividades,
+            'tablaCalorMesesActividades':tablaCalorMesesActividades,
+            'tablaCalorDependencias': tablaCalorDependencias,
+            'tablaCalorMeses':tablaCalorMeses,
+            'gasto':gasto
+        }
     def obtenerPorcentajePMD(self):
         return ''
 

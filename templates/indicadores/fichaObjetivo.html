@@ -61,6 +61,8 @@ Objetivo
         <h4 class="text-center"><strong>Gasto total:</strong>&nbsp; ${{gasto}}</h4>
     </div>
     <hr>
+    <div id="actividades_fechas"></div>
+    <br>
     <div id="comparacion_actividades"></div>
     <hr>
     <h4 class="text-center font-weight-bold">Programas operativos</h4>
@@ -73,7 +75,9 @@ Objetivo
 
 
 {% block extrascripts %}
-
+<script src="https://code.highcharts.com/modules/heatmap.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/modules/item-series.js"></script>
 <script>
         $(document).ready(()=>{
             porcentajesProgramasOperativos = '{{porcentajesProgramasOperativos|escapejs}}'
@@ -161,50 +165,101 @@ Objetivo
             }
             let comparacionActividades = '{{comparacionActividades|escapejs}}'
             comparacionActividades = JSON.parse(comparacionActividades)
-            console.log(comparacionActividades)
-            Highcharts.chart('comparacion_actividades', {
+            let tablaCalorMesesActividades = '{{tablaCalorMesesActividades|escapejs}}'
+            tablaCalorMesesActividades = JSON.parse(tablaCalorMesesActividades)
+            let tablaCalorDependencias = '{{tablaCalorDependencias|escapejs}}'
+            tablaCalorDependencias = JSON.parse(tablaCalorDependencias)
+            let tablaCalorMeses = '{{tablaCalorMeses|escapejs}}'
+            tablaCalorMeses = JSON.parse(tablaCalorMeses)
+            Highcharts.chart('actividades_fechas', {
+
                 chart: {
-                    type: 'packedbubble',
-                    backgroundColor:'rgba(255, 255, 255, 0.0)',
-                    height: '100%'
+                    type: 'heatmap',
+                    marginTop: 40,
+                    marginBottom: 80,
+                    plotBorderWidth: 1
                 },
+            
+            
                 title: {
-                    text: 'Aporte de actividades por dependencia'
+                    text: 'Actividades por dependencia por mes'
                 },
+            
+                xAxis: {
+                    categories: tablaCalorDependencias
+                },
+            
+                yAxis: {
+                    categories: tablaCalorMeses,
+                    title: null
+                },
+            
+                colorAxis: {
+                    min: 0,
+                    minColor: '#FFFFFF',
+                    maxColor: Highcharts.getOptions().colors[0]
+                },
+            
+                legend: {
+                    align: 'right',
+                    layout: 'vertical',
+                    margin: 0,
+                    verticalAlign: 'top',
+                    y: 25,
+                    symbolHeight: 280
+                },
+            
                 tooltip: {
-                    useHTML: true,
-                    pointFormat: '<b>{point.name}:</b> {point.value} Actividades'
-                },
-                plotOptions: {
-                    packedbubble: {
-                        minSize: '20%',
-                        maxSize: '100%',
-                        zMin: 0,
-                        zMax: 1000,
-                        layoutAlgorithm: {
-                            gravitationalConstant: 0.05,
-                            splitSeries: true,
-                            seriesInteraction: false,
-                            dragBetweenSeries: true,
-                            parentNodeLimit: true
-                        },
-                        dataLabels: {
-                            enabled: true,
-                            format: '{point.name}',
-                            filter: {
-                                property: 'y',
-                                operator: '>',
-                                value: 250
-                            },
-                            style: {
-                                color: 'black',
-                                textOutline: 'none',
-                                fontWeight: 'normal'
-                            }
-                        }
+                    formatter: function () {
+                        return '<b>' + this.series.xAxis.categories[this.point.x] + '</b> realizó <br><b>' +
+                            this.point.value + '</b> actividades <br><b>' + this.series.yAxis.categories[this.point.y] + '</b>';
                     }
                 },
-                series: comparacionActividades
+            
+                series: [{
+                    name: 'Sales per employee',
+                    borderWidth: 1,
+                    data: tablaCalorMesesActividades,
+                    dataLabels: {
+                        enabled: true,
+                        color: '#000000'
+                    }
+                }]
+            
+            });
+            Highcharts.chart('comparacion_actividades', {
+
+                chart: {
+                    type: 'item'
+                },
+            
+                title: {
+                    text: 'Actividades por dependencia'
+                },
+            
+                subtitle: {
+                    text: 'Parliament visualization'
+                },
+            
+                legend: {
+                    labelFormat: '{name} <span style="opacity: 0.4">{y}</span>'
+                },
+            
+                series: [{
+                    name: 'Actividades',
+                    keys: ['name', 'y', 'color', 'label'],
+                    data: comparacionActividades,
+                    dataLabels: {
+                        enabled: true,
+                        format: '{point.label}'
+                    },
+            
+                    // Circular options
+                    center: ['50%', '88%'],
+                    size: '170%',
+                    startAngle: -100,
+                    endAngle: 100
+                }]
             });
 
         });
