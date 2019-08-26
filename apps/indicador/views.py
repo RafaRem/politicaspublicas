@@ -86,7 +86,7 @@ def obtenerComparacionActividadesMeses(arreglo,filtrarPor,xAxis,yAxis):
             if filtrarPor =='d':
                 actividades = Actividad.objects.filter(programaoperativo__dependencia=valx,
                 fecha_fi__gte=fechaDesde,fecha_fi__lte=fechaHasta)
-                resultado.append([x,y,actividades.count()])
+                resultado.append([x,y,actividades.count()])                
     return resultado
 
 
@@ -185,7 +185,7 @@ class PorcentajesMetas():
                 'descripcionMeta':'meta cualitativa',
                 'cantidadMeta':''
              }
-        elif accion.meta.all():
+        elif accion.meta.filter(periodo=configuracion.periodoGobierno).first():
             resultadoAccion = obtenerPorcentajeAccion(accion,configuracion.periodoGobierno)
             if resultadoAccion['porcentajeAccion'] > 34 and resultadoAccion['porcentajeAccion'] < 85:
                 claseSemaforo = 'warning'
@@ -428,9 +428,17 @@ class PorcentajesMetas():
             'gasto':gasto
         }
     def obtenerPorcentajeEje(self,idEje):
+        """sujeto a cambio cuando los ejes se hagan modelos"""
+        opcionesEjesTransversales = {
+            '1':'Desarrollo Integral',
+            '2':'Desarrollo Social y Humano',
+            '3':'Promoción Económica y Medio Ambiente',
+            '4':'Seguridad Ciudadana y Protección Civil',
+            '5':'Combate a la Corrupción y Participación Ciudadana'
+        }
         meses = obtenerMesesGobierno()
-        objetivo = Objetivo.objects.get(pk=idObjetivo)
-        programasOperativos__acciones = ProgramaOperativo.acciones.through.objects.filter(acciones__objetivo=objetivo)
+        objetivos = Objetivo.objects.filter(ejeTransversal=idEje)
+        programasOperativos__acciones = ProgramaOperativo.acciones.through.objects.filter(acciones__objetivo__ejeTransversal=idEje)
         programasOperativos = []
         dependencias = []
         for po_accion in programasOperativos__acciones:
@@ -439,6 +447,7 @@ class PorcentajesMetas():
             dependencias.append(programaOperativo.dependencia)
         dependencias = list(set(dependencias))
         programasOperativos = list(set(programasOperativos))
+        #Aquí ttsbsjamos con la tabla de calor
         tablaCalorMesesActividades = obtenerComparacionActividadesMeses(programasOperativos,'d',dependencias,meses)
         tablaCalorMesesActividades = json.dumps(tablaCalorMesesActividades)
         tablaCalorDependencias = []
@@ -446,6 +455,7 @@ class PorcentajesMetas():
             tablaCalorDependencias.append(dependencia.nombre)
         tablaCalorDependencias = json.dumps(tablaCalorDependencias)
         tablaCalorMeses = json.dumps(meses)
+        #********************************************
         puntos = []
         porcentajesProgramasOperativos = []
         numeroActividades = 0
@@ -457,10 +467,10 @@ class PorcentajesMetas():
         porcentajeProgramaOperativo = 0
         promedioInvolucradosActividad = 0
         promedioGastoActividad = 0
-        porcentajeObjetivo = 0
+        porcentajeEje = 0
         for programaOperativo in programasOperativos:
             porcentajeProgramaOperativo= self.obtenerPorcentajeProgramaOperativo(programaOperativo.id)
-            porcentajeObjetivo = 100 if porcentajeProgramaOperativo['tieneMetaCuantitativa'] == False else 0
+            porcentajeEje = 100 if porcentajeProgramaOperativo['tieneMetaCuantitativa'] == False else 0
             tieneMetaCuantitativa = True if porcentajeProgramaOperativo['tieneMetaCuantitativa'] else False
             acumuladorPorcentajesDependencias += porcentajeProgramaOperativo['porcentajePo']
             puntos.extend(json.loads(porcentajeProgramaOperativo['puntos']))
@@ -470,28 +480,29 @@ class PorcentajesMetas():
             totalInvolucrados += porcentajeProgramaOperativo['totalInvolucrados']
             porcentajesProgramasOperativos.append(porcentajeProgramaOperativo)
         gasto = round(gasto,2)
-        porcentajeObjetivo = round(acumuladorPorcentajesDependencias / len(porcentajesProgramasOperativos),2) if len(porcentajesProgramasOperativos) > 0 else 0
-        enteroPorcentajeObjetivo = int(porcentajeObjetivo)
+        porcentajeEje = round(acumuladorPorcentajesDependencias / len(porcentajesProgramasOperativos),2) if len(porcentajesProgramasOperativos) > 0 else 0
+        enteroPorcentajeEje = int(porcentajeEje)
         promedioGastoBeneficairio = round(gasto / totalBeneficiarios,2) if totalBeneficiarios >0 else 0
         if numeroActividades >0:
             promedioBeneficiariosActividad = int(totalBeneficiarios / numeroActividades) 
             promedioInvolucradosActividad = int(totalInvolucrados / numeroActividades)
             promedioGastoActividad = round(gasto / numeroActividades,2)
         claseSemaforo = 'danger'
-        if porcentajeObjetivo > 34 and porcentajeObjetivo < 85:
+        if porcentajeEje > 34 and porcentajeEje < 85:
             claseSemaforo = 'warning'
-        elif porcentajeObjetivo >= 85:
+        elif porcentajeEje >= 85:
             claseSemaforo = 'success'
         puntos = json.dumps(puntos)
         porcentajesProgramasOperativos = json.dumps(porcentajesProgramasOperativos)
-        objetivo ={
-            'nombre':objetivo.nombre,
-            'id':objetivo.id
+        eje ={
+            'nombre':opcionesEjesTransversales[idEje],
+            'id':idEje
         }
         comparacionActividades = obtenerComparacionActividades(programasOperativos,'d')
         comparacionActividades = json.dumps(comparacionActividades)
+        print(eje)
         return {
-            'objetivo':objetivo,
+            'eje':eje,
             'tieneMetaCuantitativa':tieneMetaCuantitativa,
             'puntos':puntos,
             'numeroActividades':numeroActividades,
@@ -500,8 +511,8 @@ class PorcentajesMetas():
             'totalBeneficiarios':totalBeneficiarios,
             'promedioBeneficiariosActividad':promedioBeneficiariosActividad,
             'promedioInvolucradosActividad':promedioInvolucradosActividad,
-            'porcentajeObjetivo':porcentajeObjetivo,
-            'enteroPorcentajeObjetivo':enteroPorcentajeObjetivo,
+            'porcentajeEje':porcentajeEje,
+            'enteroPorcentajeEje':enteroPorcentajeEje,
             'claseSemaforo':claseSemaforo,
             'porcentajesProgramasOperativos':porcentajesProgramasOperativos,#nota: este reemplazó a 'metas'
             'comparacionActividades':comparacionActividades,
@@ -603,9 +614,23 @@ class FichaObjetivo(LoginRequiredMixin,View):
         contexto = porcentajeMeta.obtenerPorcentajeObjetivo(idObjetivo)
         return render(request,'indicadores/fichaObjetivo.html',contexto)
 
+class FichaEje(LoginRequiredMixin,View):
+    login_url = 'login'
+    def get(self,request, idEje):
+        porcentajeMeta = PorcentajesMetas()
+        contexto = porcentajeMeta.obtenerPorcentajeEje(idEje)
+        return render(request,'indicadores/fichaEje.html',contexto)
+
 class FichasAdmin(LoginRequiredMixin,View):
     login_url = 'login'
     def get(self,request):
+        opcionesEjesTransversales = {
+            '1':'Desarrollo Integral',
+            '2':'Desarrollo Social y Humano',
+            '3':'Promoción Económica y Medio Ambiente',
+            '4':'Seguridad Ciudadana y Protección Civil',
+            '5':'Combate a la Corrupción y Participación Ciudadana'
+        }
         #TO:DO quitar cuando se haga genérico
         #TO:DO definir cabeceras base y hacerlo dinámico, dependendiendo de lo que elija
         programasOperativos = ProgramaOperativo.objects.filter(estado='a')
@@ -613,9 +638,15 @@ class FichasAdmin(LoginRequiredMixin,View):
         for programaOperativo in programasOperativos:
             accionesPo = programaOperativo.acciones.all()
             for accion in accionesPo:
+                idEje = accion.objetivo.ejeTransversal
+                eje = {
+                    'id':idEje,
+                    'nombre':opcionesEjesTransversales[idEje]
+                }
                 acciones_po.append({
                     'accion':accion,
                     'programaOperativo':programaOperativo,
+                    'eje':eje
                 })
         return render(request,'indicadores/admin/fichasAdmin.html',{
             'acciones_po':acciones_po

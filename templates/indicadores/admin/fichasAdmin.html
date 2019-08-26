@@ -58,7 +58,7 @@ Fichas en construcción
         {% for accione_po in acciones_po %}
             <tr>
                 <td id="id_celda_ejes">
-                        <a href="#">{{accione_po.accion.objetivo.ejeTransversal}}</a>
+                        <a href="{%url 'fichaEje' idEje=accione_po.eje.id%}">{{accione_po.eje.nombre}}</a>
                 </td>
                     
                 <td>

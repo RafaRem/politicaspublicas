@@ -1,0 +1,308 @@
+{%extends 'base/base.html'%}
+{%load staticfiles%}
+
+
+{% block title %}
+Eje
+{% endblock %}
+
+{%block navTitle%}
+Eje
+{%endblock%}
+{%block messages %}
+{% endblock%}
+{% block extracss %}
+<style>
+        /* Always set the map height explicitly to define the size of the div
+         * element that contains the map. */
+        #map {
+          height: 400px;
+        }
+        .progress-bar{
+            color: black;
+            font-weight: bold;
+        }
+</style>
+{% endblock %}
+
+{%block content%}
+    {% if messages %}
+        <ul class="messages">
+                {% for message in messages %}
+                <li{% if message.tags == "success" %} class="alert alert-success"
+            {%else%}
+            class="alert alert-danger"
+            {% endif %}>
+            {{ message }}</li>
+                {% endfor %}
+        </ul>
+    {% endif %}
+    <h2 class="text-center">Eje {{eje.id}}, {{eje.nombre}}</h2>
+    <hr>
+    <h3 class="text-center"><strong>Total actividades:</strong>{{numeroActividades}}</h3>
+    <hr>
+    <div class="container bg-transparent">
+        <div id="id_porcentajeAccion_po">
+
+        </div>
+
+        <hr>
+        <div id="map"></div>
+        <hr>
+        <div id="id_porcentajesDependencias" class="row">
+
+        </div>
+        <hr>
+        <h4 class="text-center"><strong>Costo promedio de las actividades:</strong>&nbsp; ${{promedioGastoActividad}}</h4>
+        <h4 class="text-center"><strong>Costo promedio por beneficiario:</strong>&nbsp; ${{promedioGastoBeneficairio}}</h4>
+        <h4 class="text-center"><strong>Total de beneficiarios:</strong>&nbsp; {{totalBeneficiarios}}</h4>
+        <h4 class="text-center"><strong>Promedio de beneficiarios por actividad:</strong>&nbsp; {{promedioBeneficiariosActividad}}</h4>
+        <h4 class="text-center"><strong>Promedio de involucrados por actividad:</strong>&nbsp; {{promedioInvolucradosActividad}}</h4>
+        <h4 class="text-center"><strong>Gasto total:</strong>&nbsp; ${{gasto}}</h4>
+    </div>
+    <hr>
+    <div id="actividades_fechas"></div>
+    <br>
+    <div id="comparacion_actividades"></div>
+    <hr>
+    <h4 class="text-center font-weight-bold">Programas operativos</h4>
+    <div id="id_acordeon_pos">
+
+          </div>
+
+
+{%endblock%}
+
+
+{% block extrascripts %}
+<script src="https://code.highcharts.com/modules/heatmap.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/modules/item-series.js"></script>
+<script>
+        $(document).ready(()=>{
+            porcentajesProgramasOperativos = '{{porcentajesProgramasOperativos|escapejs}}'
+            porcentajesProgramasOperativos = JSON.parse(porcentajesProgramasOperativos);
+            console.log(porcentajesProgramasOperativos)
+            let tieneAccionCuantitativa = false
+            for (let i = 0; i < porcentajesProgramasOperativos.length; i++) {
+                const porcentajeProgramaOperativo = porcentajesProgramasOperativos[i];
+                if (!porcentajeProgramaOperativo.tieneMetaCuantitativa){
+                    $('#id_acordeon_pos').append(`
+                    <div class="card">
+                            <div class="card-header bg-transparent" id="heading_accion_${porcentajeProgramaOperativo.programaOperativo.id}">
+                              <h5 class="mb-0">
+                                <button class="btn guinda collapsed" data-toggle="collapse" data-target="#collapse_accion_${porcentajeProgramaOperativo.programaOperativo.id}" aria-expanded="false" aria-controls="collapse_accion_${porcentajeProgramaOperativo.programaOperativo.id}">
+                                    ${porcentajeProgramaOperativo.programaOperativo.nombre}
+                                </button>
+                              </h5>
+                            </div>
+                            <div id="collapse_accion_${porcentajeProgramaOperativo.programaOperativo.id}" class="collapse" aria-labelledby="heading_accion_${porcentajeProgramaOperativo.programaOperativo.id}" data-parent="#id_acordeon_pos">
+                              <div class="card-body">   
+                                    <div class="col-sm-12">
+                                        <h5>Acción cualitativa</h5>
+                                            <div class="progress" style="height: 30px;">
+                                                <div class="progress-bar bg-${porcentajeProgramaOperativo.claseSemaforo} progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="${porcentajeProgramaOperativo.porcentajePo}" aria-valuemin="0" aria-valuemax="100" style="width: ${porcentajeProgramaOperativo.porcentajePo}%"></div>
+                                            </div>
+                                        </div>
+                                        <div class="justify-content-center d-flex mt-2">
+                                                <a target="_blank" class="btn guinda" href"/indicador/fichas/programa/${porcentajeProgramaOperativo.programaOperativo.id}">Ficha</a>
+                                            </div>
+                              </div>
+                            </div>
+                          </div>
+
+                     
+                        `
+                    )
+                }else{
+                    tieneAccionCuantitativa = true
+                    $('#id_acordeon_pos').append(`
+                    <div class="card bg-transparent">
+                            <div class="card-header bg-transparent" id="heading_accion_${porcentajeProgramaOperativo.programaOperativo.id}">
+                              <h5 class="mb-0">
+                                <button class="btn guinda collapsed" data-toggle="collapse" data-target="#collapse_accion_${porcentajeProgramaOperativo.programaOperativo.id}" aria-expanded="false" aria-controls="collapse_accion_${porcentajeProgramaOperativo.programaOperativo.id}">
+                                    ${porcentajeProgramaOperativo.programaOperativo.nombre}
+                                </button>
+                              </h5>
+                            </div>
+                            <div id="collapse_accion_${porcentajeProgramaOperativo.programaOperativo.id}" class="collapse" aria-labelledby="heading_accion_${porcentajeProgramaOperativo.programaOperativo.id}" data-parent="#id_acordeon_pos">
+                              <div class="card-body">
+                                    <div class="col-sm-12">
+                                        <h5>${porcentajeProgramaOperativo.programaOperativo.nombre}</h5>
+                                            <div class="progress" style="height: 30px;">
+                                                <div class="progress-bar bg-${porcentajeProgramaOperativo.claseSemaforo} progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="${porcentajeProgramaOperativo.porcentajePo}" aria-valuemin="0" aria-valuemax="100" style="width: ${porcentajeProgramaOperativo.porcentajePo}%">${porcentajeProgramaOperativo.porcentajePo}%</div>
+                                            </div>
+                                        </div>
+                                        <div class="justify-content-center d-flex mt-2">
+                                                <a target="_blank" 
+                                                class="btn guinda" href="/indicador/fichas/programa/${porcentajeProgramaOperativo.programaOperativo.id}">Ficha</a>
+                                            </div>
+                                        
+                              </div>
+                            </div>
+                          </div>
+
+                     
+                        `
+                    )
+                }
+            }
+            if (tieneAccionCuantitativa){
+                $('#id_porcentajeAccion_po').append(`
+                <div class="col-12">
+                        <div class="progress" style="height: 30px;">
+                            <div class="progress-bar bg-{{claseSemaforo}} progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="{{enteroPorcentajeObjetivo}}" aria-valuemin="0" aria-valuemax="100" style="width: {{enteroPorcentajeEje}}%">{{porcentajeEje}}%</div>
+                        </div>
+                    </div>
+                `);
+            }else{
+                $('#id_porcentajeAccion_po').append(`
+                <h5 class="text-center">Sin acciones cuantificables</h5>
+                    <div class="progress" style="height: 30px;">
+                        <div class="progress-bar bg-info progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%"></div>
+                    </div>
+            `);
+            }
+            let comparacionActividades = '{{comparacionActividades|escapejs}}'
+            comparacionActividades = JSON.parse(comparacionActividades)
+            let tablaCalorMesesActividades = '{{tablaCalorMesesActividades|escapejs}}'
+            tablaCalorMesesActividades = JSON.parse(tablaCalorMesesActividades)
+            let tablaCalorDependencias = '{{tablaCalorDependencias|escapejs}}'
+            tablaCalorDependencias = JSON.parse(tablaCalorDependencias)
+            let tablaCalorMeses = '{{tablaCalorMeses|escapejs}}'
+            tablaCalorMeses = JSON.parse(tablaCalorMeses)
+            Highcharts.chart('actividades_fechas', {
+
+                chart: {
+                    type: 'heatmap',
+                    marginTop: 40,
+                    marginBottom: 80,
+                    plotBorderWidth: 1
+                },
+            
+            
+                title: {
+                    text: 'Actividades por dependencia por mes'
+                },
+            
+                xAxis: {
+                    categories: tablaCalorDependencias
+                },
+            
+                yAxis: {
+                    categories: tablaCalorMeses,
+                    title: null
+                },
+            
+                colorAxis: {
+                    min: 0,
+                    minColor: '#FFFFFF',
+                    maxColor: Highcharts.getOptions().colors[0]
+                },
+            
+                legend: {
+                    align: 'right',
+                    layout: 'vertical',
+                    margin: 0,
+                    verticalAlign: 'top',
+                    y: 25,
+                    symbolHeight: 280
+                },
+            
+                tooltip: {
+                    formatter: function () {
+                        return '<b>' + this.series.xAxis.categories[this.point.x] + '</b> realizó <br><b>' +
+                            this.point.value + '</b> actividades <br><b>' + this.series.yAxis.categories[this.point.y] + '</b>';
+                    }
+                },
+            
+                series: [{
+                    name: 'Sales per employee',
+                    borderWidth: 1,
+                    data: tablaCalorMesesActividades,
+                    dataLabels: {
+                        enabled: true,
+                        color: '#000000'
+                    }
+                }]
+            
+            });
+            Highcharts.chart('comparacion_actividades', {
+
+                chart: {
+                    type: 'item'
+                },
+            
+                title: {
+                    text: 'Actividades por dependencia'
+                },
+            
+                subtitle: {
+                    text: 'Parliament visualization'
+                },
+            
+                legend: {
+                    labelFormat: '{name} <span style="opacity: 0.4">{y}</span>'
+                },
+            
+                series: [{
+                    name: 'Actividades',
+                    keys: ['name', 'y', 'color', 'label'],
+                    data: comparacionActividades,
+                    dataLabels: {
+                        enabled: true,
+                        format: '{point.label}'
+                    },
+            
+                    // Circular options
+                    center: ['50%', '88%'],
+                    size: '170%',
+                    startAngle: -100,
+                    endAngle: 100
+                }]
+            });
+
+        });
+
+        // This example requires the Visualization library. Include the libraries=visualization
+        // parameter when you first load the API. For example:
+        // <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=visualization">
+
+            var map, heatmap;
+    
+            function initMap() {
+                var puntos = '{{puntos|escapejs}}';
+                puntos = JSON.parse(puntos);
+                puntos = getPoints(puntos);
+                map = new google.maps.Map(document.getElementById('map'), {
+                fullscreenControl:false,
+                center: {lat: 25.7904657, lng: -108.985882},
+                zoom: 10,
+                disableDefaultUI: true,
+                mapTypeId: 'roadmap'
+                });
+        
+                heatmap = new google.maps.visualization.HeatmapLayer({
+                data: puntos,
+                map: map
+                });
+                google.maps.event.addListener(map, 'click', function(event) {
+                    alert('Lat: ' + event.latLng.lat() + ' Lng: ' + event.latLng.lng());
+                });
+            }
+
+            // Heatmap data: 500 Points
+            function getPoints(puntos) {
+                let points = [];
+                for (let i = 0; i < puntos.length; i++) {
+                    const punto = puntos[i];
+                    points.push(new google.maps.LatLng(punto[0], punto[1]));
+                }
+                return points;
+                }
+</script>
+<script async defer
+    src="https://maps.googleapis.com/maps/api/js?key={{api_key}}&libraries=visualization&callback=initMap">
+</script>
+
+{% endblock %}
