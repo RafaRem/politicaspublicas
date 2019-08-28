@@ -146,6 +146,35 @@ def obtenerTotalBenefieciarios(actividades):
     return total
 
 class PorcentajesMetas():
+    def obtenerActividadesGastos(self,tipo,arreglo):
+        """si tipo es 'o' se hará por objetivos en el xAxis"""
+        if tipo == 'o':
+            #el arreglo son los programas operativos
+            gastos = []
+            objetivo_id = []
+            descripcionesObjetivo = []
+            totalActividades = []
+            for programaOperativo in arreglo:
+                porcentajesAcciones = json.loads(programaOperativo['porcentajesAcciones'])
+                for porcentajeAccion in porcentajesAcciones:
+                    objetivoIndex = 0
+                    # print(porcentajeAccion)
+                    if porcentajeAccion['accion']['objetivo_id'] in objetivo_id:
+                        objetivoIndex = objetivo_id.index(porcentajeAccion['accion']['objetivo_id'])
+                    else:
+                        objetivo_id.append(porcentajeAccion['accion']['objetivo_id'])
+                        descripcionesObjetivo.append(porcentajeAccion['accion']['objetivo'])
+                        gastos.append(0)
+                        totalActividades.append(0)
+                        objetivoIndex = len(objetivo_id) - 1
+                    gastos[objetivoIndex] += float(porcentajeAccion['gasto'])
+                    totalActividades[objetivoIndex] += int(porcentajeAccion['numeroActividades'])
+            return{
+                'gastos':gastos,
+                'totalActividades':totalActividades,
+                'descripcionesObjetivo':descripcionesObjetivo
+            }
+        return ''
     def obtenerPorcentajeAccion(self, idAccion):
         accion = Acciones.objects.get(pk=idAccion)
         configuracion = Configuracion.objects.get(pk=1)
@@ -201,7 +230,10 @@ class PorcentajesMetas():
             }
         accion = {
             'id':accion.id,
-            'nombre':accion.nombre
+            'nombre':accion.nombre,
+            'objetivo_id':accion.objetivo.id,
+            'objetivo':accion.objetivo.nombre,
+            'ejeTransversal_id':accion.objetivo.ejeTransversal
         }
         return {
             'accion':accion,
@@ -455,7 +487,7 @@ class PorcentajesMetas():
             tablaCalorDependencias.append(dependencia.nombre)
         tablaCalorDependencias = json.dumps(tablaCalorDependencias)
         tablaCalorMeses = json.dumps(meses)
-        #********************************************
+        #*********************************************
         puntos = []
         porcentajesProgramasOperativos = []
         numeroActividades = 0
@@ -492,15 +524,18 @@ class PorcentajesMetas():
             claseSemaforo = 'warning'
         elif porcentajeEje >= 85:
             claseSemaforo = 'success'
+        
+        graficaActividadesGastos = self.obtenerActividadesGastos(tipo='o',arreglo=porcentajesProgramasOperativos)
+        graficaActividadesGastos = json.dumps(graficaActividadesGastos)
         puntos = json.dumps(puntos)
         porcentajesProgramasOperativos = json.dumps(porcentajesProgramasOperativos)
+
         eje ={
             'nombre':opcionesEjesTransversales[idEje],
             'id':idEje
         }
         comparacionActividades = obtenerComparacionActividades(programasOperativos,'d')
         comparacionActividades = json.dumps(comparacionActividades)
-        print(eje)
         return {
             'eje':eje,
             'tieneMetaCuantitativa':tieneMetaCuantitativa,
@@ -519,6 +554,7 @@ class PorcentajesMetas():
             'tablaCalorMesesActividades':tablaCalorMesesActividades,
             'tablaCalorDependencias': tablaCalorDependencias,
             'tablaCalorMeses':tablaCalorMeses,
+            'graficaActividadesGastos':graficaActividadesGastos,
             'gasto':gasto
         }
     def obtenerPorcentajePMD(self):
