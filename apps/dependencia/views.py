@@ -153,6 +153,8 @@ class AccionesDependencia(LoginRequiredMixin,View):
 class DependenciasAdmin(LoginRequiredMixin,View):
     login_url = 'login'
     def get(self,request):
+        if (request.user.profile.tipoUsuario != 'a') and (request.user.profile.tipoUsuario != 's'):
+            return redirect('index')
         periodos = Periodo.objects.all() #[30,30,30]
         dependencias = Dependencia.objects.filter(estado='a')
         dpendencias_periodosGasto = []

@@ -11,6 +11,7 @@ from django.core import serializers
 from django.views.generic import View
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse,HttpResponse
+from apps.users.views import *
 """Forms"""
 from apps.users.forms import RegistrarActividad
 from apps.programaOperativo.forms import ProgramaOperativoForm, ActividadesForm, TerminarActividadesForm, RevalidarActividadesForm
@@ -94,7 +95,7 @@ def corregirAcciones(request):
                 accion.meta = ""
                 # accion.save()
     return HttpResponse('listón')
-            
+
 def filtroDependencias(id_objetivo=0):
     dependencias = []
     if id_objetivo > 0:
@@ -456,7 +457,7 @@ class ListActividadesAdmin(LoginRequiredMixin,View):
                 arrDependencias.append(dependencia)
         return arrDependencias
     def get(self,request):
-        if request.user.profile.tipoUsuario == 'e':
+        if (request.user.profile.tipoUsuario != 'a') and (request.user.profile.tipoUsuario != 's'):
             return redirect('index')
         dependencias = self.obtenerDependencias()
         programasOperativos = ProgramaOperativo.objects.filter(estado='a').order_by('nombre') 
@@ -542,6 +543,8 @@ class VerActividadAdmin(LoginRequiredMixin,View):
             'cantidadMeta':cantidadMeta
                 }
     def get(self, request,idActividad):
+        if (request.user.profile.tipoUsuario != 'a') and (request.user.profile.tipoUsuario != 's'):
+            return redirect('index')
         actividad = Actividad.objects.get(pk=idActividad)
         contexto = self.obtenerContexto(idActividad)
         contexto['actividad'] = actividad
@@ -629,14 +632,14 @@ class ReporteActividadesAdmin(LoginRequiredMixin,View):
         arregloObjetivos = json.dumps(arregloObjetivos)
         return arregloObjetivos
     def get(self,request):
-        if request.user.profile.tipoUsuario == 'e':
+        if (request.user.profile.tipoUsuario != 'a') and (request.user.profile.tipoUsuario != 's'):
             return redirect('index')
         arregloObjetivos = self.filtrar("1")
         return render(request,'programasOperativos/actividades/admin/reporteActividadesAdmin.html',{
             'arregloObjetivos':arregloObjetivos
         })
     def post(self,request):
-        if request.user.profile.tipoUsuario == 'e':
+        if (request.user.profile.tipoUsuario != 'a') and (request.user.profile.tipoUsuario != 's'):
             return redirect('index')
         eje = request.POST.get('eje')
         arregloObjetivos = self.filtrar(eje)
@@ -645,7 +648,10 @@ class ReporteActividadesAdmin(LoginRequiredMixin,View):
         })
 
 class ProductividadAdmin(LoginRequiredMixin,View):
+    login_url = 'login'
     def get(self,request):
+        if ((request.user.profile.tipoUsuario != 'a') and (request.user.profile.tipoUsuario != 's')):
+            return redirect('index')
         logs = LogActividad.objects.all()
         #este será el arreglo que iteraremos para obtener lo que ha hecho
         usuarios = []
@@ -789,7 +795,7 @@ class MetasAdmin(LoginRequiredMixin,View):
         return arreglosDependencia
     def get(self,request):
         #se renderiza como dependencia, como objetivo, como eje
-        if request.user.profile.tipoUsuario == 'e':
+        if (request.user.profile.tipoUsuario != 'a') and (request.user.profile.tipoUsuario != 's') and (request.user.profile.tipoUsuario != 'i'):
             return redirect('index')
         contexto = self.obtenerContexto()
         #TO:DO esto tiene que ser cambiado por una tabla de configuraciones

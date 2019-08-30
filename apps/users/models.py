@@ -13,7 +13,7 @@ class Profile(models.Model):
         ('s', 'Super usuario'),
         ('a', 'Administrador'),
         ('e', 'Enlace'),
-        ('i', 'Inspector')
+        ('i', 'Analista')
     )
     dependencia = models.ForeignKey(Dependencia,blank=True, null=True, on_delete=models.CASCADE,verbose_name='Dependencia a la que pertenece')  
     telephone = models.CharField(max_length=30, blank=True, verbose_name='Teléfono')

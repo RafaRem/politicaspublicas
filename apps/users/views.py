@@ -70,7 +70,6 @@ ejes = [
     }
 ]
 
-
 class IndexView(LoginRequiredMixin,View):
     login_url = 'login'
     ejes = [
@@ -213,7 +212,6 @@ def CalendarView(request):
         else:
             return HttpResponseRedirect('usuarios/calendario/')     
     return render(request, 'users/calendario.html',{'actividad':evento,'fecha': formatedDay, 'contador': contador,'depende':depend, 'objetivo':objetivo})
-
 
 class UsuarioView(LoginRequiredMixin,View):  
     login_url = 'login'

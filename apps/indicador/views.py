@@ -575,7 +575,7 @@ class AccionesMetasView(LoginRequiredMixin,View):
         return acciones
         #Aquí les va a decir si ya se capturó meta
     def get(self,request):
-        if request.user.profile.tipoUsuario == 'e':
+        if (request.user.profile.tipoUsuario != 'a') and (request.user.profile.tipoUsuario != 's') and (request.user.profile.tipoUsuario != 'i'):
             return redirect('index')
         periodos = PeriodoGobierno.objects.all()
         acciones_po = self.obtenerAcciones()
@@ -596,12 +596,14 @@ class AccionesMetasForm(LoginRequiredMixin,View):
             'metas':metas
         }
     def get(self,request,idAccion):
-        if request.user.profile.tipoUsuario == 'e':
+        if (request.user.profile.tipoUsuario != 'a') and (request.user.profile.tipoUsuario != 's') and (request.user.profile.tipoUsuario != 'i'):
             return redirect('index')
         accion = Acciones.objects.get(pk=idAccion)
         contexto = self.getContexto(accion)
         return render(request,'indicadores/metas/capturarMetasForm.html',contexto)
     def post(self,request,idAccion):
+        if (request.user.profile.tipoUsuario != 'a') and (request.user.profile.tipoUsuario != 's') and (request.user.profile.tipoUsuario != 'i'):
+            return redirect('index')
         accion = Acciones.objects.get(pk=idAccion)
         if request.POST.get('cualitativa'):
             accion.cualitativa = True
@@ -626,12 +628,16 @@ class AccionesMetasForm(LoginRequiredMixin,View):
 class FichaAccion(LoginRequiredMixin,View):
     login_url = 'login'
     def get(self,request, idAccion):
+        if (request.user.profile.tipoUsuario != 'a') and (request.user.profile.tipoUsuario != 's') and (request.user.profile.tipoUsuario != 'i'):
+            return redirect('index')
         contexto = PorcentajesMetas.obtenerPorcentajeAccion(self,idAccion=idAccion)
         return render(request,'indicadores/fichaAccion.html',contexto)
 
 class FichaProgramaOperativo(LoginRequiredMixin,View):
     login_url = 'login'
     def get(self,request, idPrograma):
+        if (request.user.profile.tipoUsuario != 'a') and (request.user.profile.tipoUsuario != 's') and (request.user.profile.tipoUsuario != 'i'):
+            return redirect('index')
         porcentajeMetas = PorcentajesMetas()
         contexto = porcentajeMetas.obtenerPorcentajeProgramaOperativo(idPrograma)
         return render(request,'indicadores/fichaProgramaOperativo.html',contexto)
@@ -639,6 +645,8 @@ class FichaProgramaOperativo(LoginRequiredMixin,View):
 class FichaDependencia(LoginRequiredMixin,View):
     login_url = 'login'
     def get(self,request, idDependencia):
+        if (request.user.profile.tipoUsuario != 'a') and (request.user.profile.tipoUsuario != 's') and (request.user.profile.tipoUsuario != 'i'):
+            return redirect('index')
         porcentajeMeta = PorcentajesMetas()
         contexto = porcentajeMeta.obtenerPorcentajeDependencia(idDependencia)
         return render(request,'indicadores/fichaDependencia.html',contexto)
@@ -646,6 +654,8 @@ class FichaDependencia(LoginRequiredMixin,View):
 class FichaObjetivo(LoginRequiredMixin,View):
     login_url = 'login'
     def get(self,request, idObjetivo):
+        if (request.user.profile.tipoUsuario != 'a') and (request.user.profile.tipoUsuario != 's') and (request.user.profile.tipoUsuario != 'i'):
+            return redirect('index')
         porcentajeMeta = PorcentajesMetas()
         contexto = porcentajeMeta.obtenerPorcentajeObjetivo(idObjetivo)
         return render(request,'indicadores/fichaObjetivo.html',contexto)
@@ -653,6 +663,8 @@ class FichaObjetivo(LoginRequiredMixin,View):
 class FichaEje(LoginRequiredMixin,View):
     login_url = 'login'
     def get(self,request, idEje):
+        if (request.user.profile.tipoUsuario != 'a') and (request.user.profile.tipoUsuario != 's') and (request.user.profile.tipoUsuario != 'i'):
+            return redirect('index')
         porcentajeMeta = PorcentajesMetas()
         contexto = porcentajeMeta.obtenerPorcentajeEje(idEje)
         return render(request,'indicadores/fichaEje.html',contexto)
@@ -660,6 +672,8 @@ class FichaEje(LoginRequiredMixin,View):
 class FichasAdmin(LoginRequiredMixin,View):
     login_url = 'login'
     def get(self,request):
+        if (request.user.profile.tipoUsuario != 'a') and (request.user.profile.tipoUsuario != 's') and (request.user.profile.tipoUsuario != 'i'):
+            return redirect('index')
         opcionesEjesTransversales = {
             '1':'Desarrollo Integral',
             '2':'Desarrollo Social y Humano',
@@ -693,6 +707,8 @@ class FichasAdmin(LoginRequiredMixin,View):
 class Configuraciones(LoginRequiredMixin,View):
     login_url = 'login'
     def get(self,request):
+        if (request.user.profile.tipoUsuario != 'a') and (request.user.profile.tipoUsuario != 's'):
+            return redirect('index')
         try:
             configuracion = Configuracion.objects.get(pk=1)
         except:
@@ -704,6 +720,8 @@ class Configuraciones(LoginRequiredMixin,View):
             'form':form
         })
     def post(self,request):
+        if (request.user.profile.tipoUsuario != 'a') and (request.user.profile.tipoUsuario != 's'):
+            return redirect('index')
         configuracion = Configuracion.objects.get(pk=1)
         form = ConfiguracionesForm(request.POST,instance=configuracion)
         if form.is_valid():

@@ -110,7 +110,7 @@
     <!-- Sidebar -->
     <ul class="sidebar sidebar-blanco navbar-nav">
       {#Si el usuario es diferente a ENLACE#}
-      {% if request.user.profile.tipoUsuario != 'e' %}
+      {% if request.user.profile.tipoUsuario == 'a' or  request.user.profile.tipoUsuario == 's'%}
           <!--<li class="nav-item active {% if request.resolver_match.url_name == "my_view_name" %}active{% endif %}">
               <a class="nav-link" href="{%url 'calendar'%}">
                 <i class="fas fa-fw fa-tachometer-alt"></i>
@@ -150,7 +150,18 @@
                 <i class="fas fa-cog"></i>
               <span class="font-weight-bold">Configuraciones</span></a>
           </li>
-      {% endif %}
+      {%elif request.user.profile.tipoUsuario == 'i'%}
+      <li class="nav-item">
+        <a class="nav-link" href="{%url 'metasAdmin'%}">
+          <i class="fas fa-chart-pie"></i>
+          <span class="font-weight-bold">Metas</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{%url 'fichasAdmin'%}">
+          <i class="fas fa-chart-line"></i>
+          <span class="font-weight-bold">Fichas</span></a>
+      </li>
+      {% elif request.user.profile.tipoUsuario == 'e' or request.user.profile.tipoUsuario == 'a' %}
           <li class="nav-item">
             <a class="nav-link" href="{%url 'listaObjetivos'%}">
               <i class="fas fa-fw fa-chalkboard-teacher"></i>
@@ -188,6 +199,8 @@
                   <i class="fas fa-toolbox"></i>
                 <span class="font-weight-bold">Recursos</span></a>
             </li>
+      {% endif %}
+
     </ul>
 
     <div id="content-wrapper">
