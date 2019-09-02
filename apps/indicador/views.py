@@ -70,8 +70,10 @@ def obtenerComparacionActividades(programasOperativos,filtrarPor):
             datos.append([dependencia.nombre, contadorActividades, color, dependencia.nombre])
         return datos 
 
-def obtenerComparacionActividadesMeses(arreglo,filtrarPor,xAxis,yAxis):
-    """Opciones: 'd' = dependencias, 'o' = objetivo. programasOperativos es un arreglo de programas operativos a comparar"""
+def obtenerComparacionActividadesMeses(arreglo,filtrarPor,xAxis,yAxis,valorFiltro):
+    """Opciones: 'e' = dependencias, 'o' = objetivo.
+     programasOperativos es un arreglo de programas operativos a comparar.
+     filtrarPor será el filtro"""
     resultado = []
     #El arreglo por parametro contiene programasOperativos
     for x,valx in enumerate(xAxis):
@@ -83,12 +85,18 @@ def obtenerComparacionActividadesMeses(arreglo,filtrarPor,xAxis,yAxis):
             else:
                 mesHasta += 1
             fechaHasta = fechaDesde.replace(month=mesHasta)
-            if filtrarPor =='d':
+            if filtrarPor =='e':
                 actividades = Actividad.objects.filter(programaoperativo__dependencia=valx,
-                fecha_fi__gte=fechaDesde,fecha_fi__lte=fechaHasta)
-                resultado.append([x,y,actividades.count()])                
+                fecha_fi__gte=fechaDesde,fecha_fi__lte=fechaHasta, 
+                accion__objetivo__ejeTransversal=valorFiltro)
+                resultado.append([x,y,actividades.count()])       
+            if filtrarPor =='o':
+                objetivo = Objetivo.objects.get(pk=valorFiltro)
+                actividades = Actividad.objects.filter(programaoperativo__dependencia=valx,
+                fecha_fi__gte=fechaDesde,fecha_fi__lte=fechaHasta, 
+                accion__objetivo=valorFiltro)
+                resultado.append([x,y,actividades.count()])           
     return resultado
-
 
 def obtenerGeoPuntosActividades(actividades):
     puntos = []
@@ -388,7 +396,7 @@ class PorcentajesMetas():
             dependencias.append(programaOperativo.dependencia)
         dependencias = list(set(dependencias))
         programasOperativos = list(set(programasOperativos))
-        tablaCalorMesesActividades = obtenerComparacionActividadesMeses(programasOperativos,'d',dependencias,meses)
+        tablaCalorMesesActividades = obtenerComparacionActividadesMeses(programasOperativos,'o',dependencias,meses,idObjetivo)
         tablaCalorMesesActividades = json.dumps(tablaCalorMesesActividades)
         tablaCalorDependencias = []
         for dependencia in dependencias:
@@ -480,7 +488,7 @@ class PorcentajesMetas():
         dependencias = list(set(dependencias))
         programasOperativos = list(set(programasOperativos))
         #Aquí ttsbsjamos con la tabla de calor
-        tablaCalorMesesActividades = obtenerComparacionActividadesMeses(programasOperativos,'d',dependencias,meses)
+        tablaCalorMesesActividades = obtenerComparacionActividadesMeses(programasOperativos,'e',dependencias,meses,idEje)
         tablaCalorMesesActividades = json.dumps(tablaCalorMesesActividades)
         tablaCalorDependencias = []
         for dependencia in dependencias:
@@ -636,7 +644,8 @@ class FichaAccion(LoginRequiredMixin,View):
 class FichaProgramaOperativo(LoginRequiredMixin,View):
     login_url = 'login'
     def get(self,request, idPrograma):
-        if (request.user.profile.tipoUsuario != 'a') and (request.user.profile.tipoUsuario != 's') and (request.user.profile.tipoUsuario != 'i'):
+        programaOperativo = ProgramaOperativo.objects.get(pk=idPrograma)
+        if (str(request.user.profile.dependencia.id) != str(programaOperativo.dependencia.id)) and ((request.user.profile.tipoUsuario != 'a') and (request.user.profile.tipoUsuario != 's') and (request.user.profile.tipoUsuario != 'i')):
             return redirect('index')
         porcentajeMetas = PorcentajesMetas()
         contexto = porcentajeMetas.obtenerPorcentajeProgramaOperativo(idPrograma)
@@ -645,7 +654,7 @@ class FichaProgramaOperativo(LoginRequiredMixin,View):
 class FichaDependencia(LoginRequiredMixin,View):
     login_url = 'login'
     def get(self,request, idDependencia):
-        if (request.user.profile.tipoUsuario != 'a') and (request.user.profile.tipoUsuario != 's') and (request.user.profile.tipoUsuario != 'i'):
+        if (str(request.user.profile.dependencia.id) != str(idDependencia)) and ((request.user.profile.tipoUsuario != 'a') and (request.user.profile.tipoUsuario != 's') and (request.user.profile.tipoUsuario != 'i')):
             return redirect('index')
         porcentajeMeta = PorcentajesMetas()
         contexto = porcentajeMeta.obtenerPorcentajeDependencia(idDependencia)
