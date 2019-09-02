@@ -102,8 +102,15 @@ class IndexView(View):
     def get(self,request, *args, **kwargs):
         if request.user.is_anonymous:
             return render(request,'index/ciudadanos.html')
-        if request.user.profile.tipoUsuario == 'e':
+        elif request.user.profile.tipoUsuario == 'e':
             return render(request,'index/enlaces.html',{'ejes':self.ejes})
+        elif request.user.profile.tipoUsuario == 'a' or request.user.profile.tipoUsuario == 's':
+            return render(request,'index/administradores.html')
+        elif request.user.profile.tipoUsuario == 'i':
+            return render(request,'index/analistas.html')
+        else:
+            return render(request,'index/ciudadanos.html')
+
 class IndexLoginRequired(LoginRequiredMixin,View):
     """Esta vista es solo para usaurios que necesitan un login previo"""
     template_name = 'users/login.html'
