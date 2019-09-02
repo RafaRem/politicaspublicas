@@ -382,7 +382,7 @@ class CambiarPassview(LoginRequiredMixin,View):
             user.set_password(request.POST.get("nuevaPass"))
             user.save()
             messages.success(request,"Contraseña actualizada con éxito")
-            return redirect('index')
+            return redirect('login')
         else:
             messages.error(request,"Contraseña incorrecta")
         return render(request,'users/cambiarPass.html')

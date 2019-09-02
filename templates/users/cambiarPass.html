@@ -95,7 +95,8 @@
                 nuevaPass = document.getElementById('id_nuevaPass');
                 confirmarPass = document.getElementById('id_confirmarPass');
                 if(nuevaPass.value == confirmarPass.value){
-                    if(nuevaPass.value.match(/^(?=.*\d)(?=.*[a-z])[0-9a-zA-Z]{8,}$/)){
+                    pass = nuevaPass.value
+                    if(pass.match(/^(?=.*\d)(?=.*[a-z])[0-9a-zA-Z]{8,}$/)){
                         this.submit();
                     }else{
                         Swal.fire({

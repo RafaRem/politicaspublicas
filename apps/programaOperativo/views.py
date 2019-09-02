@@ -1,5 +1,5 @@
 import json
-import datetime
+from datetime import datetime
 import os
 import threading
 import queue
@@ -307,10 +307,9 @@ class ActividadFormView(LoginRequiredMixin,View):
             datos.longitud = request.POST.get('longitud')
             datos.fecha_in = request.POST.get('fecha_in')
             datos.fecha_fi = request.POST.get('fecha_fi')
-            fecha_final = datetime.datetime.strptime(request.POST.get('fecha_fi'),'%Y-%m-%d')
-            fecha_inicial = datetime.datetime.strptime(request.POST.get('fecha_in'),'%Y-%m-%d')
-
-            junio = datetime.datetime.strptime('2019-06-30','%Y-%m-%d')
+            fecha_final = datetime.strptime(request.POST.get('fecha_fi'),'%Y-%m-%d')
+            fecha_inicial = datetime.strptime(request.POST.get('fecha_in'),'%Y-%m-%d')
+            junio = datetime.strptime('2019-06-30','%Y-%m-%d')
             if((fecha_final <= junio or fecha_inicial <= junio)
             and
             not ((request.user.profile.dependencia.id == 14) or (request.user.profile.dependencia.id == 31))):
@@ -336,7 +335,7 @@ class ActividadFormView(LoginRequiredMixin,View):
 class TerminarActividadFormView(LoginRequiredMixin,View):
     login_url = 'login'
     def cambiarRuta(self,actividad):
-        ruta = str(datetime.datetime.now().year) + '/' + str(datetime.datetime.now().month) + '/'
+        ruta = str(datetime.now().year) + '/' + str(datetime.now().month) + '/'
         if not os.path.exists(settings.MEDIA_ROOT + '/' + ruta):
             os.makedirs(settings.MEDIA_ROOT + '/' + ruta)
         os.rename(actividad.evidencia.path,settings.MEDIA_ROOT+'/'+ruta+str(actividad.evidencia))
