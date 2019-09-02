@@ -28,7 +28,7 @@ from apps.indicador import urls as indicadoresUrls
 from seguimientometas.views import *
 
 urlpatterns = [
-    url(r'^admin/', admin.site.urls),
+    url(r'^4zZ1245gHHjUytzcvVB/', admin.site.urls),
     url(r'^',include(usersUrls)),
     url(r'^',include(posUrls)),
     url(r'^',include(objetivosUrls)),

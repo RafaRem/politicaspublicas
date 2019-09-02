@@ -70,8 +70,7 @@ ejes = [
     }
 ]
 
-class IndexView(LoginRequiredMixin,View):
-    login_url = 'login'
+class IndexView(View):
     ejes = [
         {
             'numero':'Eje I',
@@ -101,7 +100,16 @@ class IndexView(LoginRequiredMixin,View):
         ]
     template_name = 'users/login.html'
     def get(self,request, *args, **kwargs):
-        return render(request,'index.html',{'ejes':self.ejes})
+        if request.user.is_anonymous:
+            return render(request,'index/ciudadanos.html')
+        if request.user.profile.tipoUsuario == 'e':
+            return render(request,'index/enlaces.html',{'ejes':self.ejes})
+class IndexLoginRequired(LoginRequiredMixin,View):
+    """Esta vista es solo para usaurios que necesitan un login previo"""
+    template_name = 'users/login.html'
+    def get(self,request, *args, **kwargs):
+        if request.user.profile.tipoUsuario == 'e':
+            return render(request,'index/enlaces.html')
 
 @login_required(login_url='login')
 def CalendarView(request):
@@ -221,26 +229,26 @@ class UsuarioView(LoginRequiredMixin,View):
 
 
 class LoginView(View):
-    def post(self,request):
-        username = str(request.POST['usuario'])
-        password = str(request.POST['pass'])
-        if username:
-            user = authenticate(username=username,password=password)
-            if user != None:
-                login(request,user)
-                return redirect(request.path) 
-            else:
-                messages.error(request,'Usuario o contraseña inválidos')
-                return redirect('login')
-                
-            
-        return render(request,"users/login.html")
-        pass
     def get(self,request):
         if request.user.is_authenticated:
             return redirect('index')
         return render(request,"users/login.html")
         pass
+    def post(self,request):
+        username = str(request.POST['usuario'])
+        password = str(request.POST['pass'])
+        if username:
+            user = authenticate(username=username,password=password)
+            if user is not None and user.is_active:
+                login(request,user)
+                siguiente = request.GET.get('next')
+                if siguiente:
+                    return redirect(siguiente)
+                return redirect('login')
+            else:
+                messages.error(request,'Usuario o contraseña inválidos')
+                return redirect('login')
+        return render(request,"users/login.html")
 
 
 @login_required(login_url='login')

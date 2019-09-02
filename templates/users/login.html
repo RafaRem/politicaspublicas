@@ -32,3 +32,14 @@
 {% block superContent %}
 {%include "users/LoginForm.html"%}
 {% endblock superContent %}
+
+{% block extrascripts%}
+<script>
+    $(document).ready(()=>{
+        $('#loginForm').submit(()=>{
+            $(this).submit()
+            $('#btn-iniciar').attr("disabled", true)
+        })
+    })
+</script>
+{% endblock %}
