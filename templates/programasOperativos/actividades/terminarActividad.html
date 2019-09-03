@@ -80,6 +80,11 @@ Actividad
             <h5 class="text-center">Realizada el {{actividad.fecha_in}} al {{actividad.fecha_fi}}</h5>
             <hr>
             {{ form|crispy }}
+            <br>
+            <div class="justify-content-center d-flex">
+              <a target="_blank" class="btn guinda" href="http://www.google.com/maps/place/{{actividad.latitud}},{{actividad.longitud}}"><i class="fas fa-map-marked-alt"></i>&nbsp;Ubicacion</a>
+            </div>
+            <br>
             <label for="input-42-es">Evidencia*</label>
             <div class="file-loading">
                     <input required class="guinda" 

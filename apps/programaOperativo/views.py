@@ -675,7 +675,6 @@ class ProductividadAdmin(LoginRequiredMixin,View):
             logs = LogActividad.objects.filter(usuario=usuario,estado='n')
             arreglosActividades[1]['data'].append(logs.count())
         arreglosActividades = json.dumps(arreglosActividades)
-        
         return render(request,'programasOperativos/actividades/admin/productividadAdmin.html',{
             'nombres':nombres,
             'arregloActividades':arreglosActividades
@@ -833,4 +832,3 @@ class MetasAdmin(LoginRequiredMixin,View):
         eje = request.POST.get('eje')
         contexto = self.obtenerContexto()
         return render(request,'programasOperativos/actividades/admin/metasAdmin.html',contexto)
-

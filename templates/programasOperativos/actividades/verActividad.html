@@ -94,30 +94,10 @@
                         </tr>
                 </tbody>
               </table>
-    <!-- <h3 class="text-center font-weight-bold">Detalles de gasto</h3>
-    <div class="row">
-        {% for gasto in gastos %}
-            <div class="col-xl-4 col-sm-6 mb-3 animated fadeIn">
-                <div class="card text-dorado eje3 o-hidden h-100">
-                    <div class="card-body">
-                        <h4>{{gasto.gasto.nombre}}</h4>
-                        <h4 class="text-white text-center">${{gasto.cantidad}}</h4>
-                    </div>
-
-                </div>
-                </div>
-        {% endfor %}        
-        <hr>
-        <div class="col-12 mb-3 animated fadeIn">
-                <div class="card text-dorado eje5 ">
-                    <div class="card-body">
-                        <h3 class="text-center">Total</h3>
-                        <h4 class="text-white text-center">${{total}}</h4>
-                    </div>
-
-                </div>
-                </div>
-    </div> -->
+    <br>
+    <div class="justify-content-center d-flex">
+        <a target="_blank" class="btn guinda" href="http://www.google.com/maps/place/{{actividad.latitud}},{{actividad.longitud}}"><i class="fas fa-map-marked-alt"></i>&nbsp;Ubicacion</a>
+    </div>
     <hr>
     <h3 class="text-center font-weight-bold">Observaciones</h3>
     {% if actividad.observaciones %}
