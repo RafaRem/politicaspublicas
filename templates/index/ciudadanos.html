@@ -1,17 +1,41 @@
 {% extends "base/base.html" %}
 {% load staticfiles %}
 
+{% block extracss %}
+<style>
+    img#logo{
+        width: 60%;
+        height: 60%;
+    }
+</style>
+{% endblock %}
+
 
 {%block title%}
   Inicio
 {%endblock%}
 {%block navTitle%}
-
+En construcción
 {%endblock%}
 
 
 {% block superContent %}
- 
+ {% block content %}
+  <div class="container bg-transparent">
+    <div class="d-flex justify-content-center">
+        <img id="logo" src="{%static 'images/Ahome.png'%}" alt="">
+    </div>
+    <h3>
+       Se ha cambiado la ruta de inicio de sesión, para iniciar sesión iniciar en el siguiente link:
+    </h3>
+    <div class="justify-content-center d-flex">
+      <a class="btn guinda" href="{%url 'login'%}">Iniciar sesión</a>
+    </div>
+    <strong>Correo: jesus.acosta@ahomedigital.gob.mx</strong>
+  </div>
+ {% endblock %}
 
 
 {% endblock %}
+
+
