@@ -324,7 +324,8 @@ class PorcentajesMetas():
         }
     def obtenerPorcentajeDependencia(self, idDependencia):
         dependencia = Dependencia.objects.get(pk=idDependencia)
-        programasOperativos = ProgramaOperativo.objects.filter(dependencia=dependencia)
+        programasOperativos = ProgramaOperativo.objects.filter(dependencia=dependencia, estado='a')
+        print(programasOperativos)
         puntos = []
         porcentajesProgramasOperativos = []
         numeroActividades = 0
