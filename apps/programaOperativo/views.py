@@ -696,9 +696,14 @@ class MetasAdmin(LoginRequiredMixin,View):
         dependencia = Dependencia.objects.get(pk=id_dependencia)
         objetoDependencia = {
         'dependencia':dependencia.nombre,
+        'porcentaje':0.0,
+        'porcentajeEntero':0,
+        'claseSemaforo':'info',
         'pos':[]
         }
         pos = filtroProgramasOperativos(id_dependencia=id_dependencia)
+        acumuladorPorcentajesPo = 0.0
+        contadorPos = 0
         for po in pos:
             objetoPo = {
                 'id':po.id,
@@ -759,10 +764,19 @@ class MetasAdmin(LoginRequiredMixin,View):
                 pass
             #porcentaje total del programa operativo
             if contadorAccionesConMeta > 0:
+                contadorPos += 1
                 porcentajePo = (acumuladorPorcentajeAccion / contadorAccionesConMeta)
+                acumuladorPorcentajesPo += round(porcentajePo,2)
                 objetoPo['porcentajePo'] = round(porcentajePo,2)
                 objetoDependencia['pos'].append(objetoPo)
-
+        porcentajeDependencia = round(acumuladorPorcentajesPo / contadorPos,2) if contadorPos > 0 else 0
+        objetoDependencia['porcentaje'] = porcentajeDependencia
+        objetoDependencia['porcentajeEntero'] = int(porcentajeDependencia)
+        if objetoDependencia['porcentajeEntero'] > 34 and objetoDependencia['porcentajeEntero'] < 85:
+            claseSemaforo = 'warning'
+        elif objetoDependencia['porcentajeEntero'] >= 85:
+            claseSemaforo = 'success'
+        objetoDependencia['claseSemaforo'] = claseSemaforo
         self.queue.put(objetoDependencia)
         return
     def filtrarDependencias(self,periodoGobierno,id_dependencia=0):

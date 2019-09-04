@@ -76,6 +76,10 @@ Metas
                         <div class="mr-5">
                             <h3>{{dependencia.dependencia}}</h3>
 
+                            <div class="progress" style="height: 30px;">
+                                <div class="progress-bar bg-{{dependencia.claseSemaforo}} progress-bar-striped progress-bar-animated" role="progressbar" style="width: {{dependencia.porcentajeEntero}}%" aria-valuenow="{{dependencia.porcentaje}}" aria-valuemin="0" aria-valuemax="100">{{dependencia.porcentaje}}%</div>
+                              </div>
+
                             <div class="text-white">
                                 {% for po in dependencia.pos %}
                                 <div class="container bg-transparent">
