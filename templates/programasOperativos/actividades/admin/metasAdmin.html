@@ -74,7 +74,7 @@ Metas
                     <div class="card text-dorado eje2 o-hidden h-100">
                         <div class="card-body">
                         <div class="mr-5">
-                            <h3>{{dependencia.dependencia}}</h3>
+                            <h3> <a target="__blank" href="{%url 'fichaDependencia' idDependencia=dependencia.dependencia_id%}">{{dependencia.dependencia}}</a> </h3>
 
                             <div class="progress" style="height: 30px;">
                                 <div class="progress-bar bg-{{dependencia.claseSemaforo}} progress-bar-striped progress-bar-animated" role="progressbar" style="width: {{dependencia.porcentajeEntero}}%" aria-valuenow="{{dependencia.porcentaje}}" aria-valuemin="0" aria-valuemax="100">{{dependencia.porcentaje}}%</div>
@@ -84,7 +84,7 @@ Metas
                                 {% for po in dependencia.pos %}
                                 <div class="container bg-transparent">
 
-                                    <h4 class="text-center"> <strong>{{po.nombre}}</strong> </h4>
+                                    <h4 class="text-center"><a href="{%url 'fichaPrograma' idPrograma=po.id%}" target="__blank"><strong>{{po.nombre}}</strong></a>   </h4>
                                     <h5 class="text-center">{{po.porcentajePo}}%</h5>
                                     <br>
                                     {% for accion in po.acciones %}

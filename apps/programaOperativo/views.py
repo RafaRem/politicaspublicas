@@ -698,6 +698,7 @@ class MetasAdmin(LoginRequiredMixin,View):
         dependencia = Dependencia.objects.get(pk=id_dependencia)
         objetoDependencia = {
         'dependencia':dependencia.nombre,
+        'dependencia_id':dependencia.id,
         'porcentaje':0.0,
         'porcentajeEntero':0,
         'claseSemaforo':'info',
