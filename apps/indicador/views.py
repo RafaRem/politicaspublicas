@@ -94,8 +94,10 @@ def obtenerComparacionActividadesMeses(arreglo,filtrarPor,xAxis,yAxis,valorFiltr
                 objetivo = Objetivo.objects.get(pk=valorFiltro)
                 actividades = Actividad.objects.filter(programaoperativo__dependencia=valx,
                 fecha_fi__gte=fechaDesde,fecha_fi__lte=fechaHasta, 
-                accion__objetivo=valorFiltro)
+                accion__objetivo=objetivo)
+                print(actividades.count())
                 resultado.append([x,y,actividades.count()])           
+                import pdb; pdb.set_trace()
     return resultado
 
 def obtenerGeoPuntosActividades(actividades):
