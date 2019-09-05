@@ -153,6 +153,23 @@ def obtenerTotalBenefieciarios(actividades):
             total += int(actividad.beneficiarios) 
     return total
 
+def obtenerCantidadesBrutasMetas(tipoArreglo, arreglo):
+    """El tipo de arreglo si es 'p' es programa operativo"""
+    metas = []
+    if tipoArreglo == 'p':
+        for programaOperativo in arreglo:
+            porcentajesAcciones = json.loads(programaOperativo['porcentajesAcciones'])
+            for porcentajeAccion in porcentajesAcciones:
+                meta = porcentajeAccion['meta']
+                accion = porcentajeAccion['accion']['nombre']
+                if meta['tieneMeta']:
+                    metas.append({
+                        'accion':accion,
+                        'descripcion':meta['descripcionMeta'],
+                        'cantidad':meta['cantidadMeta']
+                    })
+    return metas
+
 class PorcentajesMetas():
     def obtenerActividadesGastos(self,tipo,arreglo):
         """si tipo es 'o' se hará por objetivos en el xAxis"""
@@ -354,6 +371,7 @@ class PorcentajesMetas():
             totalBeneficiarios += porcentajeProgramaOperativo['totalBeneficiarios']
             totalInvolucrados += porcentajeProgramaOperativo['totalInvolucrados']
             porcentajesProgramasOperativos.append(porcentajeProgramaOperativo)
+        cantidadesBrutasMetas = obtenerCantidadesBrutasMetas('p',porcentajesProgramasOperativos)
         porcentajeDireccion = round(acumuladorPorcentajesPos / contadorPosCuantitativos,2) if contadorPosCuantitativos > 0 else 0
         enteroPorcentajeDireccion = int(porcentajeDireccion)
         promedioGastoBeneficairio = round(gasto / totalBeneficiarios,2) if totalBeneficiarios >0 else 0
@@ -386,6 +404,7 @@ class PorcentajesMetas():
             'porcentajeDireccion':porcentajeDireccion,
             'enteroPorcentajeDireccion':enteroPorcentajeDireccion,
             'claseSemaforo':claseSemaforo,
+            'cantidadesBrutasMetas':cantidadesBrutasMetas,
             'porcentajesProgramasOperativos':porcentajesProgramasOperativos,#nota: este reemplazó a 'metas'
             'gasto':gasto
         }
@@ -420,11 +439,14 @@ class PorcentajesMetas():
         promedioInvolucradosActividad = 0
         promedioGastoActividad = 0
         porcentajeObjetivo = 0
+        contadorPosCuantitativos = 0
         for programaOperativo in programasOperativos:
             porcentajeProgramaOperativo= self.obtenerPorcentajeProgramaOperativo(programaOperativo.id)
             porcentajeObjetivo = 100 if porcentajeProgramaOperativo['tieneMetaCuantitativa'] == False else 0
+            if porcentajeProgramaOperativo['tieneMetaCuantitativa']:
+                acumuladorPorcentajesDependencias += porcentajeProgramaOperativo['porcentajePo']
+                contadorPosCuantitativos += 1   
             tieneMetaCuantitativa = True if porcentajeProgramaOperativo['tieneMetaCuantitativa'] else False
-            acumuladorPorcentajesDependencias += porcentajeProgramaOperativo['porcentajePo']
             puntos.extend(json.loads(porcentajeProgramaOperativo['puntos']))
             numeroActividades += porcentajeProgramaOperativo['numeroActividades']
             gasto += porcentajeProgramaOperativo['gasto']
@@ -432,7 +454,7 @@ class PorcentajesMetas():
             totalInvolucrados += porcentajeProgramaOperativo['totalInvolucrados']
             porcentajesProgramasOperativos.append(porcentajeProgramaOperativo)
         gasto = round(gasto,2)
-        porcentajeObjetivo = round(acumuladorPorcentajesDependencias / len(porcentajesProgramasOperativos),2) if len(porcentajesProgramasOperativos) > 0 else 0
+        porcentajeObjetivo = round(acumuladorPorcentajesDependencias / contadorPosCuantitativos,2) if contadorPosCuantitativos > 0 else 0
         enteroPorcentajeObjetivo = int(porcentajeObjetivo)
         promedioGastoBeneficairio = round(gasto / totalBeneficiarios,2) if totalBeneficiarios >0 else 0
         if numeroActividades >0:
@@ -513,11 +535,14 @@ class PorcentajesMetas():
         promedioInvolucradosActividad = 0
         promedioGastoActividad = 0
         porcentajeEje = 0
+        contadorPosCuantitativos = 0
         for programaOperativo in programasOperativos:
             porcentajeProgramaOperativo= self.obtenerPorcentajeProgramaOperativo(programaOperativo.id)
             porcentajeEje = 100 if porcentajeProgramaOperativo['tieneMetaCuantitativa'] == False else 0
             tieneMetaCuantitativa = True if porcentajeProgramaOperativo['tieneMetaCuantitativa'] else False
-            acumuladorPorcentajesDependencias += porcentajeProgramaOperativo['porcentajePo']
+            if porcentajeProgramaOperativo['tieneMetaCuantitativa']:
+                acumuladorPorcentajesDependencias += porcentajeProgramaOperativo['porcentajePo']
+                contadorPosCuantitativos += 1
             puntos.extend(json.loads(porcentajeProgramaOperativo['puntos']))
             numeroActividades += porcentajeProgramaOperativo['numeroActividades']
             gasto += porcentajeProgramaOperativo['gasto']
@@ -525,7 +550,7 @@ class PorcentajesMetas():
             totalInvolucrados += porcentajeProgramaOperativo['totalInvolucrados']
             porcentajesProgramasOperativos.append(porcentajeProgramaOperativo)
         gasto = round(gasto,2)
-        porcentajeEje = round(acumuladorPorcentajesDependencias / len(porcentajesProgramasOperativos),2) if len(porcentajesProgramasOperativos) > 0 else 0
+        porcentajeEje = round(acumuladorPorcentajesDependencias / contadorPosCuantitativos,2) if contadorPosCuantitativos > 0 else 0
         enteroPorcentajeEje = int(porcentajeEje)
         promedioGastoBeneficairio = round(gasto / totalBeneficiarios,2) if totalBeneficiarios >0 else 0
         if numeroActividades >0:

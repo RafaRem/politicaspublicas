@@ -70,6 +70,19 @@ Dependencia
         <hr>
         <div id="map"></div>
         <hr>
+        <div class="row">
+            {% for cantidadBrutaMeta in cantidadesBrutasMetas %}
+            <div class="col-lg-4 col-md-6 col-sm-12 m-2 card bg-light mb-3" style="max-width: 18rem;">
+                    <div class="card-body">
+                      <h2 class="card-title">{{cantidadBrutaMeta.cantidad}}&nbsp;{{cantidadBrutaMeta.descripcion}}</h2>
+                      <p class="card-text">{{cantidadBrutaMeta.accion}}</p>
+                    </div>
+                  </div>
+            {% endfor %}
+
+        </div>
+
+        <hr>
         <div id="id_porcentajesProgramasOperativos" class="row">
 
         </div>
