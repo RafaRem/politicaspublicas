@@ -75,8 +75,14 @@ Dependencia
             <div class="col-lg-4 col-md-6 col-sm-12 m-2 card bg-light mb-3" style="max-width: 18rem;">
                     <div class="card-body">
                       <h2 class="card-title">{{cantidadBrutaMeta.cantidad}}&nbsp;{{cantidadBrutaMeta.descripcion}}</h2>
-                      <p class="card-text">{{cantidadBrutaMeta.accion}}</p>
-                    </div>
+                        <p>{{cantidadBrutaMeta.accion}}</p>
+                        {% if request.user.profile.tipoUsuario == 'a' or request.user.profile.tipoUsuario == 's'%}
+                      <a id="accion_{{cantidadBrutaMeta.id}}" href="#" class="accion btn guinda" data-toggle="tooltip" data-placement="bottom" 
+                      title="Actividades de la acción" name="accion_{{cantidadBrutaMeta.id}}"
+                      >Ver actividades</a>
+                      {% endif %}
+                      
+                    </div> 
                   </div>
             {% endfor %}
 
@@ -98,7 +104,9 @@ Dependencia
     <div id="id_acordeon_pos">
 
           </div>
-
+    <form target="_blank" id="form_verActividades" method="POST">
+            {% csrf_token %}
+    </form>   
 
 {%endblock%}
 
@@ -106,6 +114,19 @@ Dependencia
 {% block extrascripts %}
 <script>
         $(document).ready(()=>{
+            $('[data-toggle="tooltip"]').tooltip();
+            $('.accion').click((event)=>{
+                event.preventDefault();
+                let id = event.target.id.split('_');
+                id = id[1];
+                $('#form_verActividades').append(`
+                <input name="accion" value="${id}" hidden type="text">
+                `);
+                $('#form_verActividades').submit();
+            });
+
+
+
             porcentajesProgramasOperativos = '{{porcentajesProgramasOperativos|escapejs}}'
             porcentajesProgramasOperativos = JSON.parse(porcentajesProgramasOperativos);
             console.log(porcentajesProgramasOperativos)
@@ -181,7 +202,8 @@ Dependencia
                         </div>
                     </div>
                 `);
-            }else{
+            }
+            else{
                 $('#id_porcentajeAccion_po').append(`
                 <h5 class="text-center">Sin acciones cuantificables</h5>
                     <div class="progress" style="height: 30px;">
@@ -189,7 +211,7 @@ Dependencia
                     </div>
             `);
             }
- 
+            
 
 
         });
@@ -229,7 +251,16 @@ Dependencia
                     points.push(new google.maps.LatLng(punto[0], punto[1]));
                 }
                 return points;
-                }
+            }
+            $('.accion').click((event)=>{
+                event.preventDefault();
+                let id = event.target.id.split('_');
+                id = id[1];
+                $('#form_verActividades').append(`
+                <input name="accion" value="${id}" hidden type="text">
+                `);
+                $('#form_verActividades').submit();
+            });
 </script>
 <script async defer
     src="https://maps.googleapis.com/maps/api/js?key={{api_key}}&libraries=visualization&callback=initMap">

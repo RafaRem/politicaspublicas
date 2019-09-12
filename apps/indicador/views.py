@@ -9,6 +9,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q,Count
 """funciones de otras vistas"""
 from apps.dependencia.views import getGastoPeriodo
+from apps.programaOperativo.views import ListActividadesAdmin
 """Modelos"""
 from apps.indicador.models import PeriodoGobierno, Meta, Configuracion, Periodo
 from apps.programaOperativo.models import Acciones,ProgramaOperativo,Actividad
@@ -165,6 +166,7 @@ def obtenerCantidadesBrutasMetas(tipoArreglo, arreglo):
                 if meta['tieneMeta']:
                     metas.append({
                         'accion':accion,
+                        'id':porcentajeAccion['accion']['id'],
                         'descripcion':meta['descripcionMeta'],
                         'cantidad':meta['cantidadMeta']
                     })
@@ -689,6 +691,34 @@ class FichaDependencia(LoginRequiredMixin,View):
         porcentajeMeta = PorcentajesMetas()
         contexto = porcentajeMeta.obtenerPorcentajeDependencia(idDependencia)
         return render(request,'indicadores/fichaDependencia.html',contexto)
+    def post(self,request, idDependencia):
+        if request.POST.get('accion'):
+            programasOperativos = ProgramaOperativo.objects.filter(estado='a').order_by('nombre')
+            dependencias = ListActividadesAdmin.obtenerDependencias(self)
+            objetivos = Objetivo.objects.filter(estado='a')
+            objetivos = objetivos.order_by('nombre')
+            accion = Acciones.objects.get(pk=request.POST.get('accion'))
+            actividades = Actividad.objects.filter(Q(estado='r') | Q(estado='s'))
+            actividades = actividades.filter(accion=accion)
+            arrayActividades = []
+            for actividad in actividades:
+                arrayActividades.append(actividad.id)
+            arrayActividades = json.dumps(arrayActividades)
+            return render(request,'programasOperativos/actividades/admin/listActividadesAdmin.html',{
+                'dependencias':dependencias,
+                'objetivos':objetivos,
+                'actividades':actividades,
+                'arrayActividades':arrayActividades,
+                'programasOperativos':programasOperativos
+            })
+        if request.user.profile.tipoUsuario == 'e':
+            return redirect('index')
+        if request.POST.get('options') == 'dependencias':
+            resultado = self.filtrarDependencias()
+            filtroProgramasOperativos()
+        eje = request.POST.get('eje')
+        contexto = self.obtenerContexto()
+        return render(request,'programasOperativos/actividades/admin/metasAdmin.html',contexto)
 
 class FichaObjetivo(LoginRequiredMixin,View):
     login_url = 'login'
