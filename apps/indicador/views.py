@@ -37,6 +37,8 @@ def obtenerActividades(idAccion=0,idProgramaOperativo=0,idObjetivo=0,idDependenc
     consulta = Q()
     consulta = Q(estado='r')
     consulta |= Q(estado='s')
+    configuracion = Configuracion.objects.get(pk=1)
+    consulta &= Q(fecha_fi__range=(configuracion.periodoGobierno.fechaInicial,configuracion.periodoGobierno.fechaFinal))
     if idAccion > 0:
         accion = Acciones.objects.get(pk=idAccion)
         consulta &= Q(accion=accion)
@@ -208,6 +210,8 @@ class PorcentajesMetas():
         actividades = obtenerActividades(
             idAccion=int(idAccion)
         )
+        numeroActividades = 0
+        numeroActividadesSecundarias = 0
         #los puntos son de geolicalización
         puntos = obtenerGeoPuntosActividades(actividades)
         puntos = json.dumps(puntos)
@@ -216,7 +220,6 @@ class PorcentajesMetas():
         for periodoGasto in periodosGasto:
             gasto += getGastoPeriodo(accion,periodoGasto)
         gasto = round(gasto,2)
-        numeroActividades = actividades.count()
         promedioGastoActividad = round(gasto / numeroActividades,2) if numeroActividades>0 else 0
         totalBeneficiarios = obtenerTotalBenefieciarios(actividades)
         totalInvolucrados = obtenerTotalInvolucrados(actividades)
@@ -246,6 +249,7 @@ class PorcentajesMetas():
                 'descripcionMeta':meta.descripcion,
                 'cantidadMeta':resultadoAccion['contadorActividades']
             }
+            numeroActividades += resultadoAccion['contadorActividades']
         else:
             claseSemaforo = 'info'
             meta = {
@@ -255,6 +259,10 @@ class PorcentajesMetas():
                 'descripcionMeta':'meta cualitativa',
                 'cantidadMeta':''
             }
+        for actividad in actividades:
+            if actividad.estado == 's':
+                numeroActividadesSecundarias += actividad.multiplicador
+        numeroActividades = numeroActividades + numeroActividadesSecundarias
         accion = {
             'id':accion.id,
             'nombre':accion.nombre,
@@ -266,6 +274,7 @@ class PorcentajesMetas():
             'accion':accion,
             'puntos':puntos,
             'numeroActividades':numeroActividades,
+            'numeroActividadesSecundarias':numeroActividadesSecundarias,
             'promedioGastoActividad':promedioGastoActividad,
             'promedioGastoBeneficairio':promedioGastoBeneficairio,
             'totalBeneficiarios':totalBeneficiarios,
@@ -281,6 +290,7 @@ class PorcentajesMetas():
         puntos = []
         porcentajesAcciones = []
         numeroActividades = 0
+        numeroActividadesSecundarias = 0
         gasto = 0
         totalBeneficiarios = 0
         totalInvolucrados = 0
@@ -296,6 +306,7 @@ class PorcentajesMetas():
             porcentajeAccion = self.obtenerPorcentajeAccion(accion.id)
             puntos.extend(json.loads(porcentajeAccion['puntos']))
             numeroActividades += porcentajeAccion['numeroActividades']
+            numeroActividadesSecundarias += porcentajeAccion['numeroActividadesSecundarias']
             gasto += porcentajeAccion['gasto']
             totalBeneficiarios += porcentajeAccion['totalBeneficiarios']
             totalInvolucrados += porcentajeAccion['totalInvolucrados']
@@ -332,6 +343,7 @@ class PorcentajesMetas():
             'porcentajesAcciones':porcentajesAcciones,#nota: este reemplazó a 'metas'
             'puntos':puntos,
             'numeroActividades':numeroActividades,
+            'numeroActividadesSecundarias':numeroActividadesSecundarias,
             'promedioGastoActividad':promedioGastoActividad, 
             'promedioGastoBeneficairio':promedioGastoBeneficairio, 
             'totalBeneficiarios':totalBeneficiarios,
@@ -349,6 +361,7 @@ class PorcentajesMetas():
         puntos = []
         porcentajesProgramasOperativos = []
         numeroActividades = 0
+        numeroActividadesSecundarias = 0
         gasto = 0
         totalBeneficiarios = 0
         totalInvolucrados = 0
@@ -369,6 +382,7 @@ class PorcentajesMetas():
             porcentajeDireccion = 100 if porcentajeProgramaOperativo['tieneMetaCuantitativa'] == False else 0
             puntos.extend(json.loads(porcentajeProgramaOperativo['puntos']))
             numeroActividades += porcentajeProgramaOperativo['numeroActividades']
+            numeroActividadesSecundarias += porcentajeProgramaOperativo['numeroActividadesSecundarias']
             gasto += porcentajeProgramaOperativo['gasto']
             totalBeneficiarios += porcentajeProgramaOperativo['totalBeneficiarios']
             totalInvolucrados += porcentajeProgramaOperativo['totalInvolucrados']
@@ -391,12 +405,13 @@ class PorcentajesMetas():
         dependencia ={
             'nombre':dependencia.nombre,
             'id':dependencia.id
-        }
+        } 
         return {
             'dependencia':dependencia,
             'tieneMetaCuantitativa':tieneMetaCuantitativa,
             'puntos':puntos,
             'numeroActividades':numeroActividades,
+            'numeroActividadesSecundarias':numeroActividadesSecundarias,
             'promedioGastoActividad':promedioGastoActividad,
             'promedioGastoBeneficairio':promedioGastoBeneficairio,
             'totalBeneficiarios':totalBeneficiarios,
@@ -432,6 +447,7 @@ class PorcentajesMetas():
         puntos = []
         porcentajesProgramasOperativos = []
         numeroActividades = 0
+        numeroActividadesSecundarias = 0
         gasto = 0
         totalBeneficiarios = 0
         totalInvolucrados = 0
@@ -451,6 +467,7 @@ class PorcentajesMetas():
             tieneMetaCuantitativa = True if porcentajeProgramaOperativo['tieneMetaCuantitativa'] else False
             puntos.extend(json.loads(porcentajeProgramaOperativo['puntos']))
             numeroActividades += porcentajeProgramaOperativo['numeroActividades']
+            numeroActividadesSecundarias += porcentajeProgramaOperativo['numeroActividadesSecundarias']
             gasto += porcentajeProgramaOperativo['gasto']
             totalBeneficiarios += porcentajeProgramaOperativo['totalBeneficiarios']
             totalInvolucrados += porcentajeProgramaOperativo['totalInvolucrados']
@@ -481,6 +498,7 @@ class PorcentajesMetas():
             'tieneMetaCuantitativa':tieneMetaCuantitativa,
             'puntos':puntos,
             'numeroActividades':numeroActividades,
+            'numeroActividadesSecundarias':numeroActividadesSecundarias,
             'promedioGastoActividad':promedioGastoActividad,
             'promedioGastoBeneficairio':promedioGastoBeneficairio,
             'totalBeneficiarios':totalBeneficiarios,
@@ -528,6 +546,7 @@ class PorcentajesMetas():
         puntos = []
         porcentajesProgramasOperativos = []
         numeroActividades = 0
+        numeroActividadesSecundarias = 0
         gasto = 0
         totalBeneficiarios = 0
         totalInvolucrados = 0
@@ -581,6 +600,7 @@ class PorcentajesMetas():
             'tieneMetaCuantitativa':tieneMetaCuantitativa,
             'puntos':puntos,
             'numeroActividades':numeroActividades,
+            'numeroActividadesSecundarias':numeroActividadesSecundarias,
             'promedioGastoActividad':promedioGastoActividad,
             'promedioGastoBeneficairio':promedioGastoBeneficairio,
             'totalBeneficiarios':totalBeneficiarios,
