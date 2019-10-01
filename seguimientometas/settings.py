@@ -35,7 +35,9 @@ ALLOWED_HOSTS = [
     '169.254.46.39',
     '45.6.60.196',
     'sistemadeevaluacionpp.ahome.gob.mx',
-    'www.sistemadeevaluacionpp.ahome.gob.mx'
+    'www.sistemadeevaluacionpp.ahome.gob.mx',
+    '192.168.10.26',
+    '192.168.10.27'
 ]
 
 
