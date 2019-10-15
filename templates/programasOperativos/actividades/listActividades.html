@@ -54,15 +54,15 @@ Tus actividades
             <td scope="row">{{actividad.nombre}}</td>
             <td>
                 {% if actividad.estado == 'r' or  actividad.estado == 't' or actividad.estado == 's'%}
-                <a class="btn btn-primary btn-sm guinda" 
+                <a class="btn btn-primary btn-sm guinda" target="_blank"
                 href="{%url 'verActividad' idActividad=actividad.id%}">Ver</a>
                 {%elif actividad.estado == 'n'%}
-                <a class="btn btn-primary btn-sm guinda" 
+                <a class="btn btn-primary btn-sm guinda" target="_blank"
                 href="{%url 'verActividad' idActividad=actividad.id%}">Ver</a>
-                <a class="btn btn-primary btn-sm guinda m-2" 
+                <a class="btn btn-primary btn-sm guinda m-2"  target="_blank"
                 href="{%url 'revalidarActividad' idActividad=actividad.id%}">Volver a subir</a>
                 {%else%}
-                <a class="btn btn-primary btn-sm guinda" 
+                <a class="btn btn-primary btn-sm guinda"  target="_blank"
                 href="{%url 'terminarActividad' idActividad=actividad.id%}">Finalizar</a>
                 {% endif %}
                 

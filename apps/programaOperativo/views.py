@@ -558,14 +558,14 @@ class VerActividadAdmin(LoginRequiredMixin,View):
             accion.save()
         if request.POST.get('estado'):
             metas = actividad.accion.meta.all()
-            if not metas and not actividad.accion.cualitativa:
-                messages.error(request,'Se necesita definir si la acción es cualitativa o si tiene metas')
-            else:
-                actividad.observaciones = request.POST.get('observaciones')
-                actividad.estado = request.POST.get('estado')
-                actividad.multiplicador = request.POST.get('multiplicador')
-                actividad.save()
-                messages.success(request,'Cambio realizado con éxito')
+            # if not metas and not actividad.accion.cualitativa:
+            #     messages.error(request,'Se necesita definir si la acción es cualitativa o si tiene metas')
+            # else:
+            actividad.observaciones = request.POST.get('observaciones')
+            actividad.estado = request.POST.get('estado')
+            actividad.multiplicador = request.POST.get('multiplicador')
+            actividad.save()
+            messages.success(request,'Cambio realizado con éxito')
         contexto = self.obtenerContexto(idActividad)
         contexto['actividad'] = actividad
         return render(request,'programasOperativos/actividades/admin/verActividadAdmin.html',contexto)

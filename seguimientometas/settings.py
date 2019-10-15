@@ -97,10 +97,18 @@ WSGI_APPLICATION = 'seguimientometas.wsgi.application'
 # Database
 # http
 # s://docs.djangoproject.com/en/2.2/ref/settings/#databases
+debugging = os.getenv('politicasPublicasDebugging',False)
+
+#Si se están haciendo pruebas
+if debugging:
+    dbName = os.getenv('PoliticasDb_old')
+else:
+    dbName = os.getenv('PoliticasDb')
+
 DATABASES = {
         'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': os.getenv('PoliticasDb'),
+        'NAME': dbName,
         'USER': os.getenv('PoliticasDbUser'),
         'PASSWORD':os.getenv('PoliticasPass'),
         'HOST':'localhost',
