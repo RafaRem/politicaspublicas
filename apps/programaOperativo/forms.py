@@ -28,8 +28,7 @@ class ActividadesForm(forms.ModelForm):
             'fecha_in',
             'fecha_fi',
             'estado',
-            'observaciones',
-            'multiplicador'
+            'observaciones'
         ]
 
 class TerminarActividadesForm(forms.ModelForm):

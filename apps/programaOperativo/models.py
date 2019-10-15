@@ -82,7 +82,7 @@ class Actividad(models.Model):
     observaciones = models.CharField(max_length=800,blank=True, null=True)
     fechaRegistrada = models.DateTimeField(auto_now_add=True)
     fechaActualizada = models.DateTimeField(auto_now=True)
-    multiplicador = models.IntegerField(default=1)
+    multiplicador = models.IntegerField(default=1, verbose_name="¿Cuántas veces se realizó esta actividad?")
     class Meta:
         verbose_name = 'Actividad'
         verbose_name_plural = 'Actividades'

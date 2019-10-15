@@ -143,7 +143,7 @@ class Variable(models.Model):
         ('p','Porcentual'),
         ('d','Divisor'),
         ('i','Dividendo'),
-        ('t','Total')
+        ('t','Total'),
     )
     nombre = models.CharField(max_length=200,verbose_name = "Nombre de la variable")
     cantidad = models.FloatField(verbose_name="Cantidad")
