@@ -10,15 +10,10 @@ from apps.indicador.models import ConceptoGasto,Periodo,Meta,PeriodoGobierno
 class Acciones(models.Model):
     nombre = models.CharField(max_length=700)
     objetivo = models.ForeignKey(Objetivo,on_delete=models.PROTECT)
-    escolaridad = models.ManyToManyField(Escolaridad, blank=True)
-    gruposVulnerables = models.ManyToManyField(GruposVulnerables, blank=True)
-    sectorSocial = models.ManyToManyField(SectorSocial, blank=True)
-    sectorEconomico = models.ManyToManyField(SectorEconomico, blank=True)
-    ubicacion = models.ManyToManyField(Ubicacion, blank=True)
-    categoriaPoblacion = models.ManyToManyField(CategoriaPoblacion, blank=True)
-    indicador = models.ManyToManyField(Indicador, blank=True)
     meta = models.ManyToManyField(Meta,blank=True)
     publica = models.BooleanField(default=True, verbose_name='¿Es una acción pública?')
+    #To:Do
+    #ANALIZAR COMO REMOVER ESTE ATRIBUTO
     cualitativa = models.BooleanField(default=False,verbose_name='¿Es una acción cualitativa?')
     class Meta:
         verbose_name = 'Acción de programa operativo'

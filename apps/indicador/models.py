@@ -2,7 +2,6 @@ from django.db import models
 from apps.dependencia.models import Dependencia
 # Create your models here.
 
-
 class ClasificacionGasto(models.Model):
     nombre = models.CharField(max_length=300)
     class Meta:
@@ -28,66 +27,6 @@ class ConceptoGasto(models.Model):
     class Meta:
         verbose_name = 'Concepto por gasto'
         verbose_name_plural = 'Conceptos por gasto'
-    def __str__(self):
-        return self.nombre
-    
-class Escolaridad(models.Model):
-    nombre = models.CharField(max_length=200, verbose_name='Nombre')
-    class Meta:
-        verbose_name = "Escolaridad"
-        verbose_name_plural = "Escolaridades"
-
-    def __str__(self):
-        return self.nombre
-
-class GruposVulnerables(models.Model):
-    nombre = models.CharField(max_length=200, verbose_name='Nombre')
-    class Meta:
-        verbose_name = 'Grupo vulnerable'
-        verbose_name_plural = 'Grupos vulnerables'
-
-    def __str__(self):
-        return self.nombre
-
-class SectorSocial(models.Model):
-    nombre = models.CharField(max_length=200, verbose_name='Nombre')
-    class Meta:
-        verbose_name = 'Sector social'
-        verbose_name_plural = 'Sectores sociales'
-    def __str__(self):
-        return self.nombre
-
-class Ubicacion(models.Model):
-    nombre = models.CharField(max_length=200, verbose_name='Nombre')
-    class Meta:
-        verbose_name = 'Ubicación'
-        verbose_name_plural = 'Ubicaciones'
-
-    def __str__(self):
-        return self.nombre
-
-class SectorEconomico(models.Model):
-    nombre = models.CharField(max_length=200, verbose_name='Nombre')
-    class Meta:
-        verbose_name = 'Sector económico'
-        verbose_name_plural = 'Sectores económicos'
-
-    def __str__(self):
-        return self.nombre
-
-class CategoriaPoblacion(models.Model):
-    opcionesSexo = (
-        ('h','Hombre'),
-        ('m','Mujer'),
-        ('a','Ambos')
-    )
-    nombre = models.CharField(max_length=200, verbose_name='Nombre')
-    sexo = models.CharField(choices=opcionesSexo,max_length=30)
-    edadDesde = models.CharField(max_length=20,verbose_name='Edad desde')
-    edadHasta = models.CharField(max_length=20,verbose_name='Edad hasta')
-    class Meta:
-        verbose_name = 'Categoría de población'
-        verbose_name_plural = 'Categorías de población'
     def __str__(self):
         return self.nombre
 
@@ -124,37 +63,6 @@ class Meta(models.Model):
         verbose_name_plural = 'Metas de actividades'
     def __str__(self):
         return str(self.id) + ',' + self.descripcion
-
-class Indicador(models.Model):
-    opcionesTipo = (
-        ('d','Desempeño'),
-        ('g','Gestión'),
-    )
-    tipo = models.CharField(max_length=30,choices=opcionesTipo,verbose_name='Tipo de indicador')
-    nombre = models.CharField(max_length=300, verbose_name='Descripción del indicador')
-    class Meta:
-        verbose_name = "Indicador"
-        verbose_name_plural = "Indicadores"
-    def __str__(self):
-        return self.nombre
-    
-class Variable(models.Model):
-    opcionesTipo = (
-        ('p','Porcentual'),
-        ('d','Divisor'),
-        ('i','Dividendo'),
-        ('t','Total'),
-    )
-    nombre = models.CharField(max_length=200,verbose_name = "Nombre de la variable")
-    cantidad = models.FloatField(verbose_name="Cantidad")
-    tipo = models.CharField(max_length=30,choices=opcionesTipo, verbose_name="Tipo de variable")
-    indicador = models.ForeignKey(Indicador,on_delete=models.PROTECT, verbose_name='Indicador')
-    class Meta:
-        verbose_name = 'Variable'
-        verbose_name_plural = 'Variables'
-        unique_together = ['indicador','tipo']
-    def __str__(self):
-        return self.nombre
 
 class Configuracion(models.Model):
     periodoGobierno = models.ForeignKey(PeriodoGobierno, blank=True, null=True,

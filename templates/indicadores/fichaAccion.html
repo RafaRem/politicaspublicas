@@ -80,25 +80,9 @@ Acción
         <h4 class="text-center"><strong>Promedio de beneficiarios por actividad:</strong>&nbsp; {{promedioBeneficiariosActividad}}</h4>
         <h4 class="text-center"><strong>Promedio de involucrados por actividad:</strong>&nbsp; {{promedioInvolucradosActividad}}</h4>
         <h4 class="text-center"><strong>Gasto total:</strong>&nbsp; ${{gasto}}</h4>
-        <h4 class="text-center font-weight-bold">Población objetivo</h4>
-        <hr>
         <div class="row">
             <div class="col-xl-4 col-sm-6 mb-3 animated fadeIn">
                 <div class="card text-dorado eje3 o-hidden h-100">
-                  <div class="card-body">
-                    <div class="mr-5">
-                     <h5>Escolaridad</h5>
-                    </div>
-                    <hr>
-                    {% if accion.escolaridad.all.count == 0 %}
-                      <span class="badge badge-dorada">Toda la población</span>
-                    {% endif %}
-                    
-                    {% for escolaridad in accion.escolaridad.all %}
-                      <span class="badge badge-dorada">{{escolaridad.nombre}}</span>
-                    {% endfor %}
-                  </div>
-    
                 </div>
               </div>
             <div class="col-xl-4 col-sm-6 mb-3 animated fadeIn">
