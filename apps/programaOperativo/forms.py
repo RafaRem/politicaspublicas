@@ -28,7 +28,12 @@ class ActividadesForm(forms.ModelForm):
             'fecha_in',
             'fecha_fi',
             'estado',
-            'observaciones'
+            'observaciones',
+            'beneficiarios',
+            'personasInvolucradas',
+            'descripcion',
+            'nombre',
+            'multiplicador'
         ]
 
 class TerminarActividadesForm(forms.ModelForm):
@@ -47,7 +52,9 @@ class TerminarActividadesForm(forms.ModelForm):
             'accion',
             'fecha_in',
             'fecha_fi',
-            'observaciones'
+            'observaciones',
+            'personasInvolucradas',
+            'beneficiarios'
         ]
         pass
     def __init__(self, *args, **kwargs):

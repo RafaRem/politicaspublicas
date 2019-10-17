@@ -67,3 +67,12 @@ class Meta(models.Model):
 class Configuracion(models.Model):
     periodoGobierno = models.ForeignKey(PeriodoGobierno, blank=True, null=True,
     on_delete=models.PROTECT, verbose_name="Periodo de gobierno a graficar")
+
+class Beneficiarios(models.Model):
+    nombre = models.CharField(verbose_name="Beneficiario",
+    max_length=300)
+    class Meta:
+        verbose_name = "Catálogo de beneficiarios"
+        verbose_name = "Catálogo de beneficiarios"
+    def __str__(self):
+        return self.nombre

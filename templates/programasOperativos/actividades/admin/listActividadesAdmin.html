@@ -145,7 +145,7 @@ Actividades
                     <tbody class="bg-transparent">
                             {% for actividad in actividades %}
                             <tr>
-                                <td scope="row">{{actividad.nombre}}</td>
+                                <td scope="row">{{actividad.accion.nombre}}</td>
                                 <td>
                                     <a class="btn btn-primary btn-sm guinda" target="_blank"
                                     href="{%url 'verActividadAdmin' idActividad=actividad.id%}">Ver</a>

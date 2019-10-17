@@ -51,7 +51,7 @@ Tus actividades
     <tbody class="bg-transparent">
         {% for actividad in actividades %}
         <tr>
-            <td scope="row">{{actividad.nombre}}</td>
+            <td scope="row">{{actividad.accion.nombre}}</td>
             <td>
                 {% if actividad.estado == 'r' or  actividad.estado == 't' or actividad.estado == 's'%}
                 <a class="btn btn-primary btn-sm guinda" 

@@ -1,4 +1,5 @@
 from django.db import models
+from apps.indicador.models import Beneficiarios
 
 # Este modelo es padre de una dependencia
 class Raiz(models.Model):
@@ -37,6 +38,8 @@ class Dependencia(models.Model):
     adscrita = models.ForeignKey(Raiz,blank=True, null=True, on_delete=models.PROTECT)
     estado = models.CharField(max_length=30,choices=opcionesEstado,default='a')
     tieneDepartamentos = models.BooleanField(verbose_name='¿Tiene departamentos?',default=True)
+    beneficiarios = models.ManyToManyField(Beneficiarios ,blank=True, 
+    verbose_name="Beneficiarios de la dependencia")
     class Meta:
         verbose_name = 'Dependencia'
         verbose_name_plural='Dependencias'

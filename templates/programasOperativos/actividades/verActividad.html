@@ -2,7 +2,7 @@
 {%load staticfiles%}
 
 {% block navTitle %}
-{{actividad.nombre}}
+{{actividad.accion.nombre}}
 {% endblock %}
 
 {% block content %}
@@ -44,42 +44,6 @@
                         </h5>
                     </td>
                   </tr>
-                  <tr>
-                        <th scope="row">
-                            <h5 class="text-center">
-                                <strong>Descripción</strong>
-                            </h5>
-                        </th>
-                        <td>
-                            <h5 class="text-center">
-                                {{actividad.descripcion}}
-                            </h5>
-                        </td>
-                      </tr>
-                      <tr>
-                        <th scope="row">
-                            <h5 class="text-center">
-                                <strong>Beneficiarios</strong>
-                            </h5>
-                        </th>
-                        <td>
-                            <h5 class="text-center">
-                                {{actividad.beneficiarios}}
-                            </h5>
-                        </td>
-                      </tr>
-                    <tr>
-                        <th scope="row">
-                            <h5 class="text-center">
-                                <strong>Personas involucradas en la actividad:</strong>
-                            </h5>
-                        </th>
-                        <td>
-                            <h5 class="text-center">
-                                {{actividad.personasInvolucradas}}
-                            </h5>
-                        </td>
-                        </tr>
                     <tr>
                         <th scope="row">
                             <h5 class="text-center">

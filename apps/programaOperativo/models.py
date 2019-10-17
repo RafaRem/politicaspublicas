@@ -57,13 +57,13 @@ class Actividad(models.Model):
     )
     user = models.ForeignKey(User, on_delete= models.PROTECT)
     programaoperativo = models.ForeignKey(ProgramaOperativo, on_delete = models.PROTECT)
-    nombre = models.CharField(max_length=500, 
+    nombre = models.CharField(max_length=500, blank=True, null=True,
     verbose_name="Actividad")
-    descripcion = models.TextField(max_length=1000, 
+    descripcion = models.TextField(max_length=1000, blank=True, null=True,
     verbose_name="Descripción breve")
     personasInvolucradas = models.CharField(max_length=10,blank=True, null=True,
     verbose_name="Personal involucrado")
-    beneficiarios = models.CharField(max_length=10,blank=True, null=True,
+    beneficiarios = models.CharField(max_length=10,blank=True, null=True,default='0',
     verbose_name="Número de beneficiarios/Asistentes")
     evidencia = models.FileField(blank=True, null=True)
     fecha_in = models.DateField(verbose_name="Día en el que se realiza")
@@ -77,7 +77,8 @@ class Actividad(models.Model):
     observaciones = models.CharField(max_length=800,blank=True, null=True)
     fechaRegistrada = models.DateTimeField(auto_now_add=True)
     fechaActualizada = models.DateTimeField(auto_now=True)
-    multiplicador = models.IntegerField(default=1, verbose_name="¿Cuántas veces se realizó esta actividad?")
+    multiplicador = models.IntegerField(default=1, 
+    verbose_name="¿Cuántas veces se realizó esta actividad?")
     class Meta:
         verbose_name = 'Actividad'
         verbose_name_plural = 'Actividades'
@@ -135,3 +136,14 @@ class GastoAnualAsignado(models.Model):
         unique_together = ['programaOperativo', 'periodoGobierno']
     def __str__(self):
         return self.programaOperativo.nombre
+
+class BeneficiariosActividad(models.Model):
+    beneficiario = models.ForeignKey(Beneficiarios, on_delete=models.PROTECT)
+    actividad = models.ForeignKey(Actividad, on_delete=models.PROTECT)
+    cantidad = models.IntegerField()
+    class Meta:
+        unique_together = ['beneficiario','actividad']
+        verbose_name = "Cantidad de beneficiarios por actividad"
+    def __str__(self):
+        return self.actividad.accion.nombre
+    

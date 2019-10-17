@@ -11,6 +11,7 @@ class DependenciaAdmin(admin.ModelAdmin):
     list_display = ('id', 'nombre', 'tipo')
     list_display_links = ['id','nombre']
     search_fields = ('nombre', 'tipo')
+    filter_horizontal=['beneficiarios']
     # filter_horizontal = ('adscrita',)
     # fieldsets = (
     #     ('Dependencia', {
