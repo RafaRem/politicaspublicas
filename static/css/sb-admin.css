@@ -2772,7 +2772,6 @@ textarea.form-control {
   font-weight: 400;
   color: #212529;
   text-align: inherit;
-  white-space: nowrap;
   background-color: transparent;
   border: 0;
 }
@@ -9812,7 +9811,7 @@ body {
 }
 
 .sidebar .nav-item .nav-link:active, .sidebar .nav-item .nav-link:focus, .sidebar .nav-item .nav-link:hover {
-  color: rgba(0, 0, 0, 0.445);
+  color: rgb(176, 129, 134) !important;
 }
 
 .sidebar.toggled {

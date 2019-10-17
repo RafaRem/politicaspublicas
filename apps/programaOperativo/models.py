@@ -138,11 +138,11 @@ class GastoAnualAsignado(models.Model):
         return self.programaOperativo.nombre
 
 class BeneficiariosActividad(models.Model):
-    beneficiario = models.ForeignKey(Beneficiarios, on_delete=models.PROTECT)
+    alcance = models.ForeignKey(Alcance, on_delete=models.PROTECT)
     actividad = models.ForeignKey(Actividad, on_delete=models.PROTECT)
     cantidad = models.IntegerField()
     class Meta:
-        unique_together = ['beneficiario','actividad']
+        unique_together = ['alcance','actividad']
         verbose_name = "Cantidad de beneficiarios por actividad"
     def __str__(self):
         return self.actividad.accion.nombre

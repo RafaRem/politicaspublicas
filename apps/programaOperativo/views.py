@@ -19,7 +19,7 @@ from apps.programaOperativo.forms import ProgramaOperativoForm, ActividadesForm,
 from apps.programaOperativo.models import ProgramaOperativo, Acciones, Actividad, DetallesGasto, LogActividad
 from apps.objetivo.models import Objetivo
 from apps.indicador.models import ConceptoGasto, ClasificacionGasto,Periodo,PeriodoGobierno, Configuracion
-from apps.dependencia.models import Dependencia
+from apps.dependencia.models import Dependencia, Alcance
 from django.db.models import Q,Count
 """Serializer"""
 from apps.programaOperativo.serializers import AccionesSerializer
@@ -347,14 +347,13 @@ class TerminarActividadFormView(LoginRequiredMixin,View):
         """validar si ya subió información no pueda acceder"""
         actividad = Actividad.objects.get(pk=idActividad)
         form = TerminarActividadesForm(instance=actividad)
-        # if request.user.profile.dependencia.tipo == 'd':
-        #     conceptosGasto = ConceptoGasto.objects.filter(tipoDependencia='d')
-        # else:
-        #     conceptosGasto = ConceptoGasto.objects.filter(tipoDependencia='p',dependencia=request.user.profile.dependencia)
-        # conceptosGasto = serializers.serialize('json',conceptosGasto, use_natural_foreign_keys=True)
+        alcancesPredefinidos = actividad.programaoperativo.dependencia.alcance.all()
+        alcancesTodos = Alcance.objects.all()
         return render(request,'programasOperativos/actividades/terminarActividad.html',{
             'form':form,
-            'actividad':actividad
+            'actividad':actividad,
+            'alcancesPredefinidos': alcancesPredefinidos,
+            'alcancesTodos': alcancesTodos
         })
     def post(self,request,idActividad):
         actividad = Actividad.objects.get(pk=idActividad)
@@ -397,9 +396,13 @@ class RevalidarActividadFormView(LoginRequiredMixin,View):
         """validar si ya subió información no pueda acceder"""
         actividad = Actividad.objects.get(pk=idActividad)
         form = RevalidarActividadesForm(instance=actividad) 
+        alcancesPredefinidos = actividad.programaoperativo.dependencia.alcance.all()
+        alcancesTodos = Alcance.objects.all()
         return render(request,'programasOperativos/actividades/revalidarActividad.html',{
             'form':form,
-            'actividad':actividad
+            'actividad':actividad,
+            'alcancesPredefinidos': alcancesPredefinidos,
+            'alcancesTodos': alcancesTodos
         })
     def post(self,request,idActividad):
         actividad = Actividad.objects.get(pk=idActividad)
