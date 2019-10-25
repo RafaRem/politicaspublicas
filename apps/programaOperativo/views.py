@@ -16,7 +16,7 @@ from apps.users.views import *
 from apps.users.forms import RegistrarActividad
 from apps.programaOperativo.forms import ProgramaOperativoForm, ActividadesForm, TerminarActividadesForm, RevalidarActividadesForm
 """Modelos"""
-from apps.programaOperativo.models import ProgramaOperativo, Acciones, Actividad, DetallesGasto, LogActividad
+from apps.programaOperativo.models import ProgramaOperativo, Acciones, Actividad, DetallesGasto, LogActividad, BeneficiariosActividad, MetaAccion
 from apps.objetivo.models import Objetivo
 from apps.indicador.models import ConceptoGasto, ClasificacionGasto,Periodo,PeriodoGobierno, Configuracion
 from apps.dependencia.models import Dependencia, Alcance
@@ -290,9 +290,20 @@ class ActividadFormView(LoginRequiredMixin,View):
         programasOperativos = ProgramaOperativo.objects.filter(
             dependencia=request.user.profile.dependencia.id
             )
+        #Get acciones dependencia
+        dependencia = request.user.profile.dependencia
+        pos = ProgramaOperativo.objects.filter(dependencia=dependencia)
+        acciones = []
+        for po in pos:
+            acciones.extend(po.acciones.all())
+        variablesMeta = []
+        for accion in acciones:
+            variablesMeta.extend(MetaAccion.objects.filter(accion=accion))
+        print(variablesMeta)
         return render(request,'programasOperativos/actividades/actividadForm.html',{
             'form':form,
-            'programasOperativos':programasOperativos
+            'programasOperativos':programasOperativos,
+            'variablesMeta':variablesMeta
         })
     def post(self,request):
         form = ActividadesForm(request.POST)
@@ -310,13 +321,6 @@ class ActividadFormView(LoginRequiredMixin,View):
             fecha_final = datetime.strptime(request.POST.get('fecha_fi'),'%Y-%m-%d')
             fecha_inicial = datetime.strptime(request.POST.get('fecha_in'),'%Y-%m-%d')
             junio = datetime.strptime('2019-06-30','%Y-%m-%d')
-            # if((fecha_final <= junio or fecha_inicial <= junio)
-            # and
-            # not ((request.user.profile.dependencia.id == 14) or (request.user.profile.dependencia.id == 31) or 
-            # (request.user.profile.dependencia.id == 5) or (request.user.profile.dependencia.id == 26) or 
-            # (request.user.profile.dependencia.id == 9))):
-            #     messages.error(request,'La captura anterior al 30 de junio de 2019 está inhabilitada')
-            #     return redirect('nuevaActividad')
             save = datos.save()
             actividad = Actividad.objects.latest('created')
             idActividad = actividad.id
@@ -357,10 +361,6 @@ class TerminarActividadFormView(LoginRequiredMixin,View):
         })
     def post(self,request,idActividad):
         actividad = Actividad.objects.get(pk=idActividad)
-        #SI NO ES VÁLIDA LA ACTIVIDAD ELIMINA SUS DETALLES DE GASTO PARA VOLVER A CAPTURARSE
-        # if actividad.estado == 'n':
-        #     gastosActividad = DetallesGasto.objects.filter(actividad=actividad)
-        #     gastosActividad.delete()
         form = TerminarActividadesForm(request.POST, instance=actividad)
         if form.is_valid():
             datos = form.save(commit=False)
@@ -371,6 +371,16 @@ class TerminarActividadFormView(LoginRequiredMixin,View):
                 )
             datos.evidencia = archivo
             datos.estado = 't'
+            alcances = request.POST.getlist('cantidadAlcance')
+            for alcance in alcances:
+                #la posición 0 es el id, el otro es la cantidad
+                alcanceValues =alcance.split('-')
+                alcance = Alcance.objects.get(id=alcanceValues[0])
+                BeneficiariosActividad.objects.update_or_create(
+                    alcance=alcance,
+                    cantidad=alcanceValues[1],
+                    actividad=actividad
+                    )
             save = datos.save()
             #ESTO ENTRARÍA EN UN HILO
             cambiarRuta = threading.Thread(name='cambiarRuta',target=self.cambiarRuta,args=(actividad, ))
@@ -386,8 +396,7 @@ class TerminarActividadFormView(LoginRequiredMixin,View):
         conceptosGasto = serializers.serialize('json',conceptosGasto, use_natural_foreign_keys=True)
         return render(request,'programasOperativos/actividades/terminarActividad.html',{
             'form':form,
-            'actividad':actividad,
-            'conceptosGasto':conceptosGasto
+            'actividad':actividad
         })
 
 class RevalidarActividadFormView(LoginRequiredMixin,View):

@@ -65,3 +65,9 @@ class GastoAnualAsignadoAdmin(admin.ModelAdmin):
         return obj.programaOperativo.dependencia.nombre
     get_dependencia.short_description = 'Dependencia'
     get_dependencia.admin_order_field = 'programaoperativo__dependencia__nombre'
+
+@admin.register(MetaAccion)
+class MetaAccionAdmin(admin.ModelAdmin):
+    list_display = ['id','variable', 'accion']
+    list_display_links =['id','variable']
+    ordering = ['accion']

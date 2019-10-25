@@ -85,6 +85,34 @@ Nueva actividad
                 </div> 
               </div>
             {% csrf_token %}
+
+            <br>
+            <hr>
+            <div class="d-flex justify-content-center">
+                <button type="button" class="btn guinda m-2" data-toggle="modal" data-target="#modalAlcancesPredefinidos">
+                    Variables con meta&nbsp;<i class="fas fa-arrow-down"></i></button>
+                   <button type="button" class="btn guinda m-2" data-toggle="modal" data-target="#modalAlcancesTodos">
+                     Todas las variables&nbsp;<i class="fas fa-arrow-down"></i></button>
+                     <button type="button" class="btn guinda m-2" id="infoAlcance"
+                     data-toggle="tooltip" data-placement="top" 
+                     title="¿Qué es esto?">
+                        &nbsp;<i class="fas fa-info"></i></button>
+            </div>
+            <table id="tableVariablesSeleccionadas" class="table table-bordered">
+                <thead class="dorado">
+                  <tr>
+                    <th hidden scope="col">ID</th>
+                    <th scope="col">Variable</th>
+                    <th scope="col">Cantidad</th>
+                    <th scope="col">Unidad de medida</th>
+                  </tr>
+                </thead>
+                <tbody>
+
+                </tbody>
+              </table>
+            <br>
+
             {{ form|crispy }}
             <div id="div_id_fecha_in" class="form-group"> 
               <label for="id_fecha_in" class="col-form-label  requiredField">
@@ -119,6 +147,102 @@ Nueva actividad
   </div>
 
 
+      <!-- MODALS -->
+      <div class="modal fade bd-example-modal-lg" id="modalAlcancesPredefinidos"
+      tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+       <div class="modal-dialog modal-lg">
+ 
+         <div class="modal-content">
+             <div class="modal-header">
+                 <h5 class="modal-title">Veriables predefinidas</h5>
+                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                   <span aria-hidden="true">&times;</span>
+                 </button>
+               </div>
+               <div class="modal-body">
+                   <div class="input-group mb-3">
+                       <div class="input-group-prepend">
+                         <span class="input-group-text"><i class="fas fa-search"></i></span>
+                       </div>
+                       <input type="text" id="inputBuscarPredefinidos" class="form-control" placeholder="Buscar">
+                     </div>
+                   
+                   <table class="table" id="tablePredefinidos">
+                       <thead>
+                         <tr>
+                            <th hidden>Código</th>
+                            <th scope="col">Nombre</th>
+                            <th scope="col">Acción</th>
+                            <th scope="col">Unidad de medida</th>
+                          </tr>
+                       </thead>
+                       <tbody>
+                         {%for alcancePredefinido in alcancesPredefinidos%}
+                           <tr>
+                             <td hidden>{{alcancePredefinido.id}}</td>
+                             <td>{{alcancePredefinido.nombre}}</td>
+                             <td>
+                               <button name="addAlcanceBtn" class="btn btn-primary btn-sm">
+                                 <i class="fas fa-plus"></i>
+                               </button>
+                             </td>
+                           </tr>
+                         {%endfor%}
+                       </tbody>
+                     </table>
+                 </div>
+         </div>
+       </div>
+     </div>
+ 
+     <div class="modal fade bd-example-modal-lg" id="modalAlcancesTodos"
+     tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+ 
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Todas las variables</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                  <div class="input-group mb-3">
+                      <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fas fa-search"></i></span>
+                      </div>
+                      <input type="text" id="inputBuscarTodos" class="form-control" placeholder="Buscar">
+                    </div>
+                  
+                  <table class="table" id="tableTodos">
+                      <thead>
+                        <tr>
+                          <th hidden>Código</th>
+                          <th scope="col">Nombre</th>
+                          <th scope="col">Acción</th>
+                          <th scope="col">Unidad de medida</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {%for alcance in alcancesTodos%}
+                          <tr>
+                            <td hidden>{{alcance.id}}</td>
+                            <td>{{alcance.nombre}}</td>
+                            <td>
+                              <button name="addAlcanceBtn" class="btn btn-primary btn-sm">
+                                <i class="fas fa-plus"></i>
+                              </button>
+                            </td>
+                          </tr>
+                        {%endfor%}
+                      </tbody>
+                    </table>
+                </div>
+        </div>
+      </div>
+    </div>
+
+
 {% endblock content %}
 
 
@@ -126,6 +250,82 @@ Nueva actividad
   <script src="{%static 'js/gijgo.min.js'%}" type="text/javascript"></script>
   <script>
   $(document).ready(()=>{
+    function deleteRowFromAlcance(idAlcance, table){
+      let rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr')
+      for (let i = 0; i < rows.length; i++) {
+        const row = rows[i]
+        cells = row.children
+        if(cells[0].innerText == idAlcance){
+          table.deleteRow(i + 1)
+          break
+        }
+      }
+    }
+    function deleteRowFromSeleccionados(e){
+        //manipulate the row
+        let row = this.closest('tr')
+        let cells = row.children
+        cells[1].classList.remove('font-weight-bold')
+        let button = document.createElement('button')
+        //elimina sus nodos hijos
+        cells[2].innerHTML = ''
+        //crea el botón
+        button.classList.add('btn','btn-primary','btn-sm')
+        button.name ='addAlcanceBtn'
+        button.innerHTML = `
+          <i class="fas fa-plus"></i>          
+        `
+        cells[2].append(button)
+        button.addEventListener('click',addToAlcanceSeleccionado)
+        document.getElementById('tablePredefinidos').getElementsByTagName('tbody')[0].append(row)
+        row2 = row.cloneNode(true)
+        button = row2.getElementsByTagName('button')[0]
+        button.addEventListener('click',addToAlcanceSeleccionado)
+        document.getElementById('tableTodos').getElementsByTagName('tbody')[0].append(row2)
+    }
+    function addToAlcanceSeleccionado(e){
+      //manipulate the row
+      let row = this.closest('tr')
+      let cells = row.children
+      cells[1].classList.add('font-weight-bold')
+      //add the input
+      //TO:DO ANTES DEL SUBMIT HACER UNA CONCATENACIÓN DEL ID DEL ALCANCE
+      cells[2].innerHTML = `
+      <div class="input-group mb-3">
+          <input type="text" class="form-control" placeholder="Cantidad"
+          required name="cantidadAlcance">
+          <div class="input-group-append">
+            <button class="btn btn-danger btn-sm" type="button"
+            name="delSelectedAlcanceBtn">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+        </div>
+      `
+      if (row.closest('table').id == 'tablePredefinidos'){
+        let tableTodos = document.getElementById('tableTodos')
+        deleteRowFromAlcance(cells[0].innerText, tableTodos)
+      }else{
+        let tablePredefinidos = document.getElementById('tablePredefinidos')
+        deleteRowFromAlcance(cells[0].innerText,tablePredefinidos)
+      }
+      let tableSeleccionados = document.getElementById('tableVariablesSeleccionadas')
+      let tableSeleccionadosTbody = tableSeleccionados.getElementsByTagName('tbody')[0]
+      tableSeleccionadosTbody.append(row)
+      //call this functions to load method 'onClick'
+      loadMethods()
+
+    }
+    function loadMethods(){
+      $("[name='delSelectedAlcanceBtn']").click(deleteRowFromSeleccionados)
+      //we do this here because we need to aply it to the existent inputs
+      $('[name="cantidadAlcance"]').mask('00000000');
+      Toast.fire({
+        type: 'success',
+        title: 'Añadido'
+      }) 
+    }
+
 
       document.querySelector('#id_programaoperativo').addEventListener('change',()=>{
       /*   Cuando cambie el programa operativo    */
@@ -215,7 +415,65 @@ Nueva actividad
 
         event.preventDefault();
       });
-  })
+      //********************VARIABLES************************
+      $("#infoAlcance").click(()=>{
+        Swal.fire({
+          title:`
+          <p>Las variables son la cantidad de acciones generadas en la actividad, por ejemplo: 5 despensas entregadas.</p>
+        `,
+          type: 'info',
+          showCloseButton: true,
+          focusConfirm: false,
+          confirmButtonText:
+            '<i class="fa fa-thumbs-up"></i> ¡Entendido!',
+          confirmButtonAriaLabel: 'Thumbs up, great!',
+          customClass:{
+            confirmButton: 'guinda',
+            cancelButton: 'guinda',
+          }
+        })
+      })
+      //esta función funciona para las dos tablas de alcance
+      $("[name='addAlcanceBtn']").click(addToAlcanceSeleccionado)
+      $("#inputBuscarPredefinidos").keyup(()=>{
+        var input, filter, table, tr, td, i, txtValue;
+        input = document.getElementById("inputBuscarPredefinidos");
+        filter = input.value.toUpperCase();
+        table = document.getElementById("tablePredefinidos");
+        tr = table.getElementsByTagName("tr");
+        for (i = 0; i < tr.length; i++) {
+          td = tr[i].getElementsByTagName("td")[1];
+          if (td) {
+            txtValue = td.textContent || td.innerText;
+            if (txtValue.toUpperCase().indexOf(filter) > -1) {
+              tr[i].style.display = "";
+            } else {
+              tr[i].style.display = "none";
+            }
+          }       
+        }
+      })
+      $("#inputBuscarTodos").keyup(()=>{
+        var input, filter, table, tr, td, i, txtValue;
+        input = document.getElementById("inputBuscarTodos");
+        filter = input.value.toUpperCase();
+        table = document.getElementById("tableTodos");
+        tr = table.getElementsByTagName("tr");
+        for (i = 0; i < tr.length; i++) {
+          td = tr[i].getElementsByTagName("td")[1];
+          if (td) {
+            txtValue = td.textContent || td.innerText;
+            if (txtValue.toUpperCase().indexOf(filter) > -1) {
+              tr[i].style.display = "";
+            } else {
+              tr[i].style.display = "none";
+            }
+          }       
+        }
+      })
+      
+  
+    })
 
   </script>
 <script>

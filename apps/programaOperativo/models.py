@@ -5,7 +5,7 @@ from apps.objetivo.models import Objetivo
 from apps.dependencia.models import *
 from apps.indicador.models import *
 from django.contrib.auth.models import User 
-from apps.indicador.models import ConceptoGasto,Periodo,Meta,PeriodoGobierno
+from apps.indicador.models import Variable,ConceptoGasto,Periodo,Meta,PeriodoGobierno
 # Create your models here.
 class Acciones(models.Model):
     nombre = models.CharField(max_length=700)
@@ -21,6 +21,14 @@ class Acciones(models.Model):
     def __str__(self):
         return str(self.id)+ ',' + self.nombre
 
+class MetaAccion(models.Model):
+    accion = models.ForeignKey(Acciones, models.PROTECT)
+    periodoGobierno = models.ForeignKey(PeriodoGobierno, models.PROTECT)
+    variable = models.ForeignKey(Variable, models.PROTECT)
+    cantidad = models.CharField(max_length=10)
+    def __str__(self):
+        return self.accion.nombre
+    
 class ProgramaOperativo(models.Model):
     opcionesTipoPrograma=(
         ('i', 'Institucional'),

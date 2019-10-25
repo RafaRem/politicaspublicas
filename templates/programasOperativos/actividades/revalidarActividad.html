@@ -67,30 +67,26 @@
         <form id="id_form_actividad" action="" 
         method="POST" enctype="multipart/form-data">
             {% csrf_token %}
-            <!-- <label for="id_tabla_presupuesto">Presupuesto ejercido*</label>
-            <div class="table-responsive">
-              <table class="table" id="id_tabla_presupuesto">
-                <thead>
-                  <tr>
-                    <th scope="col">#</th>
-                    <th scope="col">Concepto de gasto</th>
-                    <th scope="col">Categoría</th>
-                    <th scope="col">Cantidad</th>
-                  </tr>
-                </thead>
-                <tbody>
-                </tbody>
-              </table>
-  
-            </div> -->
             <hr>
             {{ form|crispy }}
-            <label for="input-42-es">Evidencia*</label>
-            <div class="file-loading">
-                    <input required class="guinda" 
-                    id="input-42-es" data-show-upload="false" 
-                    name="archivos" type="file">
-                </div> 
+            <div class="justify-content-center d-flex">
+                <div class="form-check-inline form-control-lg">
+                    <label class="form-check-label">
+                        <input type="checkbox" name="keepEvidence" id="keepEvidence">Mantener evidencia
+                    </label>
+                  </div>
+            </div>
+
+              <br>
+              <div id="fileContainer">
+                  <label for="input-42-es">Evidencia*</label>
+                  <div class="file-loading">
+                          <input required class="guinda" 
+                          id="input-42-es" data-show-upload="false" 
+                          name="archivos" type="file">
+                      </div> 
+              </div>
+
             <div id="id_gastos">
               
             </div>
@@ -153,6 +149,15 @@
       $('#id_personasInvolucradas').mask('00000000');
       $('#id_beneficiarios').mask('00000000');
       //*********************
+      $("#keepEvidence").change(()=>{
+        checkbox = document.getElementById('keepEvidence')
+        fileContainer = document.getElementById('fileContainer')
+        if (checkbox.checked){
+          fileContainer.style.display = "none"
+        }else{
+          fileContainer.style.display = "block"
+        }
+      })
       $( "#id_form_actividad" ).submit(function( event ) {
         event.preventDefault();
           let timerInterval

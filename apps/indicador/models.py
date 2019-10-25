@@ -1,7 +1,24 @@
 from django.db import models
 from apps.dependencia.models import Dependencia
 # Create your models here.
+class UnidadMedida(models.Model):
+    nombre = models.CharField(max_length=100)
+    class Meta:
+        verbose_name = 'Unidad de medida'
+        verbose_name_plural = 'Unidades de medida'
+    def __str__(self):
+        return self.nombre
 
+class Variable(models.Model):
+    nombre = models.CharField(max_length=500)
+    unidadMedida = models.ForeignKey(UnidadMedida, 
+    on_delete=models.PROTECT ,blank=True, null=True)
+    class Meta:
+        verbose_name = 'Variable de medición'
+        verbose_name_plural = 'Variables de medición'
+    def __str__(self):
+        return self.nombre
+    
 class ClasificacionGasto(models.Model):
     nombre = models.CharField(max_length=300)
     class Meta:
@@ -52,6 +69,7 @@ class PeriodoGobierno(models.Model):
     def __str__(self):
         return self.descripcion
 
+#TO:DO borrar
 class Meta(models.Model):
     descripcion = models.CharField(max_length=300,verbose_name="Descripción de la meta")
     descendente = models.BooleanField(default=False,verbose_name="¿Es descendente?")

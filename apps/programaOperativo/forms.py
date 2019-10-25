@@ -66,11 +66,11 @@ class RevalidarActividadesForm(forms.ModelForm):
     class Meta:
         model=Actividad
         fields = [        
-            'personasInvolucradas',
-            'beneficiarios',
-            'descripcion'
             ]
         exclude = [
+            'descripcion',
+            'personasInvolucradas',
+            'beneficiarios',
             'programaoperativo',
             'evidencia',
             'observaciones',
