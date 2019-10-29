@@ -44,7 +44,7 @@ Acción
         {% endif %}
         <h3 class="text-center">{{accion.nombre}}</h3>
         <hr>
-        <h4 class="text-center font-weight-bold">Gastos por periodos</h4>
+        <h4 class="text-center font-weight-bold">Gastos y metas por periodos</h4>
         <div class="row">
             {% for periodo in periodos %}
             <div class="col-xl-4 col-sm-6 mb-3 animated fadeIn">
@@ -74,13 +74,6 @@ Acción
                   <a class="card-footer text-white clearfix small z-1" 
                   href="{%url 'editarGastos' idAccion=accion.id idPeriodo=periodo.id%}">
                       <span class="float-left">Editar gastos...</span>
-                      <span class="float-right">
-                        <i class="fas fa-angle-right"></i>
-                      </span>
-                    </a>
-                  <a class="card-footer text-white clearfix small z-1" 
-                  href="{%url 'editarGastos' idAccion=accion.id idPeriodo=periodo.id%}">
-                      <span class="float-left">Capturar meta...</span>
                       <span class="float-right">
                         <i class="fas fa-angle-right"></i>
                       </span>

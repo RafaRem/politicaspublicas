@@ -12,6 +12,7 @@ urlpatterns = [
     path('programasOperativos/accion/capturar-gastos/<str:idAccion>/<str:idPeriodo>', CapturarGastoView.as_view(), name='capturarGastos'),
     path('programasOperativos/accion/ver/gastos/<str:idAccion>/<str:idPeriodo>', ver_gastos, name='verGastos'),
     path('programasOperativos/accion/editar/gastos/<str:idAccion>/<str:idPeriodo>', EditarGastosView.as_view(), name='editarGastos'),
+    path('programasOperativos/accion/editar/metas/<str:idAccion>', EditarMetasView.as_view(), name='capturarMetas'),
     #Actividades
     path('programasOperativos/actividad/nueva', ActividadFormView.as_view() , name="nuevaActividad" ),
     path('programasOperativos/actividad/lista', ActividadesListView.as_view(), name='listActividades'),

@@ -366,7 +366,6 @@ Actividad
           string  = string.replace(/[^a-zA-Z0-9 ]/g, "")
           $('#input-42-es')[0].files[0].name = string  + '_evidencia.pdf'
           let inputs = document.querySelectorAll('[name="cantidadAlcance"]')
-          console.log(inputs)
           for (let i = 0; i<inputs.length; i++){
             let input = inputs[i]
             let tr = inputs[i].closest('tr')

@@ -26,6 +26,8 @@ class MetaAccion(models.Model):
     periodoGobierno = models.ForeignKey(PeriodoGobierno, models.PROTECT)
     variable = models.ForeignKey(Variable, models.PROTECT)
     cantidad = models.CharField(max_length=10)
+    class Meta:
+        unique_together = ['accion','variable','periodoGobierno']
     def __str__(self):
         return self.accion.nombre
     

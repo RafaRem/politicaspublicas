@@ -1,0 +1,150 @@
+{% extends "base/base.html" %}
+{% load staticfiles %}
+
+{%block title%}
+  Programas Operativos
+{%endblock%}
+
+{% block messages %}{% endblock %}
+
+ {%block navTitle%}
+ Programas operativos
+ {% endblock %}
+
+
+{% block extracss %}
+<style>
+  select{
+    background-color: #cb9831 !important;
+    border: 1px solid #cb9831 !important;
+    color: white !important;
+  }
+</style>
+{% endblock %}
+
+
+{% block content %}
+<div class="container bg-transparent">
+    {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+        <li{% if message.tags == "success" %} class="alert alert-success"
+      {%else%}
+      class="alert alert-danger"
+      {% endif %}>
+      {{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+  <div class="row">
+      {% for programaOperativo in programasOperativos %}
+      <div class="col-xl-4 col-sm-6 mb-3 animated fadeIn">
+          <div class="card text-dorado eje5 o-hidden h-100">
+            <div class="card-body">
+              <div class="mr-5">
+                <h5>{{programaOperativo.nombre}}</h5>
+                <div class="mitad-h3">
+                  {% if tieneDepartamentos %}
+                    {% if programaOperativo.departamento %}
+                    <h6><strong>Departamento: &nbsp;</strong>{{programaOperativo.departamento.nombre}}</h6>
+                    {%else%}
+                    <h6><strong>Departamento no asignado.</strong></h6>
+                    {% endif %}
+                  {% endif %}
+                  
+
+                </div>
+              </div>
+            </div>
+            {% if not programaOperativo.departamento and tieneDepartamentos %}
+            <div class="div_departamento" id="id_select_{{programaOperativo.id}}">
+
+              </div>
+            {% endif %}
+     
+            <a class="card-footer text-white clearfix small z-1" 
+            href="{%url 'presupuestoAnual' idProgramaOperativo=programaOperativo.id%}">
+                <span class="float-left">Asignar presupuesto...</span>
+                <span class="float-right">
+                  <i class="fas fa-angle-right"></i>
+                </span>
+              </a>
+            <a class="card-footer text-white clearfix small z-1" 
+            href="{%url 'postPo' idPo=programaOperativo.id%}">
+                <span class="float-left">Ver...</span>
+                <span class="float-right">
+                  <i class="fas fa-angle-right"></i>
+                </span>
+              </a>
+
+          </div>
+        </div>
+      {% endfor %}
+
+  </div>
+  <form action="" method="POST" id="id_form">
+    {% csrf_token %}
+  </form>
+  {% if tieneDepartamentos and faltaPorAsignar %}
+  <div class="justify-content-center d-flex">
+      <button id="id_guardar_cambios" class="btn guinda">
+        <i class="fas fa-check-circle"></i>&nbsp; Guardar cambios</button>
+    </div>
+
+  {% endif %}
+  
+
+
+</div>
+
+{% endblock content %}
+
+
+
+{%block extrascripts%}
+    <script>
+      $(document).ready(()=>{
+        var departamentos = '{{departamentos|escapejs}}';
+        departamentos = JSON.parse(departamentos);
+        var select = document.createElement('select');
+        //***************creamos select**************
+        select.classList.add('form-control');
+        let opt = document.createElement('option');
+        opt.value = '0';
+        opt.innerHTML = 'Departamentos';
+        select.appendChild(opt);
+        select.name = 'departamento'
+        for (let i = 0; i < departamentos.length; i++) {
+          const departamento = departamentos[i];
+          let opt = document.createElement('option');
+          opt.value = departamento.pk;
+          opt.innerHTML = departamento.fields.nombre;
+          select.appendChild(opt);
+        }
+        select.selectedIndex = 0;
+        $('.div_departamento').append(select);
+        //**************************
+        $('#id_guardar_cambios').click(()=>{
+          var divs = document.querySelectorAll('.div_departamento')
+          for (let i = 0; i < divs.length; i++) {
+            const div = divs[i];
+            let select = div.childNodes[0].nextElementSibling;
+            let idDepartamento = select.value;
+            let idPoSplit = select.parentNode.id.split('_');
+            let idProgramaOperativo = idPoSplit[2];
+            let valorInput = idProgramaOperativo + '|' + idDepartamento;
+            if(idDepartamento > 0){
+              $('#id_form').append(`
+              <input type="text" hidden=true name="valoresDependencia" value="${valorInput}">
+              `);
+            }
+  
+            //obtenemos el id del programa operativo
+  
+          }
+          $('#id_form').submit();
+        });
+
+      });
+    </script>
+{%endblock%}

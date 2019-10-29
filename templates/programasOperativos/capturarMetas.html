@@ -1,0 +1,246 @@
+{% extends 'base/base.html' %}
+
+
+{%block content%}
+<form id="id_form_actividad" method="post">
+  {%csrf_token%}
+  <hr>
+  <h4 class="text-center">{{accion.nombre.upper}}</h4>
+  <br>
+  <h5 class="text-center"> Meta del  
+    <strong>{{periodoGobierno.fechaInicial}} al 
+      {{periodoGobierno.fechaFinal}}
+    </strong>
+  </h5>
+  <hr>
+  <div class="d-flex justify-content-center">
+      <button type="button" class="btn guinda-oscuro text-white col-sm-12 col-lg-6" data-toggle="modal" data-target="#modalVariables">
+          Variables disponibles&nbsp;<i class="fas fa-arrow-down"></i></button>
+  </div>
+  <br>
+  <table id="tableVariablesSeleccionadas" class="table table-bordered">
+      <thead class="dorado">
+        <tr>
+          <th hidden scope="col">ID</th>
+          <th scope="col">Variable</th>
+          <th scope="col">Cantidad</th>
+          <th scope="col">Unidad de medida</th>
+        </tr>
+      </thead>
+      <tbody>
+          {% for metaAccion in metasAccion %}
+          <tr>
+              <td hidden="">{{metaAccion.variable.id}}</td>
+              <td class="font-weight-bold">{{metaAccion.variable.nombre}}</td>
+              <td>
+                <div class="input-group mb-3">
+                  <input type="text" class="form-control"
+                    value="{{metaAccion.cantidad}}" placeholder="Cantidad" required="" name="cantidadVariable" maxlength="8">
+                  <div class="input-group-append">
+                  <button class="btn btn-danger btn-sm" type="button" name="delSelectedAlcanceBtn">
+                      <i class="fas fa-times"></i>
+                  </button>
+                  </div>
+                </div>
+              </td>
+              <td>
+                  {%if metaAccion.variable.unidadMedida.nombre%}
+                      {{metaAccion.variable.unidadMedida.nombre}}
+                    {%else%}
+                      No aplica
+                  {%endif%}
+              </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  <br>
+  <div class="d-flex justify-content-center">
+      <button class="btn guinda col-sm-12 col-lg-6" type="submit">
+          Guardar&nbsp;<i class="fas fa-check-circle"></i></button>
+  </div>
+</form>
+
+<!-- MODALS -->
+<div class="modal fade bd-example-modal-lg" id="modalVariables"
+tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Todas las variables</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fas fa-search"></i></span>
+                    </div>
+                    <input type="text" id="inputBuscarVariables" class="form-control" placeholder="Buscar">
+                    </div>
+                
+                <table class="table" id="tableVariables">
+                    <thead>
+                        <tr>
+                        <th hidden>Código</th>
+                        <th scope="col">Nombre</th>
+                        <th scope="col">Acción</th>
+                        <th scope="col">Unidad de medida</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {%for variable in variables%}
+                        <tr>
+                            <td hidden>{{variable.id}}</td>
+                            <td>{{variable.nombre}}</td>
+                            <td>
+                            <button name="addVairable" class="btn btn-primary btn-sm">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                            </td>
+                            <td>
+                                {%if variable.unidadMedida.nombre%}
+                                    {{variable.unidadMedida.nombre}}
+                                {%else%}
+                                    No definido
+                                {%endif%}
+                                
+                            </td>
+                        </tr>
+                        {%endfor%}
+                    </tbody>
+                    </table>
+                </div>
+        </div>
+    </div>
+</div>
+{%endblock%}
+
+{% block extrascripts %}
+<script>
+  $(document).ready(()=>{ 
+    const Toast = Swal.mixin({
+      toast: true,
+      position: 'top-end',
+      showConfirmButton: false,
+      timer: 3000
+    })
+    function deleteRowFromAlcance(idAlcance, table){
+      let rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr')
+      for (let i = 0; i < rows.length; i++) {
+        const row = rows[i]
+        cells = row.children
+        if(cells[0].innerText == idAlcance){
+          table.deleteRow(i + 1)
+          break
+        }
+      }
+    }
+    function deleteRowFromSeleccionados(e){
+        //manipulate the row
+        let row = this.closest('tr')
+        let cells = row.children
+        cells[1].classList.remove('font-weight-bold')
+        let button = document.createElement('button')
+        //elimina sus nodos hijos
+        cells[2].innerHTML = ''
+        //crea el botón
+        button.classList.add('btn','btn-primary','btn-sm')
+        button.name ='addVairable'
+        button.innerHTML = `
+        <i class="fas fa-plus"></i>          
+        `
+        cells[2].append(button)
+        button.addEventListener('click',addToVariableSeleccionada)
+        document.getElementById('tableVariables').getElementsByTagName('tbody')[0].append(row)
+        row2 = row.cloneNode(true)
+        button = row2.getElementsByTagName('button')[0]
+        button.addEventListener('click',addToVariableSeleccionada)
+        document.getElementById('tableTodos').getElementsByTagName('tbody')[0].append(row2)
+    }
+    function addToVariableSeleccionada(e){
+    //manipulate the row
+    let row = this.closest('tr')
+    let cells = row.children
+    cells[1].classList.add('font-weight-bold')
+    //add the input
+    //TO:DO ANTES DEL SUBMIT HACER UNA CONCATENACIÓN DEL ID DEL ALCANCE
+    cells[2].innerHTML = `
+    <div class="input-group mb-3">
+        <input type="text" class="form-control" placeholder="Cantidad"
+        required name="cantidadVariable">
+        <div class="input-group-append">
+            <button class="btn btn-danger btn-sm" type="button"
+            name="delSelectedAlcanceBtn">
+            <i class="fas fa-times"></i>
+            </button>
+        </div>
+        </div>
+    `
+    let tableVariables = document.getElementById('tableVariables')
+    deleteRowFromAlcance(cells[0].innerText,tableVariables)
+    let tableSeleccionados = document.getElementById('tableVariablesSeleccionadas')
+    let tableSeleccionadosTbody = tableSeleccionados.getElementsByTagName('tbody')[0]
+    tableSeleccionadosTbody.append(row)
+    //call this functions to load method 'onClick'
+    loadMethods()
+
+    }
+    function loadMethods(){
+    $("[name='delSelectedAlcanceBtn']").click(deleteRowFromSeleccionados)
+    //we do this here because we need to aply it to the existent inputs
+    $('[name="cantidadVariable"]').mask('00000000');
+    Toast.fire({
+        type: 'success',
+        title: 'Añadido'
+    }) 
+    }
+    $("[name='addVairable']").click(addToVariableSeleccionada)
+    $("#inputBuscarVariables").keyup(()=>{
+      var input, filter, table, tr, td, i, txtValue;
+      input = document.getElementById("inputBuscarVariables");
+      filter = input.value.toUpperCase();
+      table = document.getElementById("tableVariables");
+      tr = table.getElementsByTagName("tr");
+      for (i = 0; i < tr.length; i++) {
+        td = tr[i].getElementsByTagName("td")[1];
+        if (td) {
+          txtValue = td.textContent || td.innerText;
+          if (txtValue.toUpperCase().indexOf(filter) > -1) {
+            tr[i].style.display = "";
+          } else {
+            tr[i].style.display = "none";
+          }
+        }       
+      }
+    })
+    $( "#id_form_actividad" ).submit(function( event ) {
+        event.preventDefault()
+        let inputs = document.querySelectorAll('[name="cantidadVariable"]')
+        for (let i = 0; i<inputs.length; i++){
+          let input = inputs[i]
+          let tr = inputs[i].closest('tr')
+          let cells = tr.children
+          input.value = cells[0].innerText + '-' + input.value
+        }
+        if(inputs.length == 0){
+          Swal.fire({
+            type: 'error',
+            title: 'Ingrese al menos una meta',
+            customClass:{
+              confirmButton: 'guinda',
+              cancelButton: 'guinda',
+            }
+          })
+        }else{
+          this.submit()
+        }
+    });
+    
+    loadMethods()
+  })
+
+</script>
+{% endblock %}

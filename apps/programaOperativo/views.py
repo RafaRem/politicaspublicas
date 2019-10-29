@@ -18,7 +18,7 @@ from apps.programaOperativo.forms import ProgramaOperativoForm, ActividadesForm,
 """Modelos"""
 from apps.programaOperativo.models import ProgramaOperativo, Acciones, Actividad, DetallesGasto, LogActividad, BeneficiariosActividad, MetaAccion
 from apps.objetivo.models import Objetivo
-from apps.indicador.models import ConceptoGasto, ClasificacionGasto,Periodo,PeriodoGobierno, Configuracion
+from apps.indicador.models import ConceptoGasto, ClasificacionGasto,Periodo,PeriodoGobierno, Configuracion, Variable
 from apps.dependencia.models import Dependencia, Alcance
 from django.db.models import Q,Count
 """Serializer"""
@@ -260,6 +260,60 @@ class EditarGastosView(LoginRequiredMixin,View):
         messages.success(request,'Se han actualizado los datos exitosamente')
         url = reverse('verAccion',args=(idAccion,))
         return redirect(url)
+
+class EditarMetasView(LoginRequiredMixin,View):
+    login_url = 'login'
+    def getContext(self,idAccion):
+        accion = Acciones.objects.get(pk=idAccion)
+        configuracion = Configuracion.objects.get(pk=1)
+        variables = Variable.objects.all()
+        periodoGobierno = configuracion.periodoGobierno
+        metasAccion = MetaAccion.objects.filter(accion=accion,periodoGobierno=periodoGobierno)
+        variablesMeta = []
+        for metaAccion in metasAccion:
+            variablesMeta.append(metaAccion.variable)
+        #Quitamos las que ya están seleccionadas de las variables disponibles
+        variables = Variable.objects.filter(~Q(id__in=[o.id for o in variablesMeta]))
+        return {
+            'metasAccion':metasAccion,
+            'accion':accion,
+            'variables': variables,
+            'periodoGobierno':periodoGobierno
+        }
+    def get(self,request,idAccion):
+        contexto = self.getContext(idAccion)
+        return render(request,'programasOperativos/capturarMetas.html',context=contexto)
+    def post(self,request,idAccion):
+        accion = Acciones.objects.get(pk=idAccion)
+        configuracion = Configuracion.objects.get(pk=1)
+        entradas = request.POST.getlist('cantidadVariable')
+        periodoGobierno = configuracion.periodoGobierno
+        #Eliminas todas las metas previamente para limpiar en caso
+        #de que se deseleccione alguna
+        MetaAccion.objects.filter(accion=accion,
+        periodoGobierno=periodoGobierno).delete()
+        for entrada in entradas:
+            entrada = entrada.split('-')
+            idVariable = entrada[0]
+            cantidad = entrada[1]
+            variable = Variable.objects.get(pk=idVariable)
+            try:
+                MetaAccion.objects.create(
+                accion=accion,
+                variable=variable,
+                periodoGobierno=periodoGobierno,
+                cantidad=cantidad
+                )
+            except:
+                MetaAccion.objects.update(
+                accion=accion,
+                variable=variable,
+                periodoGobierno=periodoGobierno,
+                cantidad=cantidad
+                )
+                pass
+        contexto = self.getContext(idAccion)
+        return render(request,'programasOperativos/capturarMetas.html',contexto)
 
 class ReporteActividadesEnlaceView(LoginRequiredMixin,View):
     login_url = 'login'
