@@ -38,11 +38,6 @@ Nueva actividad
 {%endblock%}
 
 
-
- {%block navTitle%}
-Nueva actividad
- {% endblock %}
-
  {%block messages %}
  {%endblock%}
 
@@ -61,19 +56,10 @@ Nueva actividad
               {% endfor %}
           </ul>
         {% endif %}
+        <br>
+        <h3 class="text-center">{{programaOperativo.nombre.upper}}</h3>
+        <hr>
       <form action="" method="post" id="id_form_actividad">
-            <div id="div_id_programaoperativo" class="form-group"> 
-              <label for="id_programaoperativo" class="col-form-label  requiredField">
-                Programa operativo<span class="asteriskField">*</span> </label> 
-                <div class=""> 
-                  <select name="programaoperativo" class="select form-control" required="" id="id_programaoperativo"> 
-                    <option value="" selected="">---------</option>
-                    {% for programaOperativo in programasOperativos %}
-                    <option value="{{programaOperativo.id}}">{{programaOperativo.nombre}}</option>                    
-                    {% endfor %}
-                  </select> 
-                </div> 
-              </div>
             <div id="div_id_accion" class="form-group"> 
               <label for="id_accion" class="col-form-label  requiredField">
                   Acción a la que corresponde<span class="asteriskField">*</span> 
@@ -81,6 +67,9 @@ Nueva actividad
                 <div class=""> 
                   <select name="accion" class="select form-control" required="" id="id_accion"> 
                     <option value="" selected="">---------</option> 
+                    {%for accion in programaOperativo.acciones.all%}
+                    <option value="{{accion.id}}" selected="">{{accion.nombre}}</option> 
+                    {%endfor%}
                   </select> 
                 </div> 
               </div>
@@ -88,6 +77,7 @@ Nueva actividad
 
             <br>
             <hr>
+            <h5 class="text-center font-weight-bold">Variables de medición*</h5>
             <div class="d-flex justify-content-center">
                 <button type="button" class="btn guinda m-2" data-toggle="modal" data-target="#modalAlcancesPredefinidos">
                     Variables con meta&nbsp;<i class="fas fa-arrow-down"></i></button>
@@ -177,20 +167,24 @@ Nueva actividad
                           </tr>
                        </thead>
                        <tbody>
-                         {%for alcancePredefinido in alcancesPredefinidos%}
+                         {%for variable in variablesMeta%}
                            <tr>
-                             <td hidden>{{alcancePredefinido.id}}</td>
-                             <td>{{alcancePredefinido.nombre}}</td>
+                             <td hidden>{{variable.id}}</td>
+                             <td>{{variable.nombre}}</td>
                              <td>
                                <button name="addAlcanceBtn" class="btn btn-primary btn-sm">
                                  <i class="fas fa-plus"></i>
                                </button>
                              </td>
+                             <td>{{variable.unidadMedida}}</td>
                            </tr>
                          {%endfor%}
                        </tbody>
                      </table>
                  </div>
+              <div class="modal-footer justify-content-center d-flex">
+                <button type="button" class="btn guinda-oscuro text-white" data-dismiss="modal">Cerrar</button>
+              </div>
          </div>
        </div>
      </div>
@@ -224,20 +218,24 @@ Nueva actividad
                         </tr>
                       </thead>
                       <tbody>
-                        {%for alcance in alcancesTodos%}
+                        {%for variable in variables%}
                           <tr>
-                            <td hidden>{{alcance.id}}</td>
-                            <td>{{alcance.nombre}}</td>
+                            <td hidden>{{variable.id}}</td>
+                            <td>{{variable.nombre}}</td>
                             <td>
                               <button name="addAlcanceBtn" class="btn btn-primary btn-sm">
                                 <i class="fas fa-plus"></i>
                               </button>
                             </td>
+                            <td>{{variable.unidadMedida}}</td>
                           </tr>
                         {%endfor%}
                       </tbody>
                     </table>
                 </div>
+              <div class="modal-footer justify-content-center d-flex">
+                  <button type="button" class="btn guinda-oscuro text-white" data-dismiss="modal">Cerrar</button>
+              </div>
         </div>
       </div>
     </div>
@@ -293,7 +291,7 @@ Nueva actividad
       cells[2].innerHTML = `
       <div class="input-group mb-3">
           <input type="text" class="form-control" placeholder="Cantidad"
-          required name="cantidadAlcance">
+          required name="cantidadVariable">
           <div class="input-group-append">
             <button class="btn btn-danger btn-sm" type="button"
             name="delSelectedAlcanceBtn">
@@ -319,159 +317,151 @@ Nueva actividad
     function loadMethods(){
       $("[name='delSelectedAlcanceBtn']").click(deleteRowFromSeleccionados)
       //we do this here because we need to aply it to the existent inputs
-      $('[name="cantidadAlcance"]').mask('00000000');
+      $('[name="cantidadVariable"]').mask('00000000');
       Toast.fire({
         type: 'success',
         title: 'Añadido'
       }) 
     }
-
-
-      document.querySelector('#id_programaoperativo').addEventListener('change',()=>{
-      /*   Cuando cambie el programa operativo    */
-      programaOperativo = document.querySelector('#id_programaoperativo');
-      idPo = programaOperativo.options[programaOperativo.selectedIndex].value;
-      let acciones = document.querySelector('#id_accion');
-      $('#id_accion').children().remove().end().append('<option selected value="">---------</option>') ;
-        fetch(`/programasOperativos/get/aciones/${idPo}`)
-          .then((data)=>{
-            data.json().then((data)=>{
-              data = JSON.parse(data);  
-              for (let i = 0; i < data.length; i++) {
-                const element = data[i];
-                console.log(element)
-                acciones.options[acciones.length] = new Option(element.fields.nombre,element.pk)
-              }
-            })
-          })
-          })
-      $('#id_fecha_in').datepicker({
-            uiLibrary: 'bootstrap4',
-            format: 'yyyy-mm-dd'
-        });
-      $('#id_fecha_in').attr('readonly',true)
-      $('#id_fecha_fi').attr('readonly',true)
-      $('#id_fecha_fi').datepicker({
+    
+    $('#id_fecha_in').datepicker({
           uiLibrary: 'bootstrap4',
-            format: 'yyyy-mm-dd'
+          format: 'yyyy-mm-dd'
       });
-      $( "#id_form_actividad" ).submit(function( event ) {
-        latitud = document.getElementById('id_latitud');
-        if (latitud.value == "0") {
-          Swal.fire({
-            title: `<h4 class="modal-title" id="exampleModalLabel">
-                <strong>Selecciona el lugar de esta actividad</strong>
-              </h4>`,
-            type:'warning',
-            customClass:{
-              confirmButton: 'guinda',
-              cancelButton: 'guinda',
-            },
-            html:`
-            <ul>
-                <li>
-                    <strong>
-                        En caso de ser una sindicatura, basta con poner su nombre 
-                        en el campo del mapa y presionar enter.
-                    </strong>
-                </li>
-                <li>
-                    <strong>
-                        En caso de ser en Los Mochis, escribir la colonia y presionar enter.
-                      </strong>
-                </li>
-     
-                <li>
-                    <strong>
-                        En caso de ser una actividad del Ayuntamiento, 
-                        escribir "H. Ayuntamiento" y presionar enter.
-                      </strong>
-                </li>
-              </ul>
-            `
-            })
-        }else{
-          let timerInterval
-          Swal.fire({
-            title: 'Subiendo',
-            timer: 30000,
-            onBeforeOpen: () => {
-              Swal.showLoading()
-            },
-            onClose: () => {
-              clearInterval(timerInterval)
-            }
-          }).then((result) => {
-            if (
-              // Read more about handling dismissals
-              result.dismiss === Swal.DismissReason.timer
-            ) {
-              console.log('I was closed by the timer')
-            }
-          })
-          this.submit()
-
-        }
-
-        event.preventDefault();
-      });
-      //********************VARIABLES************************
-      $("#infoAlcance").click(()=>{
+    $('#id_fecha_in').attr('readonly',true)
+    $('#id_fecha_fi').attr('readonly',true)
+    $('#id_fecha_fi').datepicker({
+        uiLibrary: 'bootstrap4',
+          format: 'yyyy-mm-dd'
+    });
+    $( "#id_form_actividad" ).submit(function( event ) {
+      latitud = document.getElementById('id_latitud');
+      let inputs = document.querySelectorAll('[name="cantidadVariable"]')
+      for (let i = 0; i<inputs.length; i++){
+        let input = inputs[i]
+        let tr = inputs[i].closest('tr')
+        let cells = tr.children
+        input.value = cells[0].innerText + '-' + input.value
+        input.readonly = true
+      }
+      if (latitud.value == "0") {
         Swal.fire({
-          title:`
-          <p>Las variables son la cantidad de acciones generadas en la actividad, por ejemplo: 5 despensas entregadas.</p>
-        `,
-          type: 'info',
-          showCloseButton: true,
-          focusConfirm: false,
-          confirmButtonText:
-            '<i class="fa fa-thumbs-up"></i> ¡Entendido!',
-          confirmButtonAriaLabel: 'Thumbs up, great!',
+          title: `<h4 class="modal-title" id="exampleModalLabel">
+              <strong>Selecciona el lugar de esta actividad</strong>
+            </h4>`,
+          type:'warning',
+          customClass:{
+            confirmButton: 'guinda',
+            cancelButton: 'guinda',
+          },
+          html:`
+          <ul>
+              <li>
+                  <strong>
+                      En caso de ser una sindicatura, basta con poner su nombre 
+                      en el campo del mapa y presionar enter.
+                  </strong>
+              </li>
+              <li>
+                  <strong>
+                      En caso de ser en Los Mochis, escribir la colonia y presionar enter.
+                    </strong>
+              </li>
+    
+              <li>
+                  <strong>
+                      En caso de ser una actividad del Ayuntamiento, 
+                      escribir "H. Ayuntamiento" y presionar enter.
+                    </strong>
+              </li>
+            </ul>
+          `
+          })
+      }else if(inputs.length==0){
+        Swal.fire({
+          type: 'error',
+          title: 'Variables de medición obligatorias',
+          text: 'Ingresa al menos una variable de medición. ejemplo: 3 reuniones',
           customClass:{
             confirmButton: 'guinda',
             cancelButton: 'guinda',
           }
         })
-      })
-      //esta función funciona para las dos tablas de alcance
-      $("[name='addAlcanceBtn']").click(addToAlcanceSeleccionado)
-      $("#inputBuscarPredefinidos").keyup(()=>{
-        var input, filter, table, tr, td, i, txtValue;
-        input = document.getElementById("inputBuscarPredefinidos");
-        filter = input.value.toUpperCase();
-        table = document.getElementById("tablePredefinidos");
-        tr = table.getElementsByTagName("tr");
-        for (i = 0; i < tr.length; i++) {
-          td = tr[i].getElementsByTagName("td")[1];
-          if (td) {
-            txtValue = td.textContent || td.innerText;
-            if (txtValue.toUpperCase().indexOf(filter) > -1) {
-              tr[i].style.display = "";
-            } else {
-              tr[i].style.display = "none";
-            }
-          }       
+      }else{
+        let timerInterval
+        Swal.fire({
+          title: 'Subiendo',
+          timer: 30000,
+          onBeforeOpen: () => {
+            Swal.showLoading()
+          },
+          onClose: () => {
+            clearInterval(timerInterval)
+          }
+        })
+        this.submit()
+
+      }
+
+      event.preventDefault();
+    });
+    //********************VARIABLES************************
+    $("#infoAlcance").click(()=>{
+      Swal.fire({
+        title:`
+        <p>Las variables son la cantidad de acciones generadas en la actividad, por ejemplo: 5 despensas entregadas.</p>
+      `,
+        type: 'info',
+        showCloseButton: true,
+        focusConfirm: false,
+        confirmButtonText:
+          '<i class="fa fa-thumbs-up"></i> ¡Entendido!',
+        confirmButtonAriaLabel: 'Thumbs up, great!',
+        customClass:{
+          confirmButton: 'guinda',
+          cancelButton: 'guinda',
         }
       })
-      $("#inputBuscarTodos").keyup(()=>{
-        var input, filter, table, tr, td, i, txtValue;
-        input = document.getElementById("inputBuscarTodos");
-        filter = input.value.toUpperCase();
-        table = document.getElementById("tableTodos");
-        tr = table.getElementsByTagName("tr");
-        for (i = 0; i < tr.length; i++) {
-          td = tr[i].getElementsByTagName("td")[1];
-          if (td) {
-            txtValue = td.textContent || td.innerText;
-            if (txtValue.toUpperCase().indexOf(filter) > -1) {
-              tr[i].style.display = "";
-            } else {
-              tr[i].style.display = "none";
-            }
-          }       
-        }
-      })
-      
+    })
+    //esta función funciona para las dos tablas de variables
+    $("[name='addAlcanceBtn']").click(addToAlcanceSeleccionado)
+    $("#inputBuscarPredefinidos").keyup(()=>{
+      var input, filter, table, tr, td, i, txtValue;
+      input = document.getElementById("inputBuscarPredefinidos");
+      filter = input.value.toUpperCase();
+      table = document.getElementById("tablePredefinidos");
+      tr = table.getElementsByTagName("tr");
+      for (i = 0; i < tr.length; i++) {
+        td = tr[i].getElementsByTagName("td")[1];
+        if (td) {
+          txtValue = td.textContent || td.innerText;
+          if (txtValue.toUpperCase().indexOf(filter) > -1) {
+            tr[i].style.display = "";
+          } else {
+            tr[i].style.display = "none";
+          }
+        }       
+      }
+    })
+    $("#inputBuscarTodos").keyup(()=>{
+      var input, filter, table, tr, td, i, txtValue;
+      input = document.getElementById("inputBuscarTodos");
+      filter = input.value.toUpperCase();
+      table = document.getElementById("tableTodos");
+      tr = table.getElementsByTagName("tr");
+      for (i = 0; i < tr.length; i++) {
+        td = tr[i].getElementsByTagName("td")[1];
+        if (td) {
+          txtValue = td.textContent || td.innerText;
+          if (txtValue.toUpperCase().indexOf(filter) > -1) {
+            tr[i].style.display = "";
+          } else {
+            tr[i].style.display = "none";
+          }
+        }       
+      }
+    })
+    
   
     })
 

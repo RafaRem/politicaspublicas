@@ -14,7 +14,7 @@ urlpatterns = [
     path('programasOperativos/accion/editar/gastos/<str:idAccion>/<str:idPeriodo>', EditarGastosView.as_view(), name='editarGastos'),
     path('programasOperativos/accion/editar/metas/<str:idAccion>', EditarMetasView.as_view(), name='capturarMetas'),
     #Actividades
-    path('programasOperativos/actividad/nueva', ActividadFormView.as_view() , name="nuevaActividad" ),
+    path('programasOperativos/actividad/nueva/<idProgramaOperativo>', ActividadFormView.as_view() , name="nuevaActividad" ),
     path('programasOperativos/actividad/lista', ActividadesListView.as_view(), name='listActividades'),
     path('programasOperativos/actividad/terminar/<str:idActividad>', 
     TerminarActividadFormView.as_view(), name='terminarActividad'),
@@ -33,4 +33,5 @@ urlpatterns = [
      name='productividadAdmin'),
     path('programasOperativos/actividad/admin/metas', MetasAdmin.as_view(),
      name='metasAdmin'),
+    path('programasOperativos/actividad/escogerPo',escoger_po,name='escogerPo'),
 ]

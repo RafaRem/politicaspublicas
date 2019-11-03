@@ -3,10 +3,9 @@
 {% load staticfiles %}
 {% load crispy_forms_tags %}
 
-{% block navTitle %}
-{{actividad.accion.nombre}}
+{% block title %}
+Revalidar
 {% endblock %}
-
 
 {% block extracss %}
 <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-fileinput/5.0.1/css/fileinput.min.css" media="all" rel="stylesheet" type="text/css" />
@@ -36,6 +35,7 @@
     }
     #filtros{
       position: fixed;
+      z-index: 99999;
     }
 </style>
 {% endblock extracss %}
@@ -63,32 +63,105 @@
             {% endfor %}
         </ul>
       {% endif %}
-      
+      <h3 class="text-center">{{actividad.accion.nombre.upper}}</h3>
         <form id="id_form_actividad" action="" 
         method="POST" enctype="multipart/form-data">
             {% csrf_token %}
             <hr>
-            {{ form|crispy }}
+            <h5 class="text-center">VARIABLES DE MEDICIÓN</h5>
+            <div class="d-flex justify-content-center">
+                   <button type="button" class="btn guinda m-2" data-toggle="modal" data-target="#modalVariablesTodas">
+                     Todas las variables&nbsp;<i class="fas fa-arrow-down"></i></button>
+            </div>
+            <table id="tableVariablesSeleccionadas" class="table table-bordered">
+                <thead class="dorado">
+                  <tr>
+                    <th hidden scope="col">ID</th>
+                    <th scope="col">Variable</th>
+                    <th scope="col">Cantidad</th>
+                    <th scope="col">Unidad de medida</th>
+                  </tr>
+                </thead>
+                <tbody>
+                    {% for variable in variablesActividad %}
+                    <tr>
+                        <td hidden="">{{variable.variable.id}}</td>
+                        <td class="font-weight-bold">{{variable}}</td>
+                        <td>
+                          <div class="input-group mb-3">
+                            <input type="text" class="form-control"
+                              value="{{variable.cantidad}}" placeholder="Cantidad" required="" name="cantidadVariable" maxlength="8">
+                            <div class="input-group-append">
+                            <button class="btn btn-danger btn-sm" type="button" name="delSelectedVariableBtn">
+                                <i class="fas fa-times"></i>
+                            </button>
+                            </div>
+                          </div>
+                        </td>
+                        <td>
+                            {%if variable.variable.unidadMedida.nombre%}
+                                {{variable.variable.unidadMedida.nombre}}
+                              {%else%}
+                                No aplica
+                            {%endif%}
+                        </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            <hr>
+            <h5 class="text-center">ALCANCE DE BENEFICIARIOS</h5>
+            <div class="d-flex justify-content-center">
+                   <button type="button" class="btn guinda m-2" data-toggle="modal" data-target="#modalAlcancesTodos">
+                     Todos los alcances&nbsp;<i class="fas fa-arrow-down"></i></button>
+            </div>
+            <table id="tableAlcanceSeleccionados" class="table table-bordered">
+                <thead class="dorado">
+                  <tr>
+                    <th hidden scope="col">ID</th>
+                    <th scope="col">Alcance</th>
+                    <th scope="col">Cantidad</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for alcance in alcancesActividad %}
+                    <tr>
+                        <td hidden="">{{alcance.alcance.id}}</td>
+                        <td class="font-weight-bold">{{alcance}}</td>
+                        <td>
+                          <div class="input-group mb-3">
+                              <input type="text" class="form-control" placeholder="Cantidad" 
+                              required name="cantidadAlcance" maxlength="8" value="{{alcance.cantidad}}">
+                              <div class="input-group-append">
+                                <button class="btn btn-danger btn-sm" type="button" name="delSelectedAlcanceBtn">
+                                  <i class="fas fa-times"></i>
+                                </button>
+                              </div>
+                            </div>
+                        </td>
+                      </tr>
+                      {% endfor %}
+                </tbody>
+              </table>
+            <hr>
+            <div class="d-flex justify-content-center mt-2">
+                <a id="evidencia" class="btn guinda m-2" href="/media/{{actividad.evidencia}}" target="_blank">Ver evidencia</a>
+            </div>
             <div class="justify-content-center d-flex">
                 <div class="form-check-inline form-control-lg">
                     <label class="form-check-label">
-                        <input type="checkbox" name="keepEvidence" id="keepEvidence">Mantener evidencia
+                        <input type="checkbox" name="keepEvidence" id="keepEvidence">&nbsp;Mantener evidencia
                     </label>
                   </div>
             </div>
-
-              <br>
-              <div id="fileContainer">
-                  <label for="input-42-es">Evidencia*</label>
-                  <div class="file-loading">
-                          <input required class="guinda" 
-                          id="input-42-es" data-show-upload="false" 
-                          name="archivos" type="file">
-                      </div> 
-              </div>
-
-            <div id="id_gastos">
-              
+            <br>
+            <div id="fileContainer">
+                <label for="input-42-es">Evidencia*</label>
+                <div class="file-loading">
+                        <input required class="guinda" 
+                        id="input-42-es" data-show-upload="false" 
+                        name="archivos" type="file">
+                    </div> 
             </div>
             <div class="d-flex justify-content-center mt-5 min-w-100">
                     <button class="btn btn-primary guinda" id="id_btn_segunda_parte" 
@@ -97,13 +170,106 @@
                     </button>
                     </div>
         </form>
-      
-
     </div>
 
     
+          <!-- MODALS VARIABLES-->
+        <div class="modal fade bd-example-modal-lg" id="modalVariablesTodas"
+         tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-lg">
+     
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Todas las variables</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body">
+                      <div class="input-group mb-3">
+                          <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fas fa-search"></i></span>
+                          </div>
+                          <input type="text" id="inputBuscarTodos" class="form-control" placeholder="Buscar">
+                        </div>
+                      
+                      <table class="table" id="tableTodasVariables">
+                          <thead>
+                            <tr>
+                              <th hidden>Código</th>
+                              <th scope="col">Nombre</th>
+                              <th scope="col">Acción</th>
+                              <th scope="col">Unidad de medida</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {%for variable in variablesTodas%}
+                              <tr>
+                                <td hidden>{{variable.id}}</td>
+                                <td>{{variable.nombre}}</td>
+                                <td>
+                                  <button name="addVariableBtn" class="btn btn-primary btn-sm">
+                                    <i class="fas fa-plus"></i>
+                                  </button>
+                                </td>
+                                <td>{{variable.unidadMedida}}</td>
+                              </tr>
+                            {%endfor%}
+                          </tbody>
+                        </table>
+                    </div>
+                  <div class="modal-footer justify-content-center d-flex">
+                      <button type="button" class="btn guinda-oscuro text-white" data-dismiss="modal">Cerrar</button>
+                  </div>
+            </div>
+          </div>
+        </div>
+        <!-- MODALS ALCANCE DE BENEFICIARIOS -->
+        <div class="modal fade bd-example-modal-lg" id="modalAlcancesTodos"
+        tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+         <div class="modal-dialog modal-lg">
     
-
+           <div class="modal-content">
+               <div class="modal-header">
+                   <h5 class="modal-title">Todos los alcances</h5>
+                   <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                     <span aria-hidden="true">&times;</span>
+                   </button>
+                 </div>
+                 <div class="modal-body">
+                     <div class="input-group mb-3">
+                         <div class="input-group-prepend">
+                           <span class="input-group-text"><i class="fas fa-search"></i></span>
+                         </div>
+                         <input type="text" id="inputBuscarTodosAlcances" class="form-control" placeholder="Buscar">
+                       </div>
+                     
+                     <table class="table" id="tableTodosAlcances">
+                         <thead>
+                           <tr>
+                             <th hidden>Código</th>
+                             <th scope="col">Nombre</th>
+                             <th scope="col">Acción</th>
+                           </tr>
+                         </thead>
+                         <tbody>
+                           {%for alcance in alcancesTodos%}
+                             <tr>
+                               <td hidden>{{alcance.id}}</td>
+                               <td>{{alcance.nombre}}</td>
+                               <td>
+                                 <button name="addAlcanceBtn" class="btn btn-primary btn-sm">
+                                   <i class="fas fa-plus"></i>
+                                 </button>
+                               </td>
+                             </tr>
+                           {%endfor%}
+                         </tbody>
+                       </table>
+                   </div>
+           </div>
+         </div>
+       </div>
 {% endblock content %}
 
 
@@ -148,18 +314,22 @@
       });
       $('#id_personasInvolucradas').mask('00000000');
       $('#id_beneficiarios').mask('00000000');
+      $('[name="cantidadAlcance"]').mask('00000000');
       //*********************
       $("#keepEvidence").change(()=>{
         checkbox = document.getElementById('keepEvidence')
         fileContainer = document.getElementById('fileContainer')
+        fileInput = document.getElementById('input-42-es')
         if (checkbox.checked){
           fileContainer.style.display = "none"
+          fileInput.required = false
         }else{
           fileContainer.style.display = "block"
+          fileInput.required = true
         }
       })
       $( "#id_form_actividad" ).submit(function( event ) {
-        event.preventDefault();
+          event.preventDefault();
           let timerInterval
           Swal.fire({
             title: 'Subiendo',
@@ -170,20 +340,226 @@
             onClose: () => {
               clearInterval(timerInterval)
             }
-          }).then((result) => {
-            if (
-              // Read more about handling dismissals
-              result.dismiss === Swal.DismissReason.timer
-            ) {
-              console.log('I was closed by the timer')
-            }
           })
-          string = $('#input-42-es')[0].files[0].name;
-          string  = string.replace(/[^a-zA-Z0-9 ]/g, "")
-          $('#input-42-es')[0].files[0].name = string  + '_evidencia.pdf'
+          if(!keepEvidence.checked){
+            keepEvidence = document.querySelector('[name="keepEvidence"]')
+            string = $('#input-42-es')[0].files[0].name;
+            string  = string.replace(/[^a-zA-Z0-9 ]/g, "")
+            $('#input-42-es')[0].files[0].name = string  + '_evidencia.pdf'
+          }
+          let inputsAlcance = document.querySelectorAll('[name="cantidadAlcance"]')
+          for (let i = 0; i<inputsAlcance.length; i++){
+            let input = inputsAlcance[i]
+            let tr = inputsAlcance[i].closest('tr')
+            let cells = tr.children
+            input.value = cells[0].innerText + '-' + input.value
+          }
+          let inputsVariable = document.querySelectorAll('[name="cantidadVariable"]')
+          for (let i = 0; i<inputsVariable.length; i++){
+            let input = inputsVariable[i]
+            let tr = inputsVariable[i].closest('tr')
+            let cells = tr.children
+            input.value = cells[0].innerText + '-' + input.value
+          }
           this.submit()
-
       });
+      //******************VARIABLES******************
+      function deleteRowFromVariableSeleccionada(e){
+          //manipulate the row
+          let row = this.closest('tr')
+          let cells = row.children
+          cells[1].classList.remove('font-weight-bold')
+          let button = document.createElement('button')
+          //elimina sus nodos hijos
+          cells[2].innerHTML = ''
+          //crea el botón
+          button.classList.add('btn','btn-primary','btn-sm')
+          button.name ='addVariableBtn'
+          button.innerHTML = `
+            <i class="fas fa-plus"></i>          
+          `
+          cells[2].append(button)
+          button.addEventListener('click',addToVariableSeleccionada)
+          document.getElementById('tableTodasVariables').getElementsByTagName('tbody')[0].append(row)
+        
+      }
+      function addToVariableSeleccionada(e){
+        //manipulate the row
+        let row = this.closest('tr')
+        let cells = row.children
+        cells[1].classList.add('font-weight-bold')
+        //add the input
+        //TO:DO ANTES DEL SUBMIT HACER UNA CONCATENACIÓN DEL ID DEL ALCANCE
+        cells[2].innerHTML = `
+        <div class="input-group mb-3">
+            <input type="text" class="form-control" placeholder="Cantidad"
+            required name="cantidadVariable">
+            <div class="input-group-append">
+              <button class="btn btn-danger btn-sm" type="button"
+              name="delSelectedVariableBtn">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+          </div>
+        `
+        let tableSeleccionados = document.getElementById('tableVariablesSeleccionadas')
+        let tableSeleccionadosTbody = tableSeleccionados.getElementsByTagName('tbody')[0]
+        tableSeleccionadosTbody.append(row)
+        //call this functions to load method 'onClick'
+        loadMethodsVariable()
+
+      }
+      function loadMethodsVariable(){
+        $("[name='delSelectedVariableBtn']").click(deleteRowFromVariableSeleccionada)
+        //we do this here because we need to aply it to the existent inputs
+        $('[name="cantidadVariable"]').mask('00000000');
+        Toast.fire({
+          type: 'success',
+          title: 'Añadido'
+        }) 
+      }
+      //esta función funciona para las dos tablas de variables
+      $("[name='delSelectedVariableBtn']").click(deleteRowFromVariableSeleccionada)
+      $("[name='addVariableBtn']").click(addToVariableSeleccionada)
+      $("#inputBuscarPredefinidos").keyup(()=>{ 
+        var input, filter, table, tr, td, i, txtValue;
+        input = document.getElementById("inputBuscarPredefinidos");
+        filter = input.value.toUpperCase();
+        table = document.getElementById("tablePredefinidos");
+        tr = table.getElementsByTagName("tr");
+        for (i = 0; i < tr.length; i++) {
+          td = tr[i].getElementsByTagName("td")[1];
+          if (td) {
+            txtValue = td.textContent || td.innerText;
+            if (txtValue.toUpperCase().indexOf(filter) > -1) {
+              tr[i].style.display = "";
+            } else {
+              tr[i].style.display = "none";
+            }
+          }       
+        }
+      })
+      $("#inputBuscarTodos").keyup(()=>{
+        var input, filter, table, tr, td, i, txtValue;
+        input = document.getElementById("inputBuscarTodos");
+        filter = input.value.toUpperCase();
+        table = document.getElementById("tableTodasVariables");
+        tr = table.getElementsByTagName("tr");
+        for (i = 0; i < tr.length; i++) {
+          td = tr[i].getElementsByTagName("td")[1];
+          if (td) {
+            txtValue = td.textContent || td.innerText;
+            if (txtValue.toUpperCase().indexOf(filter) > -1) {
+              tr[i].style.display = "";
+            } else {
+              tr[i].style.display = "none";
+            }
+          }       
+        }
+      })
+    //***************ALCANCES***************
+    function deleteRowFromAlcance(idAlcance, table){
+      let rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr')
+      for (let i = 0; i < rows.length; i++) {
+        const row = rows[i]
+        cells = row.children
+        if(cells[0].innerText == idAlcance){
+          table.deleteRow(i + 1)
+          break
+        }
+      }
+    }
+    function deleteRowFromSeleccionados(e){
+        //manipulate the row
+        let row = this.closest('tr')
+        let cells = row.children
+        cells[1].classList.remove('font-weight-bold')
+        let button = document.createElement('button')
+        //elimina sus nodos hijos
+        cells[2].innerHTML = ''
+        //crea el botón
+        button.classList.add('btn','btn-primary','btn-sm')
+        button.name ='addAlcanceBtn'
+        button.innerHTML = `
+          <i class="fas fa-plus"></i>          
+        `
+        cells[2].append(button)
+        button.addEventListener('click',addToAlcanceSeleccionado)
+        document.getElementById('tableTodosAlcances').getElementsByTagName('tbody')[0].append(row)
+    }
+    function addToAlcanceSeleccionado(e){
+      //manipulate the row
+      let row = this.closest('tr')
+      let cells = row.children
+      cells[1].classList.add('font-weight-bold')
+      //add the input
+      //TO:DO ANTES DEL SUBMIT HACER UNA CONCATENACIÓN DEL ID DEL ALCANCE
+      cells[2].innerHTML = `
+      <div class="input-group mb-3">
+          <input type="text" class="form-control" placeholder="Cantidad"
+          required name="cantidadAlcance">
+          <div class="input-group-append">
+            <button class="btn btn-danger btn-sm" type="button"
+            name="delSelectedAlcanceBtn">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+        </div>
+      `
+      let tableSeleccionados = document.getElementById('tableAlcanceSeleccionados')
+      let tableSeleccionadosTbody = tableSeleccionados.getElementsByTagName('tbody')[0]
+      tableSeleccionadosTbody.append(row)
+      //call this functions to load method 'onClick'
+      loadMethods()
+
+    }
+    function loadMethods(){
+      $("[name='delSelectedAlcanceBtn']").click(deleteRowFromSeleccionados)
+      //we do this here because we need to aply it to the existent inputs
+      $('[name="cantidadAlcance"]').mask('00000000');
+      Toast.fire({
+        type: 'success',
+        title: 'Añadido'
+      }) 
+    }
+    $("[name='addAlcanceBtn']").click(addToAlcanceSeleccionado)
+    $("#inputBuscarPredefinidos").keyup(()=>{
+      var input, filter, table, tr, td, i, txtValue;
+      input = document.getElementById("inputBuscarPredefinidos");
+      filter = input.value.toUpperCase();
+      table = document.getElementById("tablePredefinidos");
+      tr = table.getElementsByTagName("tr");
+      for (i = 0; i < tr.length; i++) {
+        td = tr[i].getElementsByTagName("td")[1];
+        if (td) {
+          txtValue = td.textContent || td.innerText;
+          if (txtValue.toUpperCase().indexOf(filter) > -1) {
+            tr[i].style.display = "";
+          } else {
+            tr[i].style.display = "none";
+          }
+        }       
+      }
     })
+    $("#inputBuscarTodosAlcances").keyup(()=>{
+      var input, filter, table, tr, td, i, txtValue;
+      input = document.getElementById("inputBuscarTodosAlcances");
+      filter = input.value.toUpperCase();
+      table = document.getElementById("tableTodosAlcances");
+      tr = table.getElementsByTagName("tr");
+      for (i = 0; i < tr.length; i++) {
+        td = tr[i].getElementsByTagName("td")[1];
+        if (td) {
+          txtValue = td.textContent || td.innerText;
+          if (txtValue.toUpperCase().indexOf(filter) > -1) {
+            tr[i].style.display = "";
+          } else {
+            tr[i].style.display = "none";
+          }
+        }       
+      }
+    })
+    $("[name='delSelectedAlcanceBtn']").click(deleteRowFromSeleccionados)
+  })
     </script>
 {% endblock %}

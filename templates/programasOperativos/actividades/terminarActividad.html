@@ -55,7 +55,7 @@ Actividad
             {% endfor %}
         </ul>
       {% endif %}
-      <h2 class="text-center">{{actividad.accion.nombre}}</h2>
+      <h2 class="text-center">{{actividad.accion.nombre.upper}}</h2>
         <form id="id_form_actividad" action="" 
         method="POST" enctype="multipart/form-data">
             {% csrf_token %}
@@ -370,14 +370,13 @@ Actividad
             let input = inputs[i]
             let tr = inputs[i].closest('tr')
             let cells = tr.children
-            console.log(input.value)
             input.value = cells[0].innerText + '-' + input.value
           }
           if(inputs.length == 0){
             Swal.fire({
               type: 'error',
               title: 'Alcance obligatorio',
-              text: 'Ingresa el alcance de beneficiarios que se tuvo con esta actividad',
+              text: 'Ingresa el alcance de beneficiarios que se tuvo con esta actividad, ejemplo: 5 asistentes',
               customClass:{
                 confirmButton: 'guinda',
                 cancelButton: 'guinda',
@@ -406,7 +405,7 @@ Actividad
           }
         })
       })
-      //esta función funciona para las dos tablas de alcance
+      //estas funciones funciona para las dos tablas de alcance
       $("[name='addAlcanceBtn']").click(addToAlcanceSeleccionado)
       $("#inputBuscarPredefinidos").keyup(()=>{
         var input, filter, table, tr, td, i, txtValue;

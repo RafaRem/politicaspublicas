@@ -16,7 +16,7 @@ from apps.users.views import *
 from apps.users.forms import RegistrarActividad
 from apps.programaOperativo.forms import ProgramaOperativoForm, ActividadesForm, TerminarActividadesForm, RevalidarActividadesForm
 """Modelos"""
-from apps.programaOperativo.models import ProgramaOperativo, Acciones, Actividad, DetallesGasto, LogActividad, BeneficiariosActividad, MetaAccion
+from apps.programaOperativo.models import ProgramaOperativo, Acciones, Actividad, DetallesGasto, LogActividad, BeneficiariosActividad, MetaAccion,VariableActividad
 from apps.objetivo.models import Objetivo
 from apps.indicador.models import ConceptoGasto, ClasificacionGasto,Periodo,PeriodoGobierno, Configuracion, Variable
 from apps.dependencia.models import Dependencia, Alcance
@@ -339,7 +339,8 @@ class ReporteActividadesEnlaceView(LoginRequiredMixin,View):
 
 class ActividadFormView(LoginRequiredMixin,View):
     login_url = 'login'
-    def get(self,request):
+    def get(self,request,idProgramaOperativo):
+        programaOperativo = ProgramaOperativo.objects.get(pk=idProgramaOperativo)
         form = ActividadesForm()
         programasOperativos = ProgramaOperativo.objects.filter(
             dependencia=request.user.profile.dependencia.id
@@ -350,23 +351,32 @@ class ActividadFormView(LoginRequiredMixin,View):
         acciones = []
         for po in pos:
             acciones.extend(po.acciones.all())
-        variablesMeta = []
+        #Las acciones con meta
+        metasAcciones = []
         for accion in acciones:
-            variablesMeta.extend(MetaAccion.objects.filter(accion=accion))
-        print(variablesMeta)
+            metasAcciones.extend(MetaAccion.objects.filter(accion=accion))
+        #Hacemos un arreglo de solo las variables que tienen metas
+        variablesMeta = []
+        for metaAccion in metasAcciones:
+            variablesMeta.append(metaAccion.variable)
+        #Se quitan las repetidas
+        variablesMeta = list(set(variablesMeta))
+        #variables = Variable.objects.filter(~Q(id__in=[o.id for o in variablesMeta]))
+        variables = Variable.objects.all()
         return render(request,'programasOperativos/actividades/actividadForm.html',{
             'form':form,
-            'programasOperativos':programasOperativos,
-            'variablesMeta':variablesMeta
+            'programaOperativo':programaOperativo,
+            'variablesMeta':variablesMeta,
+            'variables':variables
         })
-    def post(self,request):
+    def post(self,request,idProgramaOperativo):
+        programaOperativo = ProgramaOperativo.objects.get(pk=idProgramaOperativo)
         form = ActividadesForm(request.POST)
         if form.is_valid():
             datos = form.save(commit=False)
             accion = Acciones.objects.get(id=request.POST.get('accion'))
             datos.accion = accion
-            po = ProgramaOperativo.objects.get(id=request.POST.get('programaoperativo'))
-            datos.programaoperativo = po
+            datos.programaoperativo = programaOperativo
             datos.user = request.user
             datos.latitud = request.POST.get('latitud')
             datos.longitud = request.POST.get('longitud')
@@ -378,11 +388,18 @@ class ActividadFormView(LoginRequiredMixin,View):
             save = datos.save()
             actividad = Actividad.objects.latest('created')
             idActividad = actividad.id
+            #guardamos las variables con su cantidad
+            cantidadesVariables = request.POST.getlist('cantidadVariable')
+            for cantidadVariable in cantidadesVariables:
+                #posicion 0=variableID 1=Cantidad
+                cantidadVariable = cantidadVariable.split('-')
+                variable = Variable.objects.get(pk=cantidadVariable[0])
+                cantidad = cantidadVariable[1]
+                VariableActividad.objects.create(variable=variable,cantidad=cantidad,actividad=actividad)
+            #****
             messages.success(request, 'Actividad registrada con éxito.')
             url = reverse('terminarActividad',args=(idActividad,))
             return redirect(url)
-            # return redirect('terminarActividad',args)
-
         messages.error(request,form._errors)
         programasOperativos = ProgramaOperativo.objects.filter(
             dependencia=request.user.profile.dependencia.id
@@ -459,25 +476,72 @@ class RevalidarActividadFormView(LoginRequiredMixin,View):
         """validar si ya subió información no pueda acceder"""
         actividad = Actividad.objects.get(pk=idActividad)
         form = RevalidarActividadesForm(instance=actividad) 
-        alcancesPredefinidos = actividad.programaoperativo.dependencia.alcance.all()
-        alcancesTodos = Alcance.objects.all()
+        variablesActividad = VariableActividad.objects.filter(actividad=actividad)
+        alcancesActividad = BeneficiariosActividad.objects.filter(actividad=actividad)
+        #Quitamos las que ya están seleccionadas de las variables disponibles
+        variablesTodas = Variable.objects.filter(~Q(id__in=[o.variable.id for o in variablesActividad]))
+        alcancesTodos = Alcance.objects.filter(~Q(id__in=[o.alcance.id for o in alcancesActividad]))
         return render(request,'programasOperativos/actividades/revalidarActividad.html',{
             'form':form,
             'actividad':actividad,
-            'alcancesPredefinidos': alcancesPredefinidos,
-            'alcancesTodos': alcancesTodos
+            'alcancesTodos': alcancesTodos,
+            'variablesTodas':variablesTodas,
+            'variablesActividad':variablesActividad,
+            'alcancesActividad':alcancesActividad
         })
     def post(self,request,idActividad):
         actividad = Actividad.objects.get(pk=idActividad)
         form = RevalidarActividadesForm(request.POST, instance=actividad)
         if form.is_valid():
             datos = form.save(commit=False)
-            archivo = request.FILES['archivos']
-            archivo.name = (
-                str(request.user.profile.dependencia.id) + 
-                '-evidencia.pdf'
-                )
-            datos.evidencia = archivo
+            keepEvidence = request.POST.get('keepEvidence')
+            #si el usuario desea conservar su evidencia, lo hace
+            if keepEvidence != 'on':
+                archivo = request.FILES['archivos']
+                archivo.name = (
+                    str(request.user.profile.dependencia.id) + 
+                    '-evidencia.pdf'
+                    )
+                datos.evidencia = archivo
+            #variables y alcances
+            variables =  request.POST.getlist('cantidadVariable')
+            VariableActividad.objects.filter(actividad=actividad).delete()
+            for variable in variables:
+                variable = variable.split('-')
+                cantidad = variable[1]
+                variable = Variable.objects.get(pk=variable[0])
+                try:
+                    VariableActividad.objects.create(
+                    actividad=actividad,
+                    variable=variable,
+                    cantidad=cantidad
+                    )
+                except:
+                    VariableActividad.objects.update(
+                    actividad=actividad,
+                    variable=variable,
+                    cantidad=cantidad
+                    )
+                    pass
+            alcances = request.POST.getlist('cantidadAlcance')
+            BeneficiariosActividad.objects.filter(actividad=actividad).delete()
+            for alcance in alcances:
+                alcance = alcance.split('-')
+                cantidad = alcance[1]
+                alcance = Alcance.objects.get(pk=alcance[0])
+                try:
+                    BeneficiariosActividad.objects.create(
+                    actividad=actividad,
+                    alcance=alcance,
+                    cantidad=cantidad
+                    )
+                except:
+                    BeneficiariosActividad.objects.update(
+                    actividad=actividad,
+                    alcance=alcance,
+                    cantidad=cantidad
+                    )
+                    pass
             datos.estado = 't'
             save = datos.save()
             messages.success(request, 'Actividad actualizada con éxito.')
@@ -577,6 +641,9 @@ class VerActividadAdmin(LoginRequiredMixin,View):
         cantidadMeta = 0
         metas = actividad.accion.meta.filter(periodo=periodoGobierno)
         arregloMetas = []
+        variablesActividad = VariableActividad.objects.filter(actividad=actividad)
+        alcancesActividad = BeneficiariosActividad.objects.filter(actividad=actividad)
+        #TO:DO BORRAR LA PARTE DE METAS
         if metas:
             contadorMetas = 0
             acumuladorMetas = 0
@@ -607,7 +674,9 @@ class VerActividadAdmin(LoginRequiredMixin,View):
             'porcentajeMeta':porcentajeAccion,
             'claseSemaforo':claseSemaforo,
             'descripcionMeta':descripcionMeta,
-            'cantidadMeta':cantidadMeta
+            'cantidadMeta':cantidadMeta,
+            'variablesActividad':variablesActividad,
+            'alcancesActividad':alcancesActividad
                 }
     def get(self, request,idActividad):
         if (request.user.profile.tipoUsuario != 'a') and (request.user.profile.tipoUsuario != 's'):
@@ -629,7 +698,6 @@ class VerActividadAdmin(LoginRequiredMixin,View):
             else:
                 actividad.observaciones = request.POST.get('observaciones')
                 actividad.estado = request.POST.get('estado')
-                actividad.multiplicador = request.POST.get('multiplicador')
                 actividad.save()
                 messages.success(request,'Cambio realizado con éxito')
         contexto = self.obtenerContexto(idActividad)
@@ -915,3 +983,22 @@ class MetasAdmin(LoginRequiredMixin,View):
         eje = request.POST.get('eje')
         contexto = self.obtenerContexto()
         return render(request,'programasOperativos/actividades/admin/metasAdmin.html',contexto)
+
+@login_required(login_url='login')
+def escoger_po(request):
+    arrayPosActs = []
+    programasOperativos = ProgramaOperativo.objects.filter(
+        dependencia=request.user.profile.dependencia,
+        estado='a'
+        )
+    for po in programasOperativos:
+        actividades = Actividad.objects.filter(~Q(estado='i'),Q(programaoperativo=po))
+        arrayPosActs.append({
+            'idPo':po.id,
+            'nombrePo':po.nombre,
+            'numeroActividades':actividades.count()
+        })
+    return render(request,"programasOperativos/actividades/escogerPo.html",{
+        'arrayPosActs':arrayPosActs
+    })
+

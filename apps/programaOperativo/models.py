@@ -148,6 +148,7 @@ class GastoAnualAsignado(models.Model):
         return self.programaOperativo.nombre
 
 class BeneficiariosActividad(models.Model):
+    """En este modelo se guardan los alcances de beneficiarios de las actividades"""
     alcance = models.ForeignKey(Alcance, on_delete=models.PROTECT)
     actividad = models.ForeignKey(Actividad, on_delete=models.PROTECT)
     cantidad = models.IntegerField()
@@ -155,5 +156,18 @@ class BeneficiariosActividad(models.Model):
         unique_together = ['alcance','actividad']
         verbose_name = "Cantidad de beneficiarios por actividad"
     def __str__(self):
-        return self.actividad.accion.nombre
+        return self.alcance.nombre
     
+class VariableActividad(models.Model):
+    """En esta clase se guardan las variables con las cantidades de las actividades"""
+    variable = models.ForeignKey(Variable, on_delete=models.PROTECT)
+    actividad = models.ForeignKey(Actividad, on_delete=models.PROTECT)
+    cantidad = models.IntegerField()
+    class Meta:
+        verbose_name='Variable de la actividad'
+        verbose_name_plural = 'Variables de las actividades'
+        unique_together = ['variable','actividad']
+    def __str__(self):
+        return self.variable.nombre
+    
+
