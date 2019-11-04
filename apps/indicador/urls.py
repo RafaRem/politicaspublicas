@@ -12,5 +12,6 @@ urlpatterns = [
     path('indicador/fichas/eje/<str:idEje>', FichaEje.as_view(),name='fichaEje'),
     path('indicador/configuraciones', Configuraciones.as_view(),name='configuraciones'),
     path('indicador/admin/fichas', FichasAdmin.as_view(),name='fichasAdmin'),
+    path('generarVariables',generar_variables, name='generarVariables')
 
 ]

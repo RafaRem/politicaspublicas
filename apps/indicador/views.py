@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 from collections import OrderedDict
 from django.views.generic import TemplateView, View
 from django.shortcuts import render, redirect
+from django.http.response import HttpResponse
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q,Count
 """funciones de otras vistas"""
@@ -12,7 +13,7 @@ from apps.dependencia.views import getGastoPeriodo
 from apps.programaOperativo.views import ListActividadesAdmin
 """Modelos"""
 from apps.indicador.models import PeriodoGobierno, Meta, Configuracion, Periodo
-from apps.programaOperativo.models import Acciones,ProgramaOperativo,Actividad
+from apps.programaOperativo.models import Acciones,ProgramaOperativo,Actividad,Variable
 from apps.objetivo.models import Objetivo
 from apps.dependencia.models import Dependencia
 """Forms"""
@@ -813,8 +814,20 @@ class Configuraciones(LoginRequiredMixin,View):
             return redirect('index')
         configuracion = Configuracion.objects.get(pk=1)
         form = ConfiguracionesForm(request.POST,instance=configuracion)
-        if form.is_valid():
+        if form.is_valid(): 
             form.save()
         return render(request,'indicadores/configuraciones.html',{
             'form':form
         })
+
+def generar_variables(request):
+    metas = Meta.objects.all()
+    for meta in metas:
+        resultadoBusqueda = Variable.objects.filter(
+            nombre__icontains=meta.descripcion
+            )
+        if not resultadoBusqueda:
+            Variable.objects.create(
+                nombre=meta.descripcion
+                )
+    return HttpResponse('ok')
