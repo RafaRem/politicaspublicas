@@ -166,8 +166,12 @@ class ProgramasOperativosListView(LoginRequiredMixin,View):
 @login_required(login_url='login')
 def ver_actividad(request,idActividad):
     actividad = Actividad.objects.get(pk=idActividad)
+    variablesActividad = VariableActividad.objects.filter(actividad=actividad)
+    alcancesActividad = BeneficiariosActividad.objects.filter(actividad=actividad)
     return render(request,'programasOperativos/actividades/verActividad.html',{
-        'actividad':actividad
+        'actividad':actividad,
+        'variablesActividad':variablesActividad,
+        'alcancesActividad':alcancesActividad
     })
 
 @login_required(login_url='login')
@@ -559,18 +563,37 @@ class RevalidarActividadFormView(LoginRequiredMixin,View):
 
 class ActividadesListView(LoginRequiredMixin,View):
     login_url = 'login'
+    def getContext(self,request,fechaInicial="",fechaFinal="",
+        programaOperativoId="", estado=""):
+        q = Q()
+        programasOperativos = ProgramaOperativo.objects.filter(dependencia=request.user.profile.dependencia)
+        if programaOperativoId=="0" or request.method == "GET":
+            for po in programasOperativos:
+                q |= Q(programaoperativo=po)
+        else:
+            programaOperativo = ProgramaOperativo.objects.get(pk=programaOperativoId)
+            q &= Q(programaoperativo=programaOperativo)
+        if estado != "":
+            q &= Q(estado=estado)
+        if fechaInicial!="" and fechaFinal!="":
+            print(fechaInicial)
+            print(fechaFinal)
+            q &= Q(fecha_fi__range=(fechaInicial,fechaFinal))
+        actividades = Actividad.objects.filter(q)
+        return {
+            'actividades':actividades,
+            'programasOperativos':programasOperativos
+        }
     def get(self,request):
-        pos = ProgramaOperativo.objects.filter(dependencia=request.user.profile.dependencia)
-        actividades = []
-        for po in pos:
-            actividadesPo = Actividad.objects.filter(programaoperativo=po).exclude(estado='i')
-            for actividadPo in actividadesPo:
-                actividades.append(actividadPo)
-                pass
-            pass
-        return render(request,'programasOperativos/actividades/listActividades.html',{
-            'actividades':actividades
-        })
+        context = self.getContext(request)
+        return render(request,'programasOperativos/actividades/listActividades.html',context)
+    def post(self,request):
+        programaOperativoId = request.POST.get('programaOperativo')
+        estado = request.POST.get('estado')
+        fecha_in = request.POST.get('fecha_in')
+        fecha_fi = request.POST.get('fecha_fi')
+        context = self.getContext(request,fecha_in,fecha_fi,programaOperativoId,estado)
+        return render(request,'programasOperativos/actividades/listActividades.html',context)
 
 #Todas las vistas de admins
 class ListActividadesAdmin(LoginRequiredMixin,View):

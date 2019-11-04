@@ -4,7 +4,11 @@
 {% load crispy_forms_tags %}
 
 {% block title %}
-Revalidar
+Editar
+{% endblock %}
+
+{% block navTitle %}
+Editar
 {% endblock %}
 
 {% block extracss %}
@@ -64,6 +68,34 @@ Revalidar
         </ul>
       {% endif %}
       <h3 class="text-center">{{actividad.accion.nombre.upper}}</h3>
+      <br>
+      <br>
+      <table class="table">
+          <tbody>
+            <tr>
+              <th scope="row">
+                      <h5 class="text-center">
+                              <strong>Programa operativo:</strong>
+                          </h5>
+              </th>
+              <td>
+                  <h5 class="text-center">
+                  {{actividad.programaoperativo.nombre}}
+                  </h5>
+              </td>
+            </tr>
+              <tr>
+                  <td colspan="2" scope="row">
+                      <h5 class="text-center">
+                          <strong>
+                          Desde {{actividad.fecha_in}} al {{actividad.fecha_fi}}
+                          </strong>
+                      </h5>
+                  </td>
+                   </tr>
+          </tbody>
+        </table>
+      <br>
         <form id="id_form_actividad" action="" 
         method="POST" enctype="multipart/form-data">
             {% csrf_token %}
