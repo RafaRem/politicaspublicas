@@ -38,11 +38,11 @@ Presupuesto anual
       {{ message }}</li>
         {% endfor %}
     </ul>
-    {% endif %}
+    {% endif %} 
     <h2 class="text-center">{{programaOperativo.nombre}}</h2>
   <div class="row">
         {% for presupuestoPeriodo in presupuestosPeriodo %}
-        <div class="col-xl-4 col-sm-6 mb-3 animated fadeIn">
+        <div class="col-12 mb-3 animated fadeIn">
             <div class="card text-dorado eje5 o-hidden h-100">
               <div class="card-body">
                 <div class="mr-5">
@@ -50,6 +50,7 @@ Presupuesto anual
                   <div class="mitad-h3">
                     Desde {{presupuestoPeriodo.periodo.fechaInicial}} hasta {{presupuestoPeriodo.periodo.fechaFinal}}
                   </div>
+                  <br>
                   {% if not presupuestoPeriodo.presupuesto.permitirModificar %}
                     <h5 class="text-center">
                         <strong>Presupuesto:</strong>
@@ -58,7 +59,7 @@ Presupuesto anual
                 </div>
               </div>
               {% if presupuestoPeriodo.presupuesto.permitirModificar %}
-              <div class="form-group">
+              <div class="form-group m-5 p-2">
                     <input type="text" class="form-control input-presupuesto" 
                     id="input_{{presupuestoPeriodo.periodo.id}}" 
                     value="{{presupuestoPeriodo.presupuesto.cantidad}}"

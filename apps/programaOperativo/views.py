@@ -16,10 +16,10 @@ from apps.users.views import *
 from apps.users.forms import RegistrarActividad
 from apps.programaOperativo.forms import ProgramaOperativoForm, ActividadesForm, TerminarActividadesForm, RevalidarActividadesForm
 """Modelos"""
-from apps.programaOperativo.models import ProgramaOperativo, Acciones, Actividad, DetallesGasto, LogActividad
+from apps.programaOperativo.models import ProgramaOperativo, Acciones, Actividad, DetallesGasto, LogActividad, BeneficiariosActividad, MetaAccion,VariableActividad
 from apps.objetivo.models import Objetivo
-from apps.indicador.models import ConceptoGasto, ClasificacionGasto,Periodo,PeriodoGobierno, Configuracion
-from apps.dependencia.models import Dependencia
+from apps.indicador.models import ConceptoGasto, ClasificacionGasto,Periodo,PeriodoGobierno, Configuracion, Variable
+from apps.dependencia.models import Dependencia, Alcance
 from django.db.models import Q,Count
 """Serializer"""
 from apps.programaOperativo.serializers import AccionesSerializer
@@ -166,8 +166,12 @@ class ProgramasOperativosListView(LoginRequiredMixin,View):
 @login_required(login_url='login')
 def ver_actividad(request,idActividad):
     actividad = Actividad.objects.get(pk=idActividad)
+    variablesActividad = VariableActividad.objects.filter(actividad=actividad)
+    alcancesActividad = BeneficiariosActividad.objects.filter(actividad=actividad)
     return render(request,'programasOperativos/actividades/verActividad.html',{
-        'actividad':actividad
+        'actividad':actividad,
+        'variablesActividad':variablesActividad,
+        'alcancesActividad':alcancesActividad
     })
 
 @login_required(login_url='login')
@@ -261,6 +265,60 @@ class EditarGastosView(LoginRequiredMixin,View):
         url = reverse('verAccion',args=(idAccion,))
         return redirect(url)
 
+class EditarMetasView(LoginRequiredMixin,View):
+    login_url = 'login'
+    def getContext(self,idAccion):
+        accion = Acciones.objects.get(pk=idAccion)
+        configuracion = Configuracion.objects.get(pk=1)
+        variables = Variable.objects.all()
+        periodoGobierno = configuracion.periodoGobierno
+        metasAccion = MetaAccion.objects.filter(accion=accion,periodoGobierno=periodoGobierno)
+        variablesMeta = []
+        for metaAccion in metasAccion:
+            variablesMeta.append(metaAccion.variable)
+        #Quitamos las que ya están seleccionadas de las variables disponibles
+        variables = Variable.objects.filter(~Q(id__in=[o.id for o in variablesMeta]))
+        return {
+            'metasAccion':metasAccion,
+            'accion':accion,
+            'variables': variables,
+            'periodoGobierno':periodoGobierno
+        }
+    def get(self,request,idAccion):
+        contexto = self.getContext(idAccion)
+        return render(request,'programasOperativos/capturarMetas.html',context=contexto)
+    def post(self,request,idAccion):
+        accion = Acciones.objects.get(pk=idAccion)
+        configuracion = Configuracion.objects.get(pk=1)
+        entradas = request.POST.getlist('cantidadVariable')
+        periodoGobierno = configuracion.periodoGobierno
+        #Eliminas todas las metas previamente para limpiar en caso
+        #de que se deseleccione alguna
+        MetaAccion.objects.filter(accion=accion,
+        periodoGobierno=periodoGobierno).delete()
+        for entrada in entradas:
+            entrada = entrada.split('-')
+            idVariable = entrada[0]
+            cantidad = entrada[1]
+            variable = Variable.objects.get(pk=idVariable)
+            try:
+                MetaAccion.objects.create(
+                accion=accion,
+                variable=variable,
+                periodoGobierno=periodoGobierno,
+                cantidad=cantidad
+                )
+            except:
+                MetaAccion.objects.update(
+                accion=accion,
+                variable=variable,
+                periodoGobierno=periodoGobierno,
+                cantidad=cantidad
+                )
+                pass
+        contexto = self.getContext(idAccion)
+        return render(request,'programasOperativos/capturarMetas.html',contexto)
+
 class ReporteActividadesEnlaceView(LoginRequiredMixin,View):
     login_url = 'login'
     def get(self, request):
@@ -285,23 +343,44 @@ class ReporteActividadesEnlaceView(LoginRequiredMixin,View):
 
 class ActividadFormView(LoginRequiredMixin,View):
     login_url = 'login'
-    def get(self,request):
+    def get(self,request,idProgramaOperativo):
+        programaOperativo = ProgramaOperativo.objects.get(pk=idProgramaOperativo)
         form = ActividadesForm()
         programasOperativos = ProgramaOperativo.objects.filter(
             dependencia=request.user.profile.dependencia.id
             )
+        #Get acciones dependencia
+        dependencia = request.user.profile.dependencia
+        pos = ProgramaOperativo.objects.filter(dependencia=dependencia)
+        acciones = []
+        for po in pos:
+            acciones.extend(po.acciones.all())
+        #Las acciones con meta
+        metasAcciones = []
+        for accion in acciones:
+            metasAcciones.extend(MetaAccion.objects.filter(accion=accion))
+        #Hacemos un arreglo de solo las variables que tienen metas
+        variablesMeta = []
+        for metaAccion in metasAcciones:
+            variablesMeta.append(metaAccion.variable)
+        #Se quitan las repetidas
+        variablesMeta = list(set(variablesMeta))
+        #variables = Variable.objects.filter(~Q(id__in=[o.id for o in variablesMeta]))
+        variables = Variable.objects.all()
         return render(request,'programasOperativos/actividades/actividadForm.html',{
             'form':form,
-            'programasOperativos':programasOperativos
+            'programaOperativo':programaOperativo,
+            'variablesMeta':variablesMeta,
+            'variables':variables
         })
-    def post(self,request):
+    def post(self,request,idProgramaOperativo):
+        programaOperativo = ProgramaOperativo.objects.get(pk=idProgramaOperativo)
         form = ActividadesForm(request.POST)
         if form.is_valid():
             datos = form.save(commit=False)
             accion = Acciones.objects.get(id=request.POST.get('accion'))
             datos.accion = accion
-            po = ProgramaOperativo.objects.get(id=request.POST.get('programaoperativo'))
-            datos.programaoperativo = po
+            datos.programaoperativo = programaOperativo
             datos.user = request.user
             datos.latitud = request.POST.get('latitud')
             datos.longitud = request.POST.get('longitud')
@@ -310,21 +389,21 @@ class ActividadFormView(LoginRequiredMixin,View):
             fecha_final = datetime.strptime(request.POST.get('fecha_fi'),'%Y-%m-%d')
             fecha_inicial = datetime.strptime(request.POST.get('fecha_in'),'%Y-%m-%d')
             junio = datetime.strptime('2019-06-30','%Y-%m-%d')
-            # if((fecha_final <= junio or fecha_inicial <= junio)
-            # and
-            # not ((request.user.profile.dependencia.id == 14) or (request.user.profile.dependencia.id == 31) or 
-            # (request.user.profile.dependencia.id == 5) or (request.user.profile.dependencia.id == 26) or 
-            # (request.user.profile.dependencia.id == 9))):
-            #     messages.error(request,'La captura anterior al 30 de junio de 2019 está inhabilitada')
-            #     return redirect('nuevaActividad')
             save = datos.save()
             actividad = Actividad.objects.latest('created')
             idActividad = actividad.id
+            #guardamos las variables con su cantidad
+            cantidadesVariables = request.POST.getlist('cantidadVariable')
+            for cantidadVariable in cantidadesVariables:
+                #posicion 0=variableID 1=Cantidad
+                cantidadVariable = cantidadVariable.split('-')
+                variable = Variable.objects.get(pk=cantidadVariable[0])
+                cantidad = cantidadVariable[1]
+                VariableActividad.objects.create(variable=variable,cantidad=cantidad,actividad=actividad)
+            #****
             messages.success(request, 'Actividad registrada con éxito.')
             url = reverse('terminarActividad',args=(idActividad,))
             return redirect(url)
-            # return redirect('terminarActividad',args)
-
         messages.error(request,form._errors)
         programasOperativos = ProgramaOperativo.objects.filter(
             dependencia=request.user.profile.dependencia.id
@@ -347,21 +426,16 @@ class TerminarActividadFormView(LoginRequiredMixin,View):
         """validar si ya subió información no pueda acceder"""
         actividad = Actividad.objects.get(pk=idActividad)
         form = TerminarActividadesForm(instance=actividad)
-        # if request.user.profile.dependencia.tipo == 'd':
-        #     conceptosGasto = ConceptoGasto.objects.filter(tipoDependencia='d')
-        # else:
-        #     conceptosGasto = ConceptoGasto.objects.filter(tipoDependencia='p',dependencia=request.user.profile.dependencia)
-        # conceptosGasto = serializers.serialize('json',conceptosGasto, use_natural_foreign_keys=True)
+        alcancesPredefinidos = actividad.programaoperativo.dependencia.alcance.all()
+        alcancesTodos = Alcance.objects.all()
         return render(request,'programasOperativos/actividades/terminarActividad.html',{
             'form':form,
-            'actividad':actividad
+            'actividad':actividad,
+            'alcancesPredefinidos': alcancesPredefinidos,
+            'alcancesTodos': alcancesTodos
         })
     def post(self,request,idActividad):
         actividad = Actividad.objects.get(pk=idActividad)
-        #SI NO ES VÁLIDA LA ACTIVIDAD ELIMINA SUS DETALLES DE GASTO PARA VOLVER A CAPTURARSE
-        # if actividad.estado == 'n':
-        #     gastosActividad = DetallesGasto.objects.filter(actividad=actividad)
-        #     gastosActividad.delete()
         form = TerminarActividadesForm(request.POST, instance=actividad)
         if form.is_valid():
             datos = form.save(commit=False)
@@ -372,6 +446,16 @@ class TerminarActividadFormView(LoginRequiredMixin,View):
                 )
             datos.evidencia = archivo
             datos.estado = 't'
+            alcances = request.POST.getlist('cantidadAlcance')
+            for alcance in alcances:
+                #la posición 0 es el id, el otro es la cantidad
+                alcanceValues =alcance.split('-')
+                alcance = Alcance.objects.get(id=alcanceValues[0])
+                BeneficiariosActividad.objects.update_or_create(
+                    alcance=alcance,
+                    cantidad=alcanceValues[1],
+                    actividad=actividad
+                    )
             save = datos.save()
             #ESTO ENTRARÍA EN UN HILO
             cambiarRuta = threading.Thread(name='cambiarRuta',target=self.cambiarRuta,args=(actividad, ))
@@ -387,8 +471,7 @@ class TerminarActividadFormView(LoginRequiredMixin,View):
         conceptosGasto = serializers.serialize('json',conceptosGasto, use_natural_foreign_keys=True)
         return render(request,'programasOperativos/actividades/terminarActividad.html',{
             'form':form,
-            'actividad':actividad,
-            'conceptosGasto':conceptosGasto
+            'actividad':actividad
         })
 
 class RevalidarActividadFormView(LoginRequiredMixin,View):
@@ -397,21 +480,72 @@ class RevalidarActividadFormView(LoginRequiredMixin,View):
         """validar si ya subió información no pueda acceder"""
         actividad = Actividad.objects.get(pk=idActividad)
         form = RevalidarActividadesForm(instance=actividad) 
+        variablesActividad = VariableActividad.objects.filter(actividad=actividad)
+        alcancesActividad = BeneficiariosActividad.objects.filter(actividad=actividad)
+        #Quitamos las que ya están seleccionadas de las variables disponibles
+        variablesTodas = Variable.objects.filter(~Q(id__in=[o.variable.id for o in variablesActividad]))
+        alcancesTodos = Alcance.objects.filter(~Q(id__in=[o.alcance.id for o in alcancesActividad]))
         return render(request,'programasOperativos/actividades/revalidarActividad.html',{
             'form':form,
-            'actividad':actividad
+            'actividad':actividad,
+            'alcancesTodos': alcancesTodos,
+            'variablesTodas':variablesTodas,
+            'variablesActividad':variablesActividad,
+            'alcancesActividad':alcancesActividad
         })
     def post(self,request,idActividad):
         actividad = Actividad.objects.get(pk=idActividad)
         form = RevalidarActividadesForm(request.POST, instance=actividad)
         if form.is_valid():
             datos = form.save(commit=False)
-            archivo = request.FILES['archivos']
-            archivo.name = (
-                str(request.user.profile.dependencia.id) + 
-                '-evidencia.pdf'
-                )
-            datos.evidencia = archivo
+            keepEvidence = request.POST.get('keepEvidence')
+            #si el usuario desea conservar su evidencia, lo hace
+            if keepEvidence != 'on':
+                archivo = request.FILES['archivos']
+                archivo.name = (
+                    str(request.user.profile.dependencia.id) + 
+                    '-evidencia.pdf'
+                    )
+                datos.evidencia = archivo
+            #variables y alcances
+            variables =  request.POST.getlist('cantidadVariable')
+            VariableActividad.objects.filter(actividad=actividad).delete()
+            for variable in variables:
+                variable = variable.split('-')
+                cantidad = variable[1]
+                variable = Variable.objects.get(pk=variable[0])
+                try:
+                    VariableActividad.objects.create(
+                    actividad=actividad,
+                    variable=variable,
+                    cantidad=cantidad
+                    )
+                except:
+                    VariableActividad.objects.update(
+                    actividad=actividad,
+                    variable=variable,
+                    cantidad=cantidad
+                    )
+                    pass
+            alcances = request.POST.getlist('cantidadAlcance')
+            BeneficiariosActividad.objects.filter(actividad=actividad).delete()
+            for alcance in alcances:
+                alcance = alcance.split('-')
+                cantidad = alcance[1]
+                alcance = Alcance.objects.get(pk=alcance[0])
+                try:
+                    BeneficiariosActividad.objects.create(
+                    actividad=actividad,
+                    alcance=alcance,
+                    cantidad=cantidad
+                    )
+                except:
+                    BeneficiariosActividad.objects.update(
+                    actividad=actividad,
+                    alcance=alcance,
+                    cantidad=cantidad
+                    )
+                    pass
             datos.estado = 't'
             save = datos.save()
             messages.success(request, 'Actividad actualizada con éxito.')
@@ -429,18 +563,35 @@ class RevalidarActividadFormView(LoginRequiredMixin,View):
 
 class ActividadesListView(LoginRequiredMixin,View):
     login_url = 'login'
+    def getContext(self,request,fechaInicial="",fechaFinal="",
+        programaOperativoId="", estado=""):
+        q = Q()
+        programasOperativos = ProgramaOperativo.objects.filter(dependencia=request.user.profile.dependencia)
+        if programaOperativoId=="0" or request.method == "GET":
+            for po in programasOperativos:
+                q |= Q(programaoperativo=po)
+        else:
+            programaOperativo = ProgramaOperativo.objects.get(pk=programaOperativoId)
+            q &= Q(programaoperativo=programaOperativo)
+        if estado != "":
+            q &= Q(estado=estado)
+        if fechaInicial!="" and fechaFinal!="":
+            q &= Q(fecha_fi__range=(fechaInicial,fechaFinal))
+        actividades = Actividad.objects.filter(q)
+        return {
+            'actividades':actividades,
+            'programasOperativos':programasOperativos
+        }
     def get(self,request):
-        pos = ProgramaOperativo.objects.filter(dependencia=request.user.profile.dependencia)
-        actividades = []
-        for po in pos:
-            actividadesPo = Actividad.objects.filter(programaoperativo=po).exclude(estado='i')
-            for actividadPo in actividadesPo:
-                actividades.append(actividadPo)
-                pass
-            pass
-        return render(request,'programasOperativos/actividades/listActividades.html',{
-            'actividades':actividades
-        })
+        context = self.getContext(request)
+        return render(request,'programasOperativos/actividades/listActividades.html',context)
+    def post(self,request):
+        programaOperativoId = request.POST.get('programaOperativo')
+        estado = request.POST.get('estado')
+        fecha_in = request.POST.get('fecha_in')
+        fecha_fi = request.POST.get('fecha_fi')
+        context = self.getContext(request,fecha_in,fecha_fi,programaOperativoId,estado)
+        return render(request,'programasOperativos/actividades/listActividades.html',context)
 
 #Todas las vistas de admins
 class ListActividadesAdmin(LoginRequiredMixin,View):
@@ -511,6 +662,9 @@ class VerActividadAdmin(LoginRequiredMixin,View):
         cantidadMeta = 0
         metas = actividad.accion.meta.filter(periodo=periodoGobierno)
         arregloMetas = []
+        variablesActividad = VariableActividad.objects.filter(actividad=actividad)
+        alcancesActividad = BeneficiariosActividad.objects.filter(actividad=actividad)
+        #TO:DO BORRAR LA PARTE DE METAS
         if metas:
             contadorMetas = 0
             acumuladorMetas = 0
@@ -541,7 +695,9 @@ class VerActividadAdmin(LoginRequiredMixin,View):
             'porcentajeMeta':porcentajeAccion,
             'claseSemaforo':claseSemaforo,
             'descripcionMeta':descripcionMeta,
-            'cantidadMeta':cantidadMeta
+            'cantidadMeta':cantidadMeta,
+            'variablesActividad':variablesActividad,
+            'alcancesActividad':alcancesActividad
                 }
     def get(self, request,idActividad):
         if (request.user.profile.tipoUsuario != 'a') and (request.user.profile.tipoUsuario != 's'):
@@ -849,3 +1005,22 @@ class MetasAdmin(LoginRequiredMixin,View):
         eje = request.POST.get('eje')
         contexto = self.obtenerContexto()
         return render(request,'programasOperativos/actividades/admin/metasAdmin.html',contexto)
+
+@login_required(login_url='login')
+def escoger_po(request):
+    arrayPosActs = []
+    programasOperativos = ProgramaOperativo.objects.filter(
+        dependencia=request.user.profile.dependencia,
+        estado='a'
+        )
+    for po in programasOperativos:
+        actividades = Actividad.objects.filter(~Q(estado='i'),Q(programaoperativo=po))
+        arrayPosActs.append({
+            'idPo':po.id,
+            'nombrePo':po.nombre,
+            'numeroActividades':actividades.count()
+        })
+    return render(request,"programasOperativos/actividades/escogerPo.html",{
+        'arrayPosActs':arrayPosActs
+    })
+

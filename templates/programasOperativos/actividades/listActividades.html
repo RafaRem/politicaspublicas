@@ -4,6 +4,11 @@
 {%block navTitle%}
 Tus actividades
 {%endblock%}
+
+{% block title %}
+Actividades
+{% endblock %}
+
 {%block messages %}
 {% endblock%}
 {% block extracss %}
@@ -20,6 +25,10 @@ Tus actividades
         .badge-naranja{
             background: #f26631;
         }
+        #filtros{
+            position: fixed;
+            z-index: 9999;
+        }
     </style>
 {% endblock %}
 
@@ -35,6 +44,14 @@ Tus actividades
                 {% endfor %}
         </ul>
     {% endif %}
+    <div class="d-flex justify-content-end">
+            <button data-toggle="modal" data-target="#exampleModal"
+            id="filtros" class="btn guinda">
+                Filtros &nbsp;<i class="fas fa-filter"></i>
+            </button>
+        </div> 
+        <br>
+        <br>
 <table class="table">
     <thead>
         <tr>
@@ -51,16 +68,21 @@ Tus actividades
     <tbody class="bg-transparent">
         {% for actividad in actividades %}
         <tr>
-            <td scope="row">{{actividad.nombre}}</td>
+            <td scope="row">{{actividad.accion.nombre}}</td>
             <td>
-                {% if actividad.estado == 'r' or  actividad.estado == 't' or actividad.estado == 's'%}
-                <a class="btn btn-primary btn-sm guinda" target="_blank"
+                {% if actividad.estado == 'r'%}
+                <a class="btn btn-primary btn-sm guinda mb-1" 
                 href="{%url 'verActividad' idActividad=actividad.id%}">Ver</a>
+                {%elif actividad.estado == 't' or actividad.estado == 's'%}
+                <a class="btn btn-primary btn-sm guinda mb-1" 
+                href="{%url 'verActividad' idActividad=actividad.id%}">Ver</a>
+                <a class="btn btn-primary btn-sm guinda" 
+                href="{%url 'revalidarActividad' idActividad=actividad.id%}">Editar</a>
                 {%elif actividad.estado == 'n'%}
-                <a class="btn btn-primary btn-sm guinda" target="_blank"
+                <a class="btn btn-primary btn-sm guinda mb-1" 
                 href="{%url 'verActividad' idActividad=actividad.id%}">Ver</a>
-                <a class="btn btn-primary btn-sm guinda m-2"  target="_blank"
-                href="{%url 'revalidarActividad' idActividad=actividad.id%}">Volver a subir</a>
+                <a class="btn btn-primary btn-sm guinda" 
+                href="{%url 'revalidarActividad' idActividad=actividad.id%}">Corregir</a>
                 {%else%}
                 <a class="btn btn-primary btn-sm guinda"  target="_blank"
                 href="{%url 'terminarActividad' idActividad=actividad.id%}">Finalizar</a>
@@ -87,13 +109,88 @@ Tus actividades
     </tbody>
 </table>
 
+
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Filtros</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                </div>
+                <form action="" method="post">
+                    {% csrf_token %}
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="estado">Estado</label>
+                            <select name="estado" class="form-control">
+                                <option value="" >Todos</option>
+                                <option value="p" >Programada</option>
+                                <option value="t" >Por revisar</option>
+                                <option value="i" >Inactiva</option>
+                                <option value="r" >Válida</option>
+                                <option value="n" >No válida</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                                <label for="programaOperativo">Programas operativos</label>
+                                <select name="programaOperativo" class="form-control">
+                                    <option value="0" >Todos</option>
+                                    {% for programaOperativo in programasOperativos %}
+                                    <option value="{{programaOperativo.id}}">{{programaOperativo.nombre}}</option>
+                                    {% endfor %}
+                                </select> 
+                            </div>
+                        <div id="div_id_fecha_in" class="form-group"> 
+                            <label for="id_fecha_in" class="col-form-label  requiredField">
+                                Fecha inicial<span class="asteriskField">*</span> 
+                            </label> 
+                            <div class=""> 
+                                <input type="text" name="fecha_in" class="dateinput form-control" required="" id="id_fecha_in"> 
+                            </div> 
+                        </div>
+                    
+                        <div id="div_id_fecha_fi" class="form-group"> 
+                            <label for="id_fecha_fi" class="col-form-label  requiredField">
+                                Fecha final<span class="asteriskField">*</span> 
+                            </label> <div class=""> 
+                                <input type="text" name="fecha_fi" class="dateinput form-control" required="" id="id_fecha_fi"> 
+                            </div> 
+                        </div>
+  
+                    </div>
+                    <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                    <button type="submit" class="btn guinda">Aplicar filtros</button>
+                    </div>
+                </form>
+
+            </div>
+            </div>
+        </div>
 {%endblock%}
 
 
 {% block extrascripts %}
-    <script>
+  <script src="{%static 'js/gijgo.min.js'%}" type="text/javascript"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.43/css/bootstrap-datetimepicker.min.css">
+<link href="https://unpkg.com/gijgo@1.9.13/css/gijgo.min.css" rel="stylesheet" type="text/css" />
+  <script>
         $(document).ready( function () {
             $('.table').DataTable();
+            $('#id_fecha_in').datepicker({
+                    uiLibrary: 'bootstrap4',
+                    format: 'yyyy-mm-dd'
+                });
+            $('#id_fecha_in').attr('readonly',true)
+            $('#id_fecha_fi').attr('readonly',true)
+            $('#id_fecha_fi').datepicker({
+                uiLibrary: 'bootstrap4',
+                    format: 'yyyy-mm-dd'
+            });
+            
         } );
     </script>
 {% endblock %}

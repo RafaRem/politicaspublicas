@@ -15,7 +15,7 @@ class ProgramaOperativoAdmin(admin.ModelAdmin):
 class AccionesAdmin(admin.ModelAdmin):
     list_display = ['id','nombre', 'objetivo']
     ordering = ['nombre',]
-    filter_horizontal = ['escolaridad','gruposVulnerables', 'sectorSocial','sectorEconomico','ubicacion','categoriaPoblacion','meta','indicador']
+    filter_horizontal = ['meta']
     search_fields = ['id', 'nombre']
 # admin.site.register(ProgramaOperativo)
 @admin.register(Actividad)
@@ -65,3 +65,9 @@ class GastoAnualAsignadoAdmin(admin.ModelAdmin):
         return obj.programaOperativo.dependencia.nombre
     get_dependencia.short_description = 'Dependencia'
     get_dependencia.admin_order_field = 'programaoperativo__dependencia__nombre'
+
+@admin.register(MetaAccion)
+class MetaAccionAdmin(admin.ModelAdmin):
+    list_display = ['id','variable', 'accion']
+    list_display_links =['id','variable']
+    ordering = ['accion']

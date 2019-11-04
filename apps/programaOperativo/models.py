@@ -5,20 +5,15 @@ from apps.objetivo.models import Objetivo
 from apps.dependencia.models import *
 from apps.indicador.models import *
 from django.contrib.auth.models import User 
-from apps.indicador.models import ConceptoGasto,Periodo,Meta,PeriodoGobierno
+from apps.indicador.models import Variable,ConceptoGasto,Periodo,Meta,PeriodoGobierno
 # Create your models here.
 class Acciones(models.Model):
     nombre = models.CharField(max_length=700)
     objetivo = models.ForeignKey(Objetivo,on_delete=models.PROTECT)
-    escolaridad = models.ManyToManyField(Escolaridad, blank=True)
-    gruposVulnerables = models.ManyToManyField(GruposVulnerables, blank=True)
-    sectorSocial = models.ManyToManyField(SectorSocial, blank=True)
-    sectorEconomico = models.ManyToManyField(SectorEconomico, blank=True)
-    ubicacion = models.ManyToManyField(Ubicacion, blank=True)
-    categoriaPoblacion = models.ManyToManyField(CategoriaPoblacion, blank=True)
-    indicador = models.ManyToManyField(Indicador, blank=True)
     meta = models.ManyToManyField(Meta,blank=True)
     publica = models.BooleanField(default=True, verbose_name='¿Es una acción pública?')
+    #To:Do
+    #ANALIZAR COMO REMOVER ESTE ATRIBUTO
     cualitativa = models.BooleanField(default=False,verbose_name='¿Es una acción cualitativa?')
     class Meta:
         verbose_name = 'Acción de programa operativo'
@@ -26,6 +21,16 @@ class Acciones(models.Model):
     def __str__(self):
         return str(self.id)+ ',' + self.nombre
 
+class MetaAccion(models.Model):
+    accion = models.ForeignKey(Acciones, models.PROTECT)
+    periodoGobierno = models.ForeignKey(PeriodoGobierno, models.PROTECT)
+    variable = models.ForeignKey(Variable, models.PROTECT)
+    cantidad = models.CharField(max_length=10)
+    class Meta:
+        unique_together = ['accion','variable','periodoGobierno']
+    def __str__(self):
+        return self.accion.nombre
+    
 class ProgramaOperativo(models.Model):
     opcionesTipoPrograma=(
         ('i', 'Institucional'),
@@ -62,13 +67,13 @@ class Actividad(models.Model):
     )
     user = models.ForeignKey(User, on_delete= models.PROTECT)
     programaoperativo = models.ForeignKey(ProgramaOperativo, on_delete = models.PROTECT)
-    nombre = models.CharField(max_length=500, 
+    nombre = models.CharField(max_length=500, blank=True, null=True,
     verbose_name="Actividad")
-    descripcion = models.TextField(max_length=1000, 
+    descripcion = models.TextField(max_length=1000, blank=True, null=True,
     verbose_name="Descripción breve")
     personasInvolucradas = models.CharField(max_length=10,blank=True, null=True,
     verbose_name="Personal involucrado")
-    beneficiarios = models.CharField(max_length=10,blank=True, null=True,
+    beneficiarios = models.CharField(max_length=10,blank=True, null=True,default='0',
     verbose_name="Número de beneficiarios/Asistentes")
     evidencia = models.FileField(blank=True, null=True)
     fecha_in = models.DateField(verbose_name="Día en el que se realiza")
@@ -82,7 +87,8 @@ class Actividad(models.Model):
     observaciones = models.CharField(max_length=800,blank=True, null=True)
     fechaRegistrada = models.DateTimeField(auto_now_add=True)
     fechaActualizada = models.DateTimeField(auto_now=True)
-    multiplicador = models.IntegerField(default=1, verbose_name="¿Cuántas veces se realizó esta actividad?")
+    multiplicador = models.IntegerField(default=1, 
+    verbose_name="¿Cuántas veces se realizó esta actividad?")
     class Meta:
         verbose_name = 'Actividad'
         verbose_name_plural = 'Actividades'
@@ -140,3 +146,28 @@ class GastoAnualAsignado(models.Model):
         unique_together = ['programaOperativo', 'periodoGobierno']
     def __str__(self):
         return self.programaOperativo.nombre
+
+class BeneficiariosActividad(models.Model):
+    """En este modelo se guardan los alcances de beneficiarios de las actividades"""
+    alcance = models.ForeignKey(Alcance, on_delete=models.PROTECT)
+    actividad = models.ForeignKey(Actividad, on_delete=models.PROTECT)
+    cantidad = models.IntegerField()
+    class Meta:
+        unique_together = ['alcance','actividad']
+        verbose_name = "Cantidad de beneficiarios por actividad"
+    def __str__(self):
+        return self.alcance.nombre
+    
+class VariableActividad(models.Model):
+    """En esta clase se guardan las variables con las cantidades de las actividades"""
+    variable = models.ForeignKey(Variable, on_delete=models.PROTECT)
+    actividad = models.ForeignKey(Actividad, on_delete=models.PROTECT)
+    cantidad = models.IntegerField()
+    class Meta:
+        verbose_name='Variable de la actividad'
+        verbose_name_plural = 'Variables de las actividades'
+        unique_together = ['variable','actividad']
+    def __str__(self):
+        return self.variable.nombre
+    
+

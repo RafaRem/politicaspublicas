@@ -34,6 +34,7 @@ Actividad
       width: 100%;
       max-width:300px;
     }
+
 </style>
 {% endblock extracss %}
 
@@ -54,7 +55,7 @@ Actividad
             {% endfor %}
         </ul>
       {% endif %}
-      <h2 class="text-center">{{actividad.nombre}}</h2>
+      <h2 class="text-center">{{actividad.accion.nombre.upper}}</h2>
         <form id="id_form_actividad" action="" 
         method="POST" enctype="multipart/form-data">
             {% csrf_token %}
@@ -75,8 +76,6 @@ Actividad
   
             </div> -->
             <hr>
-            <h3 class="text-center"><strong>Descripción</strong></h3>
-            <h4 class="text-center">{{actividad.descripcion}}</h4>
             <h5 class="text-center">Realizada el {{actividad.fecha_in}} al {{actividad.fecha_fi}}</h5>
             <hr>
             {{ form|crispy }}
@@ -85,6 +84,31 @@ Actividad
               <a target="_blank" class="btn guinda" href="http://www.google.com/maps/place/{{actividad.latitud}},{{actividad.longitud}}"><i class="fas fa-map-marked-alt"></i>&nbsp;Ubicación</a>
             </div>
             <br>
+            <hr>
+            <div class="d-flex justify-content-center">
+                <button type="button" class="btn guinda m-2" data-toggle="modal" data-target="#modalAlcancesPredefinidos">
+                    Alcances predefinidos&nbsp;<i class="fas fa-arrow-down"></i></button>
+                   <button type="button" class="btn guinda m-2" data-toggle="modal" data-target="#modalAlcancesTodos">
+                     Todos los alcances&nbsp;<i class="fas fa-arrow-down"></i></button>
+                     <button type="button" class="btn guinda m-2" id="infoAlcance"
+                     data-toggle="tooltip" data-placement="top" 
+                     title="¿Qué es esto?">
+                        &nbsp;<i class="fas fa-info"></i></button>
+            </div>
+            <table id="tableAlcanceSeleccionados" class="table table-bordered">
+                <thead class="dorado">
+                  <tr>
+                    <th hidden scope="col">ID</th>
+                    <th scope="col">Alcance</th>
+                    <th scope="col">Cantidad</th>
+                  </tr>
+                </thead>
+                <tbody>
+
+                </tbody>
+              </table>
+            <br>
+                <hr>
             <label for="input-42-es">Evidencia*</label>
             <div class="file-loading">
                     <input required class="guinda" 
@@ -104,6 +128,101 @@ Actividad
       
 
     </div>
+
+
+
+    <!-- MODALS -->
+    <div class="modal fade bd-example-modal-lg" id="modalAlcancesPredefinidos"
+     tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Alcances preseleccionados</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                  <div class="input-group mb-3">
+                      <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fas fa-search"></i></span>
+                      </div>
+                      <input type="text" id="inputBuscarPredefinidos" class="form-control" placeholder="Buscar">
+                    </div>
+                  
+                  <table class="table" id="tablePredefinidos">
+                      <thead>
+                        <tr>
+                          <th hidden>Código</th>
+                          <th scope="col">Nombre</th>
+                          <th scope="col">Acción</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {%for alcancePredefinido in alcancesPredefinidos%}
+                          <tr>
+                            <td hidden>{{alcancePredefinido.id}}</td>
+                            <td>{{alcancePredefinido.nombre}}</td>
+                            <td>
+                              <button name="addAlcanceBtn" class="btn btn-primary btn-sm">
+                                <i class="fas fa-plus"></i>
+                              </button>
+                            </td>
+                          </tr>
+                        {%endfor%}
+                      </tbody>
+                    </table>
+                </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade bd-example-modal-lg" id="modalAlcancesTodos"
+    tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+     <div class="modal-dialog modal-lg">
+
+       <div class="modal-content">
+           <div class="modal-header">
+               <h5 class="modal-title">Todos los alcances</h5>
+               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                 <span aria-hidden="true">&times;</span>
+               </button>
+             </div>
+             <div class="modal-body">
+                 <div class="input-group mb-3">
+                     <div class="input-group-prepend">
+                       <span class="input-group-text"><i class="fas fa-search"></i></span>
+                     </div>
+                     <input type="text" id="inputBuscarTodos" class="form-control" placeholder="Buscar">
+                   </div>
+                 
+                 <table class="table" id="tableTodos">
+                     <thead>
+                       <tr>
+                         <th hidden>Código</th>
+                         <th scope="col">Nombre</th>
+                         <th scope="col">Acción</th>
+                       </tr>
+                     </thead>
+                     <tbody>
+                       {%for alcance in alcancesTodos%}
+                         <tr>
+                           <td hidden>{{alcance.id}}</td>
+                           <td>{{alcance.nombre}}</td>
+                           <td>
+                             <button name="addAlcanceBtn" class="btn btn-primary btn-sm">
+                               <i class="fas fa-plus"></i>
+                             </button>
+                           </td>
+                         </tr>
+                       {%endfor%}
+                     </tbody>
+                   </table>
+               </div>
+       </div>
+     </div>
+   </div>
 
     
     
@@ -134,88 +253,97 @@ Actividad
             maxFileSize: 10000
         });
         }, 1000);
- 
+    
     $(document).ready(()=>{
-      //var conceptosGasto = "{{conceptosGasto|escapejs}}"
-      //conceptosGasto = JSON.parse(conceptosGasto)
-      //este arreglo se usa para cuando hay cambios en los componentes, se registra su
-      //valor en el ya que al cambiar en paginación se destruyen los inputs
-      //usability price is fucking high...
-      /*var arregloGastos = [];
-      for (let i = 0; i < conceptosGasto.length; i++) {
-        arregloGastos.push({
-          valor:"",
-          pk:""
-        });        
-      }
-      for (let i = 0; i < conceptosGasto.length; i++) {
-        const element = conceptosGasto[i];
-        $('#id_tabla_presupuesto').find('tbody')
-        .append(`
-        <tr>
-            <th scope="row">${i}</th>
-            <td>${element.fields.nombre}</td>
-            <td>${element.fields.clasificacion}</td>
-            <td>
-              <div class="input-group mb-3  input-pago">
-                <div class="input-group-prepend">
-                  <div class="input-group-text">  
-                    <input type="checkbox" id="checkbox-gastos-${i}"
-                    aria-label="Checkbox for following text input">
-                  </div>
-                </div>
-                <input readonly="true" id="input-gastos-${i}" pk="${element.pk}"
-                type="text" class="form-control input-gastos" aria-label="Text input with checkbox">
-              </div>
-            </td>
-          </tr>
-        `);
-        $(`#checkbox-gastos-${i}`).on('click',()=>{
-          let checkbox = document.querySelector(`#checkbox-gastos-${i}`);
-          if(checkbox.checked){
-            $(`#input-gastos-${i}`).attr('readonly', false);
-            $(`#input-gastos-${i}`).attr('required', true);
-          }else{
-            $(`#input-gastos-${i}`).attr('readonly', true);
-            $(`#input-gastos-${i}`).attr('required', false);
-            //le quitamos el valor en el arreglo y en el input
-            arregloGastos[i].valor = "";
-            arregloGastos[i].pk = "";
-            document.querySelector(`#input-gastos-${i}`).value = "";
+      function deleteRowFromAlcance(idAlcance, table){
+        let rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr')
+        for (let i = 0; i < rows.length; i++) {
+          const row = rows[i]
+          cells = row.children
+          if(cells[0].innerText == idAlcance){
+            table.deleteRow(i + 1)
+            break
           }
-        })
-        $(`#input-gastos-${i}`).on('keyup',()=>{
-          arregloGastos[i].valor = document.getElementById(`input-gastos-${i}`).value;
-          arregloGastos[i].pk = document.getElementById(`input-gastos-${i}`).getAttribute('pk');
-        })
+        }
       }
-      */
-     
-      //$('#id_tabla_presupuesto').DataTable();
-      //Validaciones
-      //$('.input-gastos').mask('00000000.00', {reverse: true});
+      function deleteRowFromSeleccionados(e){
+          //manipulate the row
+          let row = this.closest('tr')
+          let cells = row.children
+          cells[1].classList.remove('font-weight-bold')
+          let button = document.createElement('button')
+          //elimina sus nodos hijos
+          cells[2].innerHTML = ''
+          //crea el botón
+          button.classList.add('btn','btn-primary','btn-sm')
+          button.name ='addAlcanceBtn'
+          button.innerHTML = `
+            <i class="fas fa-plus"></i>          
+          `
+          cells[2].append(button)
+          button.addEventListener('click',addToAlcanceSeleccionado)
+          document.getElementById('tablePredefinidos').getElementsByTagName('tbody')[0].append(row)
+          row2 = row.cloneNode(true)
+          button = row2.getElementsByTagName('button')[0]
+          button.addEventListener('click',addToAlcanceSeleccionado)
+          document.getElementById('tableTodos').getElementsByTagName('tbody')[0].append(row2)
+      }
+      function addToAlcanceSeleccionado(e){
+        //manipulate the row
+        let row = this.closest('tr')
+        let cells = row.children
+        cells[1].classList.add('font-weight-bold')
+        //add the input
+        //TO:DO ANTES DEL SUBMIT HACER UNA CONCATENACIÓN DEL ID DEL ALCANCE
+        cells[2].innerHTML = `
+        <div class="input-group mb-3">
+            <input type="text" class="form-control" placeholder="Cantidad"
+            required name="cantidadAlcance">
+            <div class="input-group-append">
+              <button class="btn btn-danger btn-sm" type="button"
+              name="delSelectedAlcanceBtn">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+          </div>
+        `
+        if (row.closest('table').id == 'tablePredefinidos'){
+          let tableTodos = document.getElementById('tableTodos')
+          deleteRowFromAlcance(cells[0].innerText, tableTodos)
+        }else{
+          let tablePredefinidos = document.getElementById('tablePredefinidos')
+          deleteRowFromAlcance(cells[0].innerText,tablePredefinidos)
+        }
+        let tableSeleccionados = document.getElementById('tableAlcanceSeleccionados')
+        let tableSeleccionadosTbody = tableSeleccionados.getElementsByTagName('tbody')[0]
+        tableSeleccionadosTbody.append(row)
+        //call this functions to load method 'onClick'
+        loadMethods()
+
+      }
+      function loadMethods(){
+        $("[name='delSelectedAlcanceBtn']").click(deleteRowFromSeleccionados)
+        //we do this here because we need to aply it to the existent inputs
+        $('[name="cantidadAlcance"]').mask('00000000');
+        Toast.fire({
+          type: 'success',
+          title: 'Añadido'
+        }) 
+      }
+
+      const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000
+      })
+      var alcancesSeleccionados = []
+      $('[data-toggle="tooltip"]').tooltip();
       $('#id_personasInvolucradas').mask('00000000');
       $('#id_beneficiarios').mask('00000000');
       //*********************
       $( "#id_form_actividad" ).submit(function( event ) {
         event.preventDefault();
-        //ESTE CODIGO INCRUSTA INPUTS PARA ENVIARLOS AL FORMULARIO POR MÉTODO POST
-        /*
-        let gastoIngresado = false;
-          for (let i = 0; i < arregloGastos.length; i++) {
-            const element = arregloGastos[i];
-            if(element.valor != ""){
-              gastoIngresado = true
-              valorString = element.valor + '|' + element.pk
-              $(`#id_gastos`).append(`
-                      <input readonly="true" id="input-gastos-${i}" name="gastos[]"
-                      type="text" class="form-control input-gastos"
-                      hidden value=${valorString}> 
-              `);
-            }
-            
-          }
-          */
           let timerInterval
           Swal.fire({
             title: 'Subiendo',
@@ -237,24 +365,85 @@ Actividad
           string = $('#input-42-es')[0].files[0].name;
           string  = string.replace(/[^a-zA-Z0-9 ]/g, "")
           $('#input-42-es')[0].files[0].name = string  + '_evidencia.pdf'
-          this.submit()
-            /*Swal.fire({
-              title: `<h4 class="modal-title" id="exampleModalLabel">
-                  <strong>Selecciona el lugar de esta actividad</strong>
-                </h4>`,
-              type:'warning',
+          let inputs = document.querySelectorAll('[name="cantidadAlcance"]')
+          for (let i = 0; i<inputs.length; i++){
+            let input = inputs[i]
+            let tr = inputs[i].closest('tr')
+            let cells = tr.children
+            input.value = cells[0].innerText + '-' + input.value
+          }
+          if(inputs.length == 0){
+            Swal.fire({
+              type: 'error',
+              title: 'Alcance obligatorio',
+              text: 'Ingresa el alcance de beneficiarios que se tuvo con esta actividad, ejemplo: 5 asistentes',
               customClass:{
                 confirmButton: 'guinda',
                 cancelButton: 'guinda',
-              },
-              html:`
-              <ul>
-                  <li>En caso de que la actividad no haya llevado ningún gasto, elegir uno y escribir 0.</li>
-                </ul>
-                `
-              })*/
-
+              }
+            })
+          }else{
+            this.submit()
+          }
       });
+      $("#infoAlcance").click(()=>{
+        Swal.fire({
+          title:`
+          <p>El alcance es una forma de llamar a los beneficiarios, 
+            sin embargo, estos también puede contemplar a instituciones u otras entidades,
+          sin limitarse al número de personas.</p>
+        `,
+          type: 'info',
+          showCloseButton: true,
+          focusConfirm: false,
+          confirmButtonText:
+            '<i class="fa fa-thumbs-up"></i> ¡Entendido!',
+          confirmButtonAriaLabel: 'Thumbs up, great!',
+          customClass:{
+            confirmButton: 'guinda',
+            cancelButton: 'guinda',
+          }
+        })
+      })
+      //estas funciones funciona para las dos tablas de alcance
+      $("[name='addAlcanceBtn']").click(addToAlcanceSeleccionado)
+      $("#inputBuscarPredefinidos").keyup(()=>{
+        var input, filter, table, tr, td, i, txtValue;
+        input = document.getElementById("inputBuscarPredefinidos");
+        filter = input.value.toUpperCase();
+        table = document.getElementById("tablePredefinidos");
+        tr = table.getElementsByTagName("tr");
+        for (i = 0; i < tr.length; i++) {
+          td = tr[i].getElementsByTagName("td")[1];
+          if (td) {
+            txtValue = td.textContent || td.innerText;
+            if (txtValue.toUpperCase().indexOf(filter) > -1) {
+              tr[i].style.display = "";
+            } else {
+              tr[i].style.display = "none";
+            }
+          }       
+        }
+      })
+      $("#inputBuscarTodos").keyup(()=>{
+        var input, filter, table, tr, td, i, txtValue;
+        input = document.getElementById("inputBuscarTodos");
+        filter = input.value.toUpperCase();
+        table = document.getElementById("tableTodos");
+        tr = table.getElementsByTagName("tr");
+        for (i = 0; i < tr.length; i++) {
+          td = tr[i].getElementsByTagName("td")[1];
+          if (td) {
+            txtValue = td.textContent || td.innerText;
+            if (txtValue.toUpperCase().indexOf(filter) > -1) {
+              tr[i].style.display = "";
+            } else {
+              tr[i].style.display = "none";
+            }
+          }       
+        }
+      })
+      
     })
     </script>
 {% endblock %}

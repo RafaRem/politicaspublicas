@@ -7,7 +7,7 @@ from django.contrib import messages
 """Models"""
 from apps.programaOperativo.models import ProgramaOperativo,GastoAnualAsignado,Acciones,DetallesGasto
 from apps.dependencia.models import Departamento,Dependencia
-from apps.indicador.models import PeriodoGobierno,Periodo
+from apps.indicador.models import PeriodoGobierno,Periodo, Configuracion
 
 def getGastoPeriodo(accion,periodo):
     gastos = DetallesGasto.objects.filter(accion=accion,periodo=periodo)
@@ -77,27 +77,27 @@ class PresupuestoAnualList(LoginRequiredMixin,View):
     login_url = 'login'
     def obtenerContexto(self,idProgramaOperativo):
         programaOperativo = ProgramaOperativo.objects.get(pk=idProgramaOperativo)
-        periodos = PeriodoGobierno.objects.all()
+        configuracion = Configuracion.objects.get(pk=1)
+        periodo = configuracion.periodoGobierno
         presupuestosPeriodo = []
         #se hará de la siguiente manera para hacer un if en el template 
         #en caso de que no haya sido asignado
         faltaAsignar = False
-        for periodo in periodos:
-            try:
-                gastoAnualAsignado = GastoAnualAsignado.objects.get(
-                programaOperativo=programaOperativo,
-                periodoGobierno=periodo)
-            except:
-                #Si no existe, esta variable será necesaria para poder asignar
-                faltaAsignar = True
-                gastoAnualAsignado = {
-                    'permitirModificar':True
-                }
+        try:
+            gastoAnualAsignado = GastoAnualAsignado.objects.get(
+            programaOperativo=programaOperativo,
+            periodoGobierno=periodo)
+        except:
+            #Si no existe, esta variable será necesaria para poder asignar
+            faltaAsignar = True
+            gastoAnualAsignado = {
+                'permitirModificar':True
+            }
 
-            presupuestosPeriodo.append({
-                'periodo':periodo,
-                'presupuesto':gastoAnualAsignado
-            })
+        presupuestosPeriodo.append({
+            'periodo':periodo,
+            'presupuesto':gastoAnualAsignado
+        })
         return {
             'presupuestosPeriodo':presupuestosPeriodo,
             'programaOperativo':programaOperativo,

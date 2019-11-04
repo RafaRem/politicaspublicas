@@ -9,6 +9,7 @@
     <link rel="shortcut icon" type="image/png" href="{%static 'images/Ayuntamiento.jpg'%}"/>
 
     <link href="https://fonts.googleapis.com/css?family=Arapey&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=IBM+Plex+Mono&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Montserrat&display=swap" rel="stylesheet">
     <!-- CDN's -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
@@ -177,7 +178,7 @@
               </a>
               <div class="dropdown-menu" aria-labelledby="pagesDropdown">
                 <!-- <h6 class="dropdown-header">Actividades</h6> -->
-                <a class="dropdown-item" href="{%url 'nuevaActividad'%}">Nueva actividad</a>
+                <a class="dropdown-item" href="{%url 'escogerPo'%}">Nueva actividad</a>
                 <a class="dropdown-item" href="{%url 'listActividades'%}">Ver actividades</a>
                 <a class="dropdown-item" href="{%url 'reporteActividadEnlace'%}">Reportes</a>
                 <a class="dropdown-item" href="{%url 'fichaDependencia' idDependencia=request.user.profile.dependencia.id%}">Metas</a>
@@ -194,7 +195,7 @@
               <a class="dropdown-item" 
               href="{%url 'accionesDependencia' idDependencia=request.user.profile.dependencia.id%}">Acciones</a>
               <a class="dropdown-item" href="{%url 'enDesarrollo'%}">Departamentos</a>
-
+              <a class="dropdown-item" href="{%url 'enDesarrollo'%}">Capturar metas</a>
             </div>
           </li>
           

@@ -2,28 +2,28 @@ html{
     height: 100%;
     width: 100%;
     padding: 0px;
-    font-family: 'Arapey';
+    font-family:  'IBM Plex Mono', monospace;
 
 }
 body{
-    background:  rgb(215, 208, 186) !important;
+    background:  white !important;
     height: 100%;
     width: 100%;
-    font-family: 'Arapey';
+    font-family:  'IBM Plex Mono', monospace;
 }
 
 h2,input,label,h1{
-    font-family: 'Arapey';
+    font-family:  'IBM Plex Mono', monospace;
 }
 h2{
-    font-family: 'Arapey';
+    font-family:  'IBM Plex Mono', monospace;
 
 }
 a{
     color: black;
 }
 ul{
-    font-family: 'Montserrat';
+    font-family: 'IBM Plex Mono', monospace;
 }
 .A-PMD{
     max-width: 40px;
@@ -32,8 +32,8 @@ ul{
 
 
 .sidebar-blanco{
-    background-color: white !important;
-    color: #b2ab9a;
+    background-color: rgb(215, 208, 186) !important;
+    color: rgb(96, 2, 12);
 }
 
 .container{

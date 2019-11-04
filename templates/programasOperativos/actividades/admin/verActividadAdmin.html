@@ -65,15 +65,6 @@ AQUÍ VAN LAS FLECHAS DE ANTES Y DESPUES
     {% endfor %}
 </ul>
 {% endif %}
-<h2 class="text-center">
-{{actividad.nombre}}
-</h2>
-<br>
-<h5 class="text-center">
-    {{actividad.descripcion}}
-</h5>
-
-<hr>
 <div id="id_meta">
     <h3 class="text-center">{{cantidadMeta}}&nbsp;{{descripcionMeta}}</h3>
 
@@ -96,7 +87,47 @@ AQUÍ VAN LAS FLECHAS DE ANTES Y DESPUES
     </div>
     {% endif %}
 </div>
-<hr>
+    <hr>
+    <h5 class="text-center">VARIABLES DE MEDICIÓN</h5>
+    <div class="row">
+        {% for variable in variablesActividad %}
+        <div class="col-xl-4 col-sm-6 mb-3 animated fadeIn">
+                <div class="card text-dorado eje5 o-hidden h-100">
+                    <div class="card-body">
+                    <div class="mr-5">
+                        <h5 name="nombrePo">{{variable}}</h5>
+
+                    </div>
+                    <br>
+                    <div class="mitad-h3">
+                        <h6>Cantidad: <strong>{{variable.cantidad}}</strong></h6>
+                    </div>
+                    </div> 
+                </div>
+        </div>
+        {% endfor %}
+    </div>
+    <hr>
+    <h5 class="text-center">ALCANCE DE BENEFICIO</h5>
+    <div class="row">
+            {% for alcance in alcancesActividad %}
+            <div class="col-xl-4 col-sm-6 mb-3 animated fadeIn">
+                    <div class="card text-dorado eje5 o-hidden h-100">
+                        <div class="card-body">
+                        <div class="mr-5">
+                            <h5 name="nombrePo">{{alcance}}</h5>
+    
+                        </div>
+                        <br>
+                        <div class="mitad-h3">
+                            <h6>Cantidad: <strong>{{alcance.cantidad}}</strong></h6>
+                        </div>
+                        </div> 
+                    </div>
+            </div>
+            {% endfor %}
+        </div>
+    <hr>
 
         <div class="justify-content-center d-flex">
             <h2>
@@ -129,19 +160,6 @@ AQUÍ VAN LAS FLECHAS DE ANTES Y DESPUES
                     <tbody>
                         <tr>
                         <th scope="row">
-                            <h5 class="text-center">
-                                <strong>Subido por
-                                </strong>
-                            </h5>
-                        </th>
-                        <td>
-                            <h5 class="text-center">
-                                    {{actividad.user.username}}, {{actividad.user.profile.dependencia.nombre}}
-                            </h5>
-                        </td>
-                        </tr>
-                        <tr>
-                        <th scope="row">
                                 <h5 class="text-center">
                                         <strong>Programa operativo:</strong>
                                     </h5>
@@ -162,52 +180,15 @@ AQUÍ VAN LAS FLECHAS DE ANTES Y DESPUES
                             </h5>
                         </td>
                         </tr>
-
                         <tr>
                             <th scope="row">
                                 <h5 class="text-center">
-                                    <strong>Personas involucradas en la actividad:</strong>
+                                    <strong>Fecha:</strong>
                                 </h5>
                             </th>
                             <td>
                                 <h5 class="text-center">
-                                    {{actividad.personasInvolucradas}}
-                                </h5>
-                            </td>
-                            </tr>
-                        <tr>
-                            <th scope="row">
-                                <h5 class="text-center">
-                                    <strong>Beneficiarios:</strong>
-                                </h5>
-                            </th>
-                            <td>
-                                <h5 class="text-center">
-                                    {{actividad.beneficiarios}}
-                                </h5>
-                            </td>
-                            </tr>
-                        <tr>
-                            <th scope="row">
-                                <h5 class="text-center">
-                                    <strong>Actividad desde:</strong>
-                                </h5>
-                            </th>
-                            <td>
-                                <h5 class="text-center">
-                                    {{actividad.fecha_in}}
-                                </h5>
-                            </td>
-                            </tr>
-                        <tr>
-                            <th scope="row">
-                                <h5 class="text-center">
-                                    <strong>Hasta:</strong>
-                                </h5>
-                            </th>
-                            <td>
-                                <h5 class="text-center">
-                                    {{actividad.fecha_fi}}
+                                    Del {{actividad.fecha_in}} hasta {{actividad.fecha_fi}}
                                 </h5>
                             </td>
                             </tr>
@@ -259,31 +240,20 @@ AQUÍ VAN LAS FLECHAS DE ANTES Y DESPUES
             <textarea class="form-control" name="observaciones" id="id_observaciones"
             maxlength="800" cols="30" rows="10"></textarea>
         </div>
-        <div class="form-group">
-                <label for="id_observaciones" class="">
-                <strong>Multiplicador</strong>
-                </label>
-                <input type="text" class="form-control numero" value="{{actividad.multiplicador}}" name="multiplicador" id="id_multiplicador">
-            </div>
 
         <h4 class="text-center">Cambiar estado</h4>
         <div class="row">
-            <div class="col-lg-3">
+            <div class="col-lg-4">
                 <button type="button" id="validar" class="btn btn-success full-width">
-                    <i class="fas fa-check"></i>&nbsp;Principal
+                    <i class="fas fa-check"></i>&nbsp;Válido
                 </button>
             </div>
-            <div class="col-lg-3">
-                    <button type="button" id="secundaria" class="btn btn-info full-width">
-                            <i class="far fa-check-circle"></i>&nbsp;Secundaria
-                    </button>
-                </div>
-            <div class="col-lg-3">
+            <div class="col-lg-4">
                 <button type="button" id="invalidar" class="btn btn-warning full-width">
-                        <i class="fas fa-exclamation-triangle"></i>&nbsp;Invalidar
+                        <i class="fas fa-exclamation-triangle"></i>&nbsp;Inválido
                 </button>
             </div>
-            <div class="col-lg-3">
+            <div class="col-lg-4">
                     <button type="button" id="desactivar" class="btn btn-danger full-width">
                         <i class="fas fa-times" aria-hidden="true"></i>&nbsp;Desactivar
                     </button>
@@ -323,7 +293,6 @@ AQUÍ VAN LAS FLECHAS DE ANTES Y DESPUES
         }
         function anterior(){
             const index = arrayActividades.indexOf(idActividad)
-            console.log(`/programasOperativos/actividad/admin/ver/actividad/${String(arrayActividades[index - 1])}`);
             if(index == 0){
                 window.location = `/programasOperativos/actividad/admin/ver/actividad/${String(arrayActividades[arrayActividades.length -1])}`;
             }else{
@@ -343,10 +312,6 @@ AQUÍ VAN LAS FLECHAS DE ANTES Y DESPUES
             inputEstado.value = 'r';
             $('#frm_actividad').submit();
         })
-        $('#secundaria').click(()=>{
-            inputEstado.value = 's';
-            $('#frm_actividad').submit();
-        })
         $('#invalidar').click(()=>{
             inputEstado.value = 'n';
             $('#frm_actividad').submit();
@@ -357,11 +322,6 @@ AQUÍ VAN LAS FLECHAS DE ANTES Y DESPUES
             $('#frm_actividad').submit();
         })
         document.onkeyup = function(e) {
-            /*secundaria 83
-            principal 65
-            siguiente 39
-            atras 37*/
-            console.log(e.which)
             e.preventDefault();
             if (e.shiftKey && e.which == 83) {
                 inputEstado.value = 's';

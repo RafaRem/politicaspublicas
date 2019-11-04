@@ -1,0 +1,141 @@
+{% extends "base/base.html" %}
+{% load staticfiles %}
+
+{% block messages %}{% endblock %}
+
+ {%block title%}
+ Programas operativos
+ {% endblock %}
+
+
+{% block extracss %}
+<style>
+  select{
+    background-color: #cb9831 !important;
+    border: 1px solid #cb9831 !important;
+    color: white !important;
+  }
+</style>
+{% endblock %}
+
+
+{% block content %}
+<div class="container bg-transparent">
+    {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+        <li{% if message.tags == "success" %} class="alert alert-success"
+      {%else%}
+      class="alert alert-danger"
+      {% endif %}>
+      {{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+  <h3 class="text-center">Programas Operativos</h3>
+  <hr>
+    <div class="col-12">
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <span class="input-group-text"><i class="fas fa-search"></i></span>
+            </div>
+            <input type="text" id="inputBuscarPo" class="form-control" placeholder="Buscar">
+        </div> 
+    </div>
+    <br>
+    <div class="row">
+        {% for poAct in arrayPosActs %}
+        <div class="col-xl-4 col-sm-6 mb-3 animated fadeIn">
+            <div class="card text-dorado eje5 o-hidden h-100">
+                <div class="card-body">
+                  <div class="mr-5">
+                      <h5 name="nombrePo">{{poAct.nombrePo}}</h5>
+
+                  </div>
+                  <br>
+                <div class="mitad-h3">
+                    <h6>Actividades: <strong>{{poAct.numeroActividades}}</strong></h6>
+                  </div>
+                </div> 
+                <a class="card-footer text-white clearfix small z-1" 
+                href="{%url 'nuevaActividad' idProgramaOperativo=poAct.idPo%}">
+                    <span class="float-left">Nueva actividad...
+                    </span>
+                    <span class="float-right">
+                    <i class="fas fa-angle-right"></i>
+                    </span>
+                </a>
+            </div>
+            </div>
+        {% endfor %}
+
+    </div>
+    <form action="" method="POST" id="id_form">
+        {% csrf_token %}
+    </form>
+    {% if tieneDepartamentos and faltaPorAsignar %}
+    <div class="justify-content-center d-flex">
+        <button id="id_guardar_cambios" class="btn guinda">
+            <i class="fas fa-check-circle"></i>&nbsp; Guardar cambios</button>
+        </div>
+
+  {% endif %}
+  
+
+
+</div>
+
+{% endblock content %}
+
+
+
+{%block extrascripts%}
+    <script>
+      $(document).ready(()=>{
+        //**************************
+        $('#id_guardar_cambios').click(()=>{
+          var divs = document.querySelectorAll('.div_departamento')
+          for (let i = 0; i < divs.length; i++) {
+            const div = divs[i];
+            let select = div.childNodes[0].nextElementSibling;
+            let idDepartamento = select.value;
+            let idPoSplit = select.parentNode.id.split('_');
+            let idProgramaOperativo = idPoSplit[2];
+            let valorInput = idProgramaOperativo + '|' + idDepartamento;
+            if(idDepartamento > 0){
+              $('#id_form').append(`
+              <input type="text" hidden=true name="valoresDependencia" value="${valorInput}">
+              `);
+            }
+  
+            //obtenemos el id del programa operativo
+  
+          }
+          $('#id_form').submit();
+        });
+        $("#inputBuscarPo").keyup(()=>{
+          var input, filter, table, tr, td, i, txtValue;
+          console.log("asd")
+          input = document.getElementById("inputBuscarPo");
+          filter = input.value.toUpperCase();
+          nombres = document.querySelectorAll('[name="nombrePo"')
+          for (i = 0; i < nombres.length; i++) {
+            nombre = nombres[i]
+            card = nombre.parentElement.parentElement.parentElement.parentElement
+            if (nombre) {
+              txtValue = nombre.innerText;
+              if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                card.classList.add('d-block');
+                card.classList.remove("d-none")
+              } else {
+                card.classList.add("d-none");
+                card.classList.remove("d-block")
+
+              }
+            }       
+          }
+        })
+        
+      });
+    </script>
+{%endblock%}

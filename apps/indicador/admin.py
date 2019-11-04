@@ -14,30 +14,6 @@ class ConceptoGastoAdmin(admin.ModelAdmin):
     ordering = ['nombre']
     search_fields = ['nombre']
 
-@admin.register(Escolaridad)
-class EscolaridadAdmin(admin.ModelAdmin):
-    list_display = ['nombre']
-
-@admin.register(GruposVulnerables)
-class GruposVulnerablesAdmin(admin.ModelAdmin):
-    list_display = ['nombre']
-
-@admin.register(SectorSocial)
-class SectorSocialAdmin(admin.ModelAdmin):
-    list_display = ['nombre']
-
-@admin.register(Ubicacion)
-class UbicacionAdmin(admin.ModelAdmin):
-    list_display = ['nombre']
-
-@admin.register(CategoriaPoblacion)
-class CategoriaPoblacionAdmin(admin.ModelAdmin):
-    list_display = ['nombre', 'edadDesde', 'edadHasta']
-
-@admin.register(SectorEconomico)
-class SectorEconomicoAdmin(admin.ModelAdmin):
-    list_display = ['nombre']
-
 @admin.register(Periodo)
 class PeriodoAdmin(admin.ModelAdmin):
     list_display = ['id','nombre','fechaInicial', 'fechaFinal']
@@ -51,14 +27,15 @@ class MetaAdmin(admin.ModelAdmin):
     list_display = ['id', 'descripcion']
     search_fields = ['nombre']
 
-
-@admin.register(Indicador)
-class IndicadorAdmin(admin.ModelAdmin):
-    list_display = ['id','nombre','tipo']
-    list_display_links = ['nombre']
-
+#jefe manuel
 @admin.register(Variable)
 class VariableAdmin(admin.ModelAdmin):
-    list_display = ['id', 'nombre','tipo','indicador']
-    list_display_links = ['nombre','tipo','indicador']
+    list_display = ['id', 'nombre', 'unidadMedida']
+    list_display_links = ['id', 'nombre']
+    search_fields = ['nombre']
+
+@admin.register(UnidadMedida)
+class UnidadMedidaAdmin(admin.ModelAdmin):
+    list_display = ['id','nombre']
+    list_display_link = ['id','nombre']
 

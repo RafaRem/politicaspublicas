@@ -1,6 +1,15 @@
 from django.db import models
 
 # Este modelo es padre de una dependencia
+class Alcance(models.Model):
+    nombre = models.CharField(verbose_name="Descripción de alcance",
+    max_length=300)
+    class Meta:
+        verbose_name = "Catálogo de alcance"
+        verbose_name = "Catálogo de alcance"
+    def __str__(self):
+        return self.nombre
+
 class Raiz(models.Model):
     opcionesRaiz = (
         ('s','Secretaría'),
@@ -37,6 +46,8 @@ class Dependencia(models.Model):
     adscrita = models.ForeignKey(Raiz,blank=True, null=True, on_delete=models.PROTECT)
     estado = models.CharField(max_length=30,choices=opcionesEstado,default='a')
     tieneDepartamentos = models.BooleanField(verbose_name='¿Tiene departamentos?',default=True)
+    alcance = models.ManyToManyField(Alcance ,blank=True, 
+    verbose_name="Alcance de la dependencia")
     class Meta:
         verbose_name = 'Dependencia'
         verbose_name_plural='Dependencias'

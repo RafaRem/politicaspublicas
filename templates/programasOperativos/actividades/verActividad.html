@@ -2,26 +2,20 @@
 {%load staticfiles%}
 
 {% block navTitle %}
-{{actividad.nombre}}
+Actividad
+{% endblock %}
+
+{% block title %}
+Actividad
 {% endblock %}
 
 {% block content %}
+<h3 class="text-center">{{actividad.accion.nombre}}</h3>
+<br>
+<br>
 <div class="container bg-transparent">
         <table class="table">
                 <tbody>
-                  <tr>
-                    <th scope="row">
-                        <h5 class="text-center">
-                            <strong>Subido por
-                            </strong>
-                        </h5>
-                    </th>
-                    <td>
-                        <h5 class="text-center">
-                                {{actividad.user.username}}, {{actividad.user.profile.dependencia.nombre}}
-                        </h5>
-                    </td>
-                  </tr>
                   <tr>
                     <th scope="row">
                             <h5 class="text-center">
@@ -34,78 +28,58 @@
                         </h5>
                     </td>
                   </tr>
-                  <tr>
-                    <th scope="row">
-                        <h5 class="text-center"><strong>Acción:</strong> </h5>
-                    </th>
-                    <td>
-                        <h5 class="text-center">
-                            {{actividad.accion.nombre}}
-                        </h5>
-                    </td>
-                  </tr>
-                  <tr>
-                        <th scope="row">
-                            <h5 class="text-center">
-                                <strong>Descripción</strong>
-                            </h5>
-                        </th>
-                        <td>
-                            <h5 class="text-center">
-                                {{actividad.descripcion}}
-                            </h5>
-                        </td>
-                      </tr>
-                      <tr>
-                        <th scope="row">
-                            <h5 class="text-center">
-                                <strong>Beneficiarios</strong>
-                            </h5>
-                        </th>
-                        <td>
-                            <h5 class="text-center">
-                                {{actividad.beneficiarios}}
-                            </h5>
-                        </td>
-                      </tr>
                     <tr>
-                        <th scope="row">
+                        <td colspan="2" scope="row">
                             <h5 class="text-center">
-                                <strong>Personas involucradas en la actividad:</strong>
-                            </h5>
-                        </th>
-                        <td>
-                            <h5 class="text-center">
-                                {{actividad.personasInvolucradas}}
+                                <strong>
+                                Desde {{actividad.fecha_in}} al {{actividad.fecha_fi}}
+                                </strong>
                             </h5>
                         </td>
-                        </tr>
-                    <tr>
-                        <th scope="row">
-                            <h5 class="text-center">
-                                <strong>Actividad desde:</strong>
-                            </h5>
-                        </th>
-                        <td>
-                            <h5 class="text-center">
-                                {{actividad.fecha_in}}
-                            </h5>
-                        </td>
-                        </tr>
-                    <tr>
-                        <th scope="row">
-                            <h5 class="text-center">
-                                <strong>Hasta:</strong>
-                            </h5>
-                        </th>
-                        <td>
-                            <h5 class="text-center">
-                                {{actividad.fecha_fi}}
-                            </h5>
-                        </td>
-                        </tr>
+                         </tr>
                 </tbody>
               </table>
+        <hr>
+        <h5 class="text-center">VARIABLES DE MEDICIÓN</h5>
+        <div class="row">
+            {% for variable in variablesActividad %}
+            <div class="col-xl-4 col-sm-6 mb-3 animated fadeIn">
+                    <div class="card text-dorado eje5 o-hidden h-100">
+                        <div class="card-body">
+                        <div class="mr-5">
+                            <h5 name="nombrePo">{{variable}}</h5>
+    
+                        </div>
+                        <br>
+                        <div class="mitad-h3">
+                            <h6>Cantidad: <strong>{{variable.cantidad}}</strong></h6>
+                        </div>
+                        </div> 
+                    </div>
+            </div>
+            {% endfor %}
+        </div>
+        <hr>
+        <h5 class="text-center">ALCANCE DE BENEFICIO</h5>
+        <div class="row">
+                {% for alcance in alcancesActividad %}
+                <div class="col-xl-4 col-sm-6 mb-3 animated fadeIn">
+                        <div class="card text-dorado eje5 o-hidden h-100">
+                            <div class="card-body">
+                            <div class="mr-5">
+                                <h5 name="nombrePo">{{alcance}}</h5>
+        
+                            </div>
+                            <br>
+                            <div class="mitad-h3">
+                                <h6>Cantidad: <strong>{{alcance.cantidad}}</strong></h6>
+                            </div>
+                            </div> 
+                        </div>
+                </div>
+                {% endfor %}
+            </div>
+        <hr>
     <br>
     <div class="justify-content-center d-flex">
         <a target="_blank" class="btn guinda" href="http://www.google.com/maps/place/{{actividad.latitud}},{{actividad.longitud}}"><i class="fas fa-map-marked-alt"></i>&nbsp;Ubicacion</a>
