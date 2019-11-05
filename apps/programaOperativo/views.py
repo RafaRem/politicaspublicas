@@ -451,6 +451,9 @@ class TerminarActividadFormView(LoginRequiredMixin,View):
                 #la posición 0 es el id, el otro es la cantidad
                 alcanceValues =alcance.split('-')
                 alcance = Alcance.objects.get(id=alcanceValues[0])
+                alcanceDependencia = actividad.programaoperativo.dependencia.alcance.filter(pk=alcance.id)
+                if not alcanceDependencia:
+                    actividad.programaoperativo.dependencia.alcance.add(alcance)
                 BeneficiariosActividad.objects.update_or_create(
                     alcance=alcance,
                     cantidad=alcanceValues[1],

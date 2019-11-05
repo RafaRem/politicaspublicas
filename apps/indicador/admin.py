@@ -39,3 +39,8 @@ class UnidadMedidaAdmin(admin.ModelAdmin):
     list_display = ['id','nombre']
     list_display_link = ['id','nombre']
 
+@admin.register(Recursos)
+class RecursosAdmin(admin.ModelAdmin):
+    list_display = ['id', 'nombre']
+    list_display_links = ['id', 'nombre']
+

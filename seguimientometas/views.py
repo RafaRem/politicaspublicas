@@ -5,11 +5,17 @@ import requests
 import os
 import json
 """MOdelos"""
-from apps.indicador.models import PeriodoGobierno, Meta
+from apps.indicador.models import PeriodoGobierno, Meta, Recursos
 from apps.programaOperativo.models import Acciones
 
 class RenderView(TemplateView):
     template_name = ".html"
+
+def getRecursos(request):
+    recursos = Recursos.objects.all()
+    return render(request,'extras/recursos.html', {
+        'recursos':recursos
+        })
 
 class ObtenerCoordenadas(View):
     def pruebaAPi(self,lugar):

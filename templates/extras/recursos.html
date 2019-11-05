@@ -20,30 +20,19 @@ Recursos del sistema
             <img id="logo" src="{%static 'images/Ahome.png'%}" alt="">
         </div>
         <div class="row">
-            <div class="col-xl-4 col-sm-6 mb-3 animated fadeIn">
-                <div class="card text-dorado eje2 o-hidden h-100">
-                <div class="card-body">
-                    <div class="mr-5">
-                    <h3>Formato de evidencia único</h3>
-                    </div>
-                </div>
-                <a class="card-footer text-white clearfix small z-1" 
-                href="{%static 'documentos/Formato-evidencia-unica.docx'%}">
-                    <span class="float-left">Descargar...</span>
-                    <span class="float-right">
-                    <i class="fas fa-angle-right"></i>
-                    </span>
-                </a>
-                </div>
-            </div>
-            <div class="col-xl-4 col-sm-6 mb-3 animated fadeIn">
+            {% for recurso in recursos %}
+                <div class="col-xl-4 col-sm-6 mb-3 animated fadeIn">
                     <div class="card text-dorado eje2 o-hidden h-100">
                     <div class="card-body">
                         <div class="mr-5">
-                        <h3>Manual de usuario</h3>
+                        <h3>{{recurso.nombre}}</h3>
+                        <div class="mitad-h3">
+                            <h6>{{recurso.descripcion}}</h6>
+                        </div>
                         </div>
                     </div>
-                    <a class="card-footer text-white clearfix small z-1" href="{%static 'documentos/manual-de-usuario-enlace.docx'%}">
+                    <a class="card-footer text-white clearfix small z-1" 
+                    href="/media/{{recurso.archivo}}" target="_blank">
                         <span class="float-left">Descargar...</span>
                         <span class="float-right">
                         <i class="fas fa-angle-right"></i>
@@ -51,21 +40,7 @@ Recursos del sistema
                     </a>
                     </div>
                 </div>
-            <div class="col-xl-4 col-sm-6 mb-3 animated fadeIn">
-                <div class="card text-dorado eje2 o-hidden h-100">
-                <div class="card-body">
-                    <div class="mr-5">
-                    <h3>Formato trámites y servicios</h3>
-                    </div>
-                </div>
-                <a class="card-footer text-white clearfix small z-1" href="{%static 'documentos/Trámites y Serv Formato.xlsx'%}">
-                    <span class="float-left">Descargar...</span>
-                    <span class="float-right">
-                    <i class="fas fa-angle-right"></i>
-                    </span>
-                </a>
-                </div>
-            </div>
+            {% endfor %}
         </div>
 
     </div>

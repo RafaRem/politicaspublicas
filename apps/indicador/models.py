@@ -71,6 +71,7 @@ class PeriodoGobierno(models.Model):
 
 #TO:DO borrar
 class Meta(models.Model):
+    """Este ya no se usa"""
     descripcion = models.CharField(max_length=300,verbose_name="Descripción de la meta")
     descendente = models.BooleanField(default=False,verbose_name="¿Es descendente?")
     noPublica = models.BooleanField(default=False, verbose_name="¿No es pública?")
@@ -85,3 +86,13 @@ class Meta(models.Model):
 class Configuracion(models.Model):
     periodoGobierno = models.ForeignKey(PeriodoGobierno, blank=True, null=True,
     on_delete=models.PROTECT, verbose_name="Periodo de gobierno a graficar")
+
+class Recursos(models.Model):
+    nombre = models.CharField(max_length=200)
+    descripcion = models.TextField(max_length=300, blank=True, null=True)
+    archivo = models.FileField(blank=True, null=True)
+    def __str__(self):
+        return self.nombre
+    class Meta:
+        verbose_name = 'Recurso'
+        verbose_name_plural = 'Recursos'
