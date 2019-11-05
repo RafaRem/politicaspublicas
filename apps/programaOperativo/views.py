@@ -719,7 +719,7 @@ class VerActividadAdmin(LoginRequiredMixin,View):
             # else:
             actividad.observaciones = request.POST.get('observaciones')
             actividad.estado = request.POST.get('estado')
-            actividad.multiplicador = request.POST.get('multiplicador')
+            actividad.multiplicador = 1
             actividad.save()
             messages.success(request,'Cambio realizado con éxito')
         contexto = self.obtenerContexto(idActividad)

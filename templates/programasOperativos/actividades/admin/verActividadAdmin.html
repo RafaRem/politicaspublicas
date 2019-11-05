@@ -67,25 +67,6 @@ AQUÍ VAN LAS FLECHAS DE ANTES Y DESPUES
 {% endif %}
 <div id="id_meta">
     <h3 class="text-center">{{cantidadMeta}}&nbsp;{{descripcionMeta}}</h3>
-
-    {% if tieneMeta %}
-
-    {% elif actividad.accion.cualitativa %}
-    <h5 class="text-center font-weight-bold">La acción es cualitativa</h5>
-    {% else %}
-    <h5 class="text-center font-weight-bold">La acción no tiene meta</h5>
-    <div class="justify-content-center d-flex">
-        <a class="btn guinda btn-sm" href="{%url 'capturarMetasForm' idAccion=actividad.accion.id%}">
-            Capturar Meta
-            </a>
-            &nbsp;
-            &nbsp;
-        <form action="" method="POST">
-            {% csrf_token %}
-            <input class="btn guinda btn-sm" name="cualitativa" type="submit" value="Cualitativa">
-        </form>                
-    </div>
-    {% endif %}
 </div>
     <hr>
     <h5 class="text-center">VARIABLES DE MEDICIÓN</h5>
