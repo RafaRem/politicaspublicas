@@ -352,9 +352,7 @@ class ActividadFormView(LoginRequiredMixin,View):
         #Get acciones dependencia
         dependencia = request.user.profile.dependencia
         pos = ProgramaOperativo.objects.filter(dependencia=dependencia)
-        acciones = []
-        for po in pos:
-            acciones.extend(po.acciones.all())
+        acciones = programaOperativo.acciones.all()
         #Las acciones con meta
         metasAcciones = []
         for accion in acciones:

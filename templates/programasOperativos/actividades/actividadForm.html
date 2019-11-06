@@ -98,9 +98,32 @@ Nueva actividad
                   </tr>
                 </thead>
                 <tbody>
-
+                    {% for variable in variablesMeta %}
+                    <tr>
+                        <td hidden="">{{variable.id}}</td>
+                        <td class="font-weight-bold">{{variable}}</td>
+                        <td>
+                          <div class="input-group mb-3">
+                            <input type="text" class="form-control"
+                              value="{{variable.cantidad}}" placeholder="Cantidad" required="" name="cantidadVariable" maxlength="8">
+                            <div class="input-group-append">
+                            <button class="btn btn-danger btn-sm" type="button" name="delSelectedVariableBtn">
+                                <i class="fas fa-times"></i>
+                            </button>
+                            </div>
+                          </div>
+                        </td>
+                        <td>
+                            {%if variable.variable.unidadMedida.nombre%}
+                                {{variable.variable.unidadMedida.nombre}}
+                              {%else%}
+                                No aplica
+                            {%endif%}
+                        </td>
+                    </tr>
+                  {% endfor %}
                 </tbody>
-              </table>
+              </table> 
             <br>
 
             {{ form|crispy }}
@@ -167,18 +190,7 @@ Nueva actividad
                           </tr>
                        </thead>
                        <tbody>
-                         {%for variable in variablesMeta%}
-                           <tr>
-                             <td hidden>{{variable.id}}</td>
-                             <td>{{variable.nombre}}</td>
-                             <td>
-                               <button name="addAlcanceBtn" class="btn btn-primary btn-sm">
-                                 <i class="fas fa-plus"></i>
-                               </button>
-                             </td>
-                             <td>{{variable.unidadMedida}}</td>
-                           </tr>
-                         {%endfor%}
+
                        </tbody>
                      </table>
                  </div>
@@ -248,6 +260,12 @@ Nueva actividad
   <script src="{%static 'js/gijgo.min.js'%}" type="text/javascript"></script>
   <script>
   $(document).ready(()=>{
+    const Toast = Swal.mixin({
+      toast: true,
+      position: 'top-end',
+      showConfirmButton: false,
+      timer: 3000
+    })
     function deleteRowFromAlcance(idAlcance, table){
       let rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr')
       for (let i = 0; i < rows.length; i++) {
@@ -324,6 +342,8 @@ Nueva actividad
       }) 
     }
     
+    $("[name='delSelectedVariableBtn']").click(deleteRowFromSeleccionados)
+    $('[name="cantidadVariable"]').mask('00000000');
     $('#id_fecha_in').datepicker({
           uiLibrary: 'bootstrap4',
           format: 'yyyy-mm-dd'
