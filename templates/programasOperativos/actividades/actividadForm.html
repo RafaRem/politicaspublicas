@@ -114,11 +114,8 @@ Nueva actividad
                           </div>
                         </td>
                         <td>
-                            {%if variable.variable.unidadMedida.nombre%}
-                                {{variable.variable.unidadMedida.nombre}}
-                              {%else%}
-                                No aplica
-                            {%endif%}
+                            {{variable.unidadMedida.nombre}}
+        
                         </td>
                     </tr>
                   {% endfor %}
