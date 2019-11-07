@@ -316,8 +316,9 @@ class EditarMetasView(LoginRequiredMixin,View):
                 cantidad=cantidad
                 )
                 pass
+        
         contexto = self.getContext(idAccion)
-        return render(request,'programasOperativos/capturarMetas.html',contexto)
+        return redirect('accionesMetas')
 
 class ReporteActividadesEnlaceView(LoginRequiredMixin,View):
     login_url = 'login'

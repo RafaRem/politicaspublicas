@@ -169,5 +169,3 @@ class VariableActividad(models.Model):
         unique_together = ['variable','actividad']
     def __str__(self):
         return self.variable.nombre
-    
-

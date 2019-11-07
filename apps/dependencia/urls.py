@@ -11,5 +11,6 @@ urlpatterns = [
     name="accionesDependencia" ),
     path('dependencia/admin/list', DependenciasAdmin.as_view(), 
     name="dependenciasAdmin" ),
+    path('depedencia/acciones-metas',accionesMetas,name='accionesMetas')
     
 ]

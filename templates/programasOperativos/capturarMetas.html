@@ -238,8 +238,8 @@ tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="tru
           this.submit()
         }
     });
-    
-    loadMethods()
+    $("[name='delSelectedAlcanceBtn']").click(deleteRowFromSeleccionados)
+    $('[name="cantidadVariable"]').mask('00000000');
   })
 
 </script>

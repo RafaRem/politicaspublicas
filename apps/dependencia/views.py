@@ -4,8 +4,9 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect, reverse
 from django.core import serializers
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 """Models"""
-from apps.programaOperativo.models import ProgramaOperativo,GastoAnualAsignado,Acciones,DetallesGasto
+from apps.programaOperativo.models import ProgramaOperativo,GastoAnualAsignado,Acciones,DetallesGasto,MetaAccion
 from apps.dependencia.models import Departamento,Dependencia
 from apps.indicador.models import PeriodoGobierno,Periodo, Configuracion
 
@@ -173,3 +174,25 @@ class DependenciasAdmin(LoginRequiredMixin,View):
               'periodos':periodos,
               'dpendencias_periodosGasto':dpendencias_periodosGasto
         })
+
+@login_required(login_url='login')
+def accionesMetas(request):
+    programasOperativos = ProgramaOperativo.objects.filter(dependencia=request.user.profile.dependencia)
+    acciones = []
+    for programaOperativo in programasOperativos:
+        acciones.extend(programaOperativo.acciones.all())
+    #se quitan repetidas en caso de existir
+    acciones = list(set(acciones))
+    accionesMetas = []
+    for accion in acciones:
+        metas = MetaAccion.objects.filter(accion=accion)
+        tieneMetas = False
+        if metas:
+            tieneMetas = True
+        accionesMetas.append({
+            'accion':accion,
+            'tieneMetas':tieneMetas
+        })
+    return render(request,'dependencias/accionesMetas.html',{
+        'accionesMetas':accionesMetas
+    }) 
