@@ -93,7 +93,7 @@ class Actividad(models.Model):
         verbose_name = 'Actividad'
         verbose_name_plural = 'Actividades'
     def __str__(self):
-        return self.nombre
+        return self.accion.nombre
     def save(self, usuario=None, estado="", *args, **kwargs):
         if usuario:
             usuario = User.objects.get(pk=usuario)
@@ -107,8 +107,12 @@ class Actividad(models.Model):
 class DetallesGasto(models.Model):
     cantidad = models.CharField(max_length=100, 
     verbose_name="Cantidad")
+    #NOTA: ESTO YA NO SE UTILIZA TO:DO borrar !!!!!!
     accion = models.ForeignKey(Acciones,on_delete=models.PROTECT,
-    verbose_name="Acción")
+    verbose_name="Acción", blank=True, null=True)
+    #***********************************************************
+    programaOperativo = models.ForeignKey(ProgramaOperativo,
+    on_delete=models.PROTECT, blank=True, null=True)
     gasto = models.ForeignKey(ConceptoGasto,on_delete=models.PROTECT,
     verbose_name="Concepto de gasto")
     periodo = models.ForeignKey(Periodo,on_delete=models.PROTECT, 
@@ -116,9 +120,9 @@ class DetallesGasto(models.Model):
     class Meta:
         verbose_name = 'Detalle de gasto por acción'
         verbose_name_plural = 'Detalles de gasto por acción'
-        unique_together = ['accion','gasto','periodo']
+        unique_together = ['programaOperativo','gasto','periodo']
     def __str__(self):
-        return (self.accion.nombre + ', ' + self.gasto.nombre)
+        return (self.gasto.nombre)
 
 class LogActividad(models.Model):
     opcionesEstado = (

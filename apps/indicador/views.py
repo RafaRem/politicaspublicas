@@ -13,7 +13,7 @@ from apps.dependencia.views import getGastoPeriodo
 from apps.programaOperativo.views import ListActividadesAdmin
 """Modelos"""
 from apps.indicador.models import PeriodoGobierno, Meta, Configuracion, Periodo
-from apps.programaOperativo.models import Acciones,ProgramaOperativo,Actividad,Variable
+from apps.programaOperativo.models import Acciones,ProgramaOperativo,Actividad,Variable,DetallesGasto
 from apps.objetivo.models import Objetivo
 from apps.dependencia.models import Dependencia
 """Forms"""
@@ -796,6 +796,36 @@ class FichasAdmin(LoginRequiredMixin,View):
 
 class Configuraciones(LoginRequiredMixin,View):
     login_url = 'login'
+    def reconfigurarGastos(self):
+        programasOperativos = ProgramaOperativo.objects.all()
+        for po in programasOperativos:
+            acciones = po.acciones.all()
+            gastos = []
+            periodos = []
+            cantidades = []            
+            for accion in acciones:
+                detallesGasto = DetallesGasto.objects.filter(accion=accion)
+                for detalleGasto in detallesGasto:
+                    if detalleGasto.gasto in gastos:
+                        index = gastos.indexOf(detalleGasto.gasto)
+                        cantidades[index] += float(detalleGasto.cantidad)
+                        periodos[index] = detalleGasto.periodo
+                        gastos[index] = detalleGasto.gasto
+                    else:
+                        gastos.append(detalleGasto.gasto)
+                        periodos.append(detalleGasto.periodo)
+                        cantidades.append(detalleGasto.cantidad)
+                    pass
+                detallesGasto.delete()
+                pass
+            for i,gasto in enumerate(gastos):
+                DetallesGasto.objects.create(
+                    programaOperativo=po,
+                    gasto=gastos[i],
+                    cantidad=cantidades[i]
+                )
+            pass
+        return 0
     def get(self,request):
         if (request.user.profile.tipoUsuario != 'a') and (request.user.profile.tipoUsuario != 's'):
             return redirect('index')
@@ -814,6 +844,9 @@ class Configuraciones(LoginRequiredMixin,View):
             return redirect('index')
         configuracion = Configuracion.objects.get(pk=1)
         form = ConfiguracionesForm(request.POST,instance=configuracion)
+        #QUITAAARRRRR TO:DO
+        self.reconfigurarGastos()
+        #******************************************
         if form.is_valid(): 
             form.save()
         return render(request,'indicadores/configuraciones.html',{
