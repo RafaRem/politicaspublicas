@@ -849,9 +849,6 @@ class Configuraciones(LoginRequiredMixin,View):
             return redirect('index')
         configuracion = Configuracion.objects.get(pk=1)
         form = ConfiguracionesForm(request.POST,instance=configuracion)
-        #QUITAAARRRRR TO:DO
-        self.reconfigurarGastos()
-        #******************************************
         if form.is_valid(): 
             form.save()
         return render(request,'indicadores/configuraciones.html',{
