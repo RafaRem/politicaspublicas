@@ -3,11 +3,11 @@
 
 
 {% block title %}
-Acciones
+Gastos
 {% endblock %}
 
 {%block navTitle%}
-Acciones
+Gastos
 {%endblock%}
 {%block messages %}
 {% endblock%}
@@ -45,7 +45,6 @@ Acciones
 <table class="table table-responsive">
     <thead>
         <tr>
-            <th>Acción</th>
             <th>Programa operativo</th>
             {% for periodo in periodos %}
                 <th>{{periodo.nombre}}</th>
@@ -58,14 +57,14 @@ Acciones
     <tbody class="bg-transparent">
         {% for accion_po in acciones_po %}
             <tr>
-                <td scope="row">{{accion_po.accion.nombre}}</td>
                 <td>{{accion_po.programaOperativo.nombre}}</td>
                 {% for periodoGasto in accion_po.periodos %}
                 <td>{{periodoGasto.gasto}}</td>
                 
                 {% endfor %}
                 <td>           
-                    <a class="btn guinda btn-sm" href="{%url 'verAccion' idAccion=accion_po.accion.id%}">
+                    <a class="btn guinda btn-sm" target="_blank"
+                    href="{%url 'postPo' idPo=accion_po.programaOperativo.id%}">
                         Detalles...
                       </a></td>
             </tr>

@@ -10,13 +10,22 @@ from apps.programaOperativo.models import ProgramaOperativo,GastoAnualAsignado,A
 from apps.dependencia.models import Departamento,Dependencia
 from apps.indicador.models import PeriodoGobierno,Periodo, Configuracion
 
-def getGastoPeriodo(accion,periodo):
+#TO:DO eliminar
+def getGastoPeriodoAccion(accion,periodo):
     gastos = DetallesGasto.objects.filter(accion=accion,periodo=periodo)
     total = 0.0
     for gasto in gastos:
         total += float(gasto.cantidad)
     return round(total,2) 
 
+def getGastoPeriodoProgramaOperativo(programaOperativo, periodo):
+    gastos = DetallesGasto.objects.filter(programaOperativo=programaOperativo, periodo=periodo)
+    total = 0.0
+    for gasto in gastos:
+        total += float(gasto.cantidad)
+    return round(total,2)
+
+#TO:DO eliminar
 def getAccionesDependencia(dependencia,periodos):
     acciones = []
     programasOperativos = ProgramaOperativo.objects.filter(dependencia=dependencia, estado='a')
@@ -27,7 +36,7 @@ def getAccionesDependencia(dependencia,periodos):
             periodosDetalleGasto = []
             for periodo in periodos:
                 periodosDetalleGasto.append({
-                    'gasto':getGastoPeriodo(accion,periodo),
+                    'gasto':getGastoPeriodoAccion(accion,periodo),
                     'periodo':periodo
                 })
             acciones.append({
@@ -36,6 +45,32 @@ def getAccionesDependencia(dependencia,periodos):
                 'periodos':periodosDetalleGasto
             })
     return acciones
+
+def getGastosProgramasOperativosDependencia(dependencia,periodos):
+    arrayPos = []
+    programasOperativos = ProgramaOperativo.objects.filter(dependencia=dependencia, estado='a')
+    for programaOperativo in programasOperativos:
+        gastos = DetallesGasto.objects.filter(programaOperativo=programaOperativo)
+        periodosDetalleGasto = []
+        for periodo in periodos:
+            periodosDetalleGasto.append({
+                'gasto':getGastoPeriodoProgramaOperativo(programaOperativo,periodo),
+                'periodo':periodo
+            })
+        arrayPos.append({
+            'programaOperativo':programaOperativo,
+            'periodos':periodosDetalleGasto
+        })
+    return arrayPos
+
+
+def getGastoProgramaOperativo(programaOperativo,periodo):
+    """Obtiene el gasto de un solo programa operativo"""
+    gastos = DetallesGasto.objects.filter(programaOperativo=programaOperativo,periodo=periodo)
+    total = 0.0
+    for gasto in gastos:
+        total += float(gasto.cantidad)
+    return round(total,2) 
 
 # Create your views here.
 class ProgramasOperativosList(LoginRequiredMixin,View):
@@ -137,17 +172,18 @@ class PresupuestoAnualList(LoginRequiredMixin,View):
         contexto = self.obtenerContexto(idProgramaOperativo)
         return render(request,'dependencias/presupuestoAnual.html',contexto)
 
-class AccionesDependencia(LoginRequiredMixin,View):
+class ProgramasOperativosGastosDependencia(LoginRequiredMixin,View):
+    """Muestra una lista de programas operativos con sus respectivos gastos de los periodos de captura definidos por los evaluadores"""
     login_url = 'login'
     def get(self,request,idDependencia):
         dependencia = Dependencia.objects.get(pk=idDependencia)
         if request.user.profile.tipoUsuario == 'e' and str(request.user.profile.dependencia.id) != idDependencia:
             return redirect('index')            
         periodos = Periodo.objects.filter(capturaHabilitada=True)
-        acciones_po = getAccionesDependencia(dependencia,periodos)
-        return render(request,'dependencias/acciones.html',{
+        acciones_po = getGastosProgramasOperativosDependencia(dependencia,periodos)
+        return render(request,'dependencias/gastosProgramasOperativos.html',{
             'acciones_po':acciones_po,
-            'periodos':periodos,
+            'periodos':periodos, 
             'dependencia':dependencia
         })
 
@@ -162,9 +198,10 @@ class DependenciasAdmin(LoginRequiredMixin,View):
         for dependencia in dependencias:
             acciones_po = getAccionesDependencia(dependencia,periodos)
             totalGastoDependencia = [0.0] * len(periodos)
-            for accion_po in acciones_po:
-                for i in range(0,len(periodos)):
-                    totalGastoDependencia[i] += float(accion_po['periodos'][i]['gasto'])
+            programasOperativos = ProgramaOperativo.objects.filter(dependencia=dependencia)
+            for po in programasOperativos:
+                for i,periodo in enumerate(periodos):
+                    totalGastoDependencia[i] += float(getGastoProgramaOperativo(po,periodo))
                     totalGastoDependencia[i] = round(totalGastoDependencia[i],2)
             dpendencias_periodosGasto.append({
                 'dependencia':dependencia,

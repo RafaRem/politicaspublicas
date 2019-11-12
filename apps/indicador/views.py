@@ -9,7 +9,7 @@ from django.http.response import HttpResponse
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q,Count
 """funciones de otras vistas"""
-from apps.dependencia.views import getGastoPeriodo
+from apps.dependencia.views import getGastoPeriodoAccion
 from apps.programaOperativo.views import ListActividadesAdmin
 """Modelos"""
 from apps.indicador.models import PeriodoGobierno, Meta, Configuracion, Periodo
@@ -219,7 +219,7 @@ class PorcentajesMetas():
         periodosGasto = Periodo.objects.filter(fechaFinal__range=(configuracion.periodoGobierno.fechaInicial,configuracion.periodoGobierno.fechaFinal))
         gasto = 0
         for periodoGasto in periodosGasto:
-            gasto += getGastoPeriodo(accion,periodoGasto)
+            gasto += getGastoPeriodoAccion(accion,periodoGasto)
         gasto = round(gasto,2)
         promedioGastoActividad = round(gasto / numeroActividades,2) if numeroActividades>0 else 0
         totalBeneficiarios = obtenerTotalBenefieciarios(actividades)
@@ -806,25 +806,30 @@ class Configuraciones(LoginRequiredMixin,View):
             for accion in acciones:
                 detallesGasto = DetallesGasto.objects.filter(accion=accion)
                 for detalleGasto in detallesGasto:
-                    if detalleGasto.gasto in gastos:
-                        index = gastos.indexOf(detalleGasto.gasto)
-                        cantidades[index] += float(detalleGasto.cantidad)
-                        periodos[index] = detalleGasto.periodo
-                        gastos[index] = detalleGasto.gasto
+                    if (detalleGasto.gasto in gastos) and (detalleGasto.periodo in periodos):
+                        try:
+                            index = gastos.index(detalleGasto.gasto)
+                        except expression as identifier:
+                            import pdb; pdb.set_trace()
+                            pass
+                        cantidades[index] =float(cantidades[index]) + float(detalleGasto.cantidad)
                     else:
                         gastos.append(detalleGasto.gasto)
                         periodos.append(detalleGasto.periodo)
                         cantidades.append(detalleGasto.cantidad)
                     pass
-                detallesGasto.delete()
                 pass
             for i,gasto in enumerate(gastos):
                 DetallesGasto.objects.create(
                     programaOperativo=po,
                     gasto=gastos[i],
-                    cantidad=cantidades[i]
+                    cantidad=cantidades[i],
+                    periodo=periodos[i]
                 )
+            
             pass
+        detallesGasto = DetallesGasto.objects.filter(programaOperativo=None)
+        detallesGasto.delete()
         return 0
     def get(self,request):
         if (request.user.profile.tipoUsuario != 'a') and (request.user.profile.tipoUsuario != 's'):

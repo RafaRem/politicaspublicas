@@ -125,11 +125,14 @@ def get_acciones_po_view(request,idPo):
 class ProgramasOperativosView(LoginRequiredMixin,View):
     login_url = 'login'
     def get(self, request, idPo):
-        programa = ProgramaOperativo.objects.get(id=idPo)
-        form = ProgramaOperativoForm(instance=programa)
+        programaOperativo = ProgramaOperativo.objects.get(id=idPo)
+        form = ProgramaOperativoForm(instance=programaOperativo)
+        periodos = Periodo.objects.all()
         return render(request, 'programasOperativos/poForm.html',{
             'form':form,
-            'acciones': programa.acciones.all()
+            'programaOperativo':programaOperativo,
+            'acciones': programaOperativo.acciones.all(),
+            'periodos':periodos
         })
     def post(self,request, idPo):
         programa = ProgramaOperativo.objects.get(id=idPo)
@@ -188,42 +191,61 @@ def ver_accion(request,idAccion):
 #Todas las vistas que tienen que ver con actividades no de administrador
 class CapturarGastoView(LoginRequiredMixin,View):
     login_url = 'login'
-    def get(self,request,idAccion,idPeriodo):
-        accion = Acciones.objects.get(pk=idAccion)
+    def getConceptosGasto(self,request,detallesGasto):
+        """SE FILTRAN LOS CONCEPTOS QUE YA ESTÉN REGISTRADOS"""
+        if request.user.profile.dependencia.tipo == 'd':
+            conceptosGasto = ConceptoGasto.objects.filter(
+                ~Q(id__in=[o.gasto.id for o in detallesGasto]),
+                tipoDependencia='d'
+                )
+        else:
+            conceptosGasto = ConceptoGasto.objects.filter(
+                ~Q(id__in=[o.gasto.id for o in detallesGasto]),
+                tipoDependencia='p',
+                dependencia=request.user.profile.dependencia
+                )
+        return conceptosGasto
+    def get(self,request,idProgramaOperativo,idPeriodo):
+        programaOperativo = ProgramaOperativo.objects.get(pk=idProgramaOperativo)
         periodo = Periodo.objects.get(pk=idPeriodo)
         if periodo.capturaHabilitada == False:
             messages.error(request,'La captura de este periodo está inhabilitada')
             url = reverse('verAccion',args=(idAccion,))
             return redirect(url)
         #Si es dependencia o paramunicipal cargará otros conceptos de gasto
-        if request.user.profile.dependencia.tipo == 'd':
-            conceptosGasto = ConceptoGasto.objects.filter(tipoDependencia='d')
-        else:
-            conceptosGasto = ConceptoGasto.objects.filter(tipoDependencia='p',dependencia=request.user.profile.dependencia)
-        detallesGasto = DetallesGasto.objects.filter(accion=accion,periodo=periodo)
-        conceptosGasto = serializers.serialize('json',conceptosGasto, use_natural_foreign_keys=True)
+        detallesGasto = DetallesGasto.objects.filter(programaOperativo=programaOperativo,periodo=periodo)
+        conceptosGasto = self.getConceptosGasto(request,detallesGasto)
         return render(request,'programasOperativos/capturarGastos.html',{
-            'conceptosGasto':conceptosGasto
+            'conceptosGasto':conceptosGasto,
+            'detallesGasto':detallesGasto,
+            'periodo':periodo,
+            'programaOperativo':programaOperativo
         })
-    def post(self, request, idAccion, idPeriodo):
-        accion = Acciones.objects.get(pk=idAccion)
+    def post(self, request, idProgramaOperativo, idPeriodo):
+        programaOperativo = ProgramaOperativo.objects.get(pk=idProgramaOperativo)
         periodo = Periodo.objects.get(pk=idPeriodo)
-        gastosAccion = request.POST.getlist('gastos[]')
-        detallesGasto = DetallesGasto.objects.filter(accion=accion,periodo=periodo)
+        gastosProgramaOperativo = request.POST.getlist('gastos[]')
+        detallesGasto = DetallesGasto.objects.filter(programaOperativo=programaOperativo,periodo=periodo)
         detallesGasto.delete()
-        for gasto in gastosAccion:
-            gasto = gasto.split('|')
-            conceptoGasto = ConceptoGasto.objects.get(pk=gasto[1])
+        for gasto in gastosProgramaOperativo:
+            gasto = gasto.split('-')
+            conceptoGasto = ConceptoGasto.objects.get(pk=gasto[0])
             objeto = DetallesGasto.objects.create(
-                cantidad=gasto[0],
-                accion=accion,
+                cantidad=gasto[1],
+                programaOperativo=programaOperativo,
                 periodo=periodo,
                 gasto=conceptoGasto
             )
             objeto.save()
+        detallesGasto = DetallesGasto.objects.filter(programaOperativo=programaOperativo,periodo=periodo)
+        conceptosGasto = self.getConceptosGasto(request,detallesGasto)
         messages.success(request,'Se han capturado los gastos exitosamente')
-        url = reverse('verAccion',args=(idAccion,))
-        return redirect(url)
+        return render(request,'programasOperativos/capturarGastos.html',{
+            'detallesGasto':detallesGasto,
+            'conceptosGasto':conceptosGasto,
+            'periodo':periodo,
+            'programaOperativo':programaOperativo
+        })
     
 @login_required(login_url='login')
 def ver_gastos(request,idAccion,idPeriodo):
@@ -239,6 +261,7 @@ def ver_gastos(request,idAccion,idPeriodo):
     })
 
 class EditarGastosView(LoginRequiredMixin,View):
+    """YA NO SE USA, IGNORA ESTO"""
     login_url = 'login'
     def get(self,request,idAccion,idPeriodo):
         accion = Acciones.objects.get(pk=idAccion)
@@ -256,7 +279,7 @@ class EditarGastosView(LoginRequiredMixin,View):
         periodo = Periodo.objects.get(pk=idPeriodo)
         gastos = request.POST.getlist('gastos[]')
         for gasto in gastos:
-            gasto = gasto.split('|')
+            gasto = gasto.split('-')
             objeto =  DetallesGasto.objects.get(pk=gasto[1])
             objeto.cantidad = gasto[0]
             objeto.save()

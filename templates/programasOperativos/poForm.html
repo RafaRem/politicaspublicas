@@ -22,7 +22,7 @@
 
 
  {%block navTitle%}
- Programas Operativos
+ Programa operativo
  {% endblock %}
 
 {%block messages%}
@@ -47,7 +47,7 @@
       <form action="" method="post">
             {% csrf_token %}
             {{ form|crispy }}
-            <h4 class="text-center">Acciones</h4>
+            <h4 class="text-center">Metas y acciones</h4>
             <div class="row">
               {% for accion in acciones %}
               <div class="col-xl-4 col-sm-6 mb-3 animated fadeIn">
@@ -58,12 +58,6 @@
                       </div>
                       
                     </div>
-                    <a class="card-footer text-white clearfix small z-1" href="{%url 'verAccion' idAccion=accion.id%}">
-                        <span class="float-left">Detalles y gastos...</span>
-                        <span class="float-right">
-                          <i class="fas fa-angle-right"></i>
-                        </span>
-                      </a>
                       <a class="card-footer text-white clearfix small z-1" 
                       href="{%url 'capturarMetas' idAccion=accion.id%}">
                           <span class="float-left">Metas...</span>
@@ -73,6 +67,33 @@
                         </a>
                   </div>
                 </div>
+                {% endfor %}
+
+            </div>
+            <hr>
+            <br>
+            <h4 class="text-center font-weight-bold">Gastos por periodos</h4>
+            <div class="row">
+                {% for periodo in periodos %}
+                <div class="col-xl-4 col-sm-6 mb-3 animated fadeIn">
+                    <div class="card text-dorado eje5 o-hidden h-100">
+                      <div class="card-body">
+                        <div class="mr-5">
+                          <h5>{{periodo.nombre}}</h5>
+                          <div class="mitad-h3">
+                            Desde {{periodo.fechaInicial}} hasta {{periodo.fechaFinal}}
+                          </div>
+                        </div>
+                      </div>
+                      <a class="card-footer text-white clearfix small z-1" 
+                      href="{%url 'capturarGastos' idProgramaOperativo=programaOperativo.id idPeriodo=periodo.id%}">
+                          <span class="float-left">Editar gastos...</span>
+                          <span class="float-right">
+                            <i class="fas fa-angle-right"></i>
+                          </span>
+                        </a>
+                    </div>
+                  </div>
                 {% endfor %}
             </div>
       </form>

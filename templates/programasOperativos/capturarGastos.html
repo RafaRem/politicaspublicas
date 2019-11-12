@@ -1,191 +1,293 @@
 {%extends 'base/base.html'%}
+{%load staticfiles%}
 
 {%block extracss%}
-<style>
-        table.dataTable tbody tr{
-            background: transparent !important;
-        }
-        button.btn{
-          min-width: 300px;
-        }
-</style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.43/css/bootstrap-datetimepicker.min.css">
+<link href="https://unpkg.com/gijgo@1.9.13/css/gijgo.min.css" rel="stylesheet" type="text/css" />
+  <style>
+    .container{
+      background: none !important;
+    }
+    label{
+      font-weight: bold;
+    }
+    /* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+       #map {
+        height: 100%;
+        width: 100%;
+
+      }
+      #id_contenedorMapa{
+        width: 100%;
+        height: 400px;
+      }
+      #id_btn_segunda_parte{
+        width: 100%;
+        max-width:300px;
+      }
+
+  </style>
 {%endblock%}
 
 
 
-{%load staticfiles%}
 {% load crispy_forms_tags %}
 {%block title%}
-
+Nueva actividad
 {%endblock%}
 
 
-
- {%block navTitle%}
-Capturar gastos
- {% endblock %}
-
-{%block messages%}
-
-{%endblock%}
+ {%block messages %}
+ {%endblock%}
 
 
 {% block content %}
-    <form id="id_form_gastos" action="" 
-    method="POST" enctype="multipart/form-data">
-    {% csrf_token %}
-    <label for="id_tabla_presupuesto">Presupuesto ejercido*</label>
-    <div class="table-responsive">
-      <table class="table" id="id_tabla_presupuesto">
-        <thead>
-          <tr>
-            <th scope="col">#</th>
-            <th scope="col">Concepto de gasto</th>
-            <th scope="col">Categoría</th>
-            <th scope="col">Cantidad</th>
-          </tr>
-        </thead>
-        <tbody>
-        </tbody>
-      </table>
+  <div class="container">
 
-    </div>
-    <div id="id_gastos">
-              
-      </div>
-    <div class="d-flex justify-content-center mt-3">
-      <button type="submit" class="btn btn-primary guinda">
-          Guardar&nbsp;<i class="fas fa-check-circle"></i>
-      </button>
-    </div>
-    </form>
+        {% if messages %}
+          <ul class="messages">
+              {% for message in messages %}
+              <li{% if message.tags == "success" %} class="alert alert-success"
+            {%else%}
+            class="alert alert-danger"
+            {% endif %}>
+            {{ message }}</li>
+              {% endfor %}
+          </ul>
+        {% endif %}
+        <br>
+        <h3 class="text-center">GASTOS DE  {{programaOperativo.nombre.upper}}</h3>
+        <hr>
+      <form action="" method="post" id="id_form_gastos">
+            {%csrf_token%}
+            <h5 class="text-center font-weight-bold">En el periodo de {{periodo.fechaInicial}} al {{periodo.fechaFinal}}*</h5>
+            <div class="d-flex justify-content-center">
+                <button type="button" class="btn guinda m-2" data-toggle="modal" data-target="#modalConceptosGasto">
+                    Variables con meta&nbsp;<i class="fas fa-arrow-down"></i></button>
+            </div>
+            <table id="tableConceptosGasto" class="table table-bordered">
+                <thead class="dorado">
+                  <tr>
+                    <th hidden scope="col">ID</th>
+                    <th scope="col">Variable</th>
+                    <th scope="col">Cantidad</th>
+                    <th scope="col">Clasificación</th>
+                  </tr>
+                </thead>
+                <tbody>
+                    {% for detalle in detallesGasto %}
+                      <tr>
+                          <td hidden="">{{detalle.gasto.id}}</td>
+                          <td class="font-weight-bold">{{detalle.gasto.nombre}}</td>
+                          <td>
+                            <div class="input-group mb-3">
+                              <input type="text" class="form-control"
+                                value="{{detalle.cantidad}}" placeholder="Cantidad" required="" name="gastos[]" maxlength="8">
+                              <div class="input-group-append">
+                              <button class="btn btn-danger btn-sm" type="button" name="delSelectedVariableBtn">
+                                  <i class="fas fa-times"></i>
+                              </button>
+                              </div>
+                            </div>
+                          </td>
+                          <td>
+                              {{detalle.gasto.clasificacion}}
+                          </td>
+                      </tr>
+                    {% endfor %}
+                </tbody>
+              </table> 
+            <br>
+            <div class="d-flex justify-content-center mt-5">
+              <button class="btn btn-primary guinda" id="id_btn_segunda_parte">
+                Guardar cambios &nbsp;<i class="fas fa-check"></i>
+              </button>
+            </div>
+      </form>
+  </div>
 
+
+      <!-- MODALS -->
+      <div class="modal fade bd-example-modal-lg" id="modalConceptosGasto"
+      tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+       <div class="modal-dialog modal-lg">
+ 
+         <div class="modal-content">
+             <div class="modal-header">
+                 <h5 class="modal-title">Variables predefinidas</h5>
+                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                   <span aria-hidden="true">&times;</span>
+                 </button>
+               </div>
+               <div class="modal-body">
+                   <div class="input-group mb-3">
+                       <div class="input-group-prepend">
+                         <span class="input-group-text"><i class="fas fa-search"></i></span>
+                       </div>
+                       <input type="text" id="inputBuscarGastos" class="form-control" placeholder="Buscar">
+                     </div>
+                   
+                   <table class="table" id="idTableConceptos">
+                       <thead>
+                         <tr>
+                            <th hidden>Código</th>
+                            <th scope="col">Nombre</th>
+                            <th scope="col">Acción</th>
+                            <th scope="col">Clasificación</th>
+                          </tr>
+                       </thead>
+                       <tbody>
+                          {%for concepto in conceptosGasto%}
+                          <tr>
+                            <td hidden>{{concepto.id}}</td>
+                            <td>{{concepto.nombre}}</td>
+                            <td>
+                              <button name="addAlcanceBtn" class="btn btn-primary btn-sm">
+                                <i class="fas fa-plus"></i>
+                              </button>
+                            </td>
+                            <td>{{concepto.clasificacion}}</td>
+                          </tr>
+                        {%endfor%}
+                       </tbody>
+                     </table>
+                 </div>
+              <div class="modal-footer justify-content-center d-flex">
+                <button type="button" class="btn guinda-oscuro text-white" data-dismiss="modal">Cerrar</button>
+              </div>
+         </div>
+       </div>
+     </div>
 
 
 {% endblock content %}
 
 
-
-{% block extrascripts %}
-<script>
-    $(document).ready(()=>{
-        var conceptosGasto = "{{conceptosGasto|escapejs}}"
-        conceptosGasto = JSON.parse(conceptosGasto)
-    //   este arreglo se usa para cuando hay cambios en los componentes, se registra su
-    //   valor en el ya que al cambiar en paginación se destruyen los inputs
-    //   usability price is fucking high...
-      var arregloGastos = [];
-      for (let i = 0; i < conceptosGasto.length; i++) {
-        arregloGastos.push({
-          valor:"",
-          pk:""
-        });        
+{%block extrascripts%}
+  <script src="{%static 'js/gijgo.min.js'%}" type="text/javascript"></script>
+  <script>
+  $(document).ready(()=>{
+    //********************Gastos************************
+    const Toast = Swal.mixin({
+      toast: true,
+      position: 'top-end',
+      showConfirmButton: false,
+      timer: 3000
+    })
+    function deleteRowFromAlcance(idAlcance, table){
+      let rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr')
+      for (let i = 0; i < rows.length; i++) {
+        const row = rows[i]
+        cells = row.children
+        if(cells[0].innerText == idAlcance){
+          table.deleteRow(i + 1)
+          break
+        }
       }
-      for (let i = 0; i < conceptosGasto.length; i++) {
-        const element = conceptosGasto[i];
-        $('#id_tabla_presupuesto').find('tbody')
-        .append(`
-        <tr>
-            <th scope="row">${i}</th>
-            <td>${element.fields.nombre}</td>
-            <td>${element.fields.clasificacion}</td>
-            <td>
-              <div class="input-group mb-3  input-pago">
-                <div class="input-group-prepend">
-                  <div class="input-group-text">  
-                    <input type="checkbox" id="checkbox-gastos-${i}"
-                    aria-label="Checkbox for following text input">
-                  </div>
-                </div>
-                <input readonly="true" id="input-gastos-${i}" pk="${element.pk}"
-                type="text" class="form-control input-gastos" aria-label="Text input with checkbox">
-              </div>
-            </td>
-          </tr>
-        `);
-        $(`#checkbox-gastos-${i}`).on('click',()=>{
-          $('.input-gastos').mask('00000000.00', {reverse: true});
-          let checkbox = document.querySelector(`#checkbox-gastos-${i}`);
-          if(checkbox.checked){
-            $(`#input-gastos-${i}`).attr('readonly', false);
-            $(`#input-gastos-${i}`).attr('required', true);
-          }else{
-            $(`#input-gastos-${i}`).attr('readonly', true);
-            $(`#input-gastos-${i}`).attr('required', false);
-            //le quitamos el valor en el arreglo y en el input
-            arregloGastos[i].valor = "";
-            arregloGastos[i].pk = "";
-            document.querySelector(`#input-gastos-${i}`).value = "";
+    }
+    function deleteRowFromSeleccionados(e){
+        //manipulate the row
+        let row = this.closest('tr')
+        let cells = row.children
+        cells[1].classList.remove('font-weight-bold')
+        let button = document.createElement('button')
+        //elimina sus nodos hijos
+        cells[2].innerHTML = ''
+        //crea el botón
+        button.classList.add('btn','btn-primary','btn-sm')
+        button.name ='addAlcanceBtn'
+        button.innerHTML = `
+          <i class="fas fa-plus"></i>          
+        `
+        cells[2].append(button)
+        button.addEventListener('click',addToAlcanceSeleccionado)
+        document.getElementById('idTableConceptos').getElementsByTagName('tbody')[0].append(row)
+    }
+    function addToAlcanceSeleccionado(e){
+      //manipulate the row
+      let row = this.closest('tr')
+      let cells = row.children
+      cells[1].classList.add('font-weight-bold')
+      //add the input
+      //TO:DO ANTES DEL SUBMIT HACER UNA CONCATENACIÓN DEL ID DEL ALCANCE
+      cells[2].innerHTML = `
+      <div class="input-group mb-3">
+          <input type="text" class="form-control" placeholder="Cantidad"
+          required name="gastos[]">
+          <div class="input-group-append">
+            <button class="btn btn-danger btn-sm" type="button"
+            name="delSelectedAlcanceBtn">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+        </div>
+      `
+      let tableTodos = document.getElementById('idTableConceptos')
+      deleteRowFromAlcance(cells[0].innerText, tableTodos)
+      let tableSeleccionados = document.getElementById('tableConceptosGasto')
+      let tableSeleccionadosTbody = tableSeleccionados.getElementsByTagName('tbody')[0]
+      tableSeleccionadosTbody.append(row)
+      //call this functions to load method 'onClick'
+      loadMethods()
+
+    }
+    function loadMethods(){
+      $("[name='delSelectedAlcanceBtn']").click(deleteRowFromSeleccionados)
+      //we do this here because we need to aply it to the existent inputs
+      $('[name="gastos[]"]').mask('00000000.00', {reverse: true});
+      Toast.fire({
+        type: 'success',
+        title: 'Añadido'
+      }) 
+    }
+    $("[name='delSelectedVariableBtn']").click(deleteRowFromSeleccionados)
+    $('[name="gastos[]"]').mask('00000000.00', {reverse: true});
+    $("[name='addAlcanceBtn']").click(addToAlcanceSeleccionado)
+    $("#inputBuscarGastos").keyup(()=>{
+      var input, filter, table, tr, td, i, txtValue;
+      input = document.getElementById("inputBuscarGastos");
+      filter = input.value.toUpperCase();
+      table = document.getElementById("idTableConceptos");
+      tr = table.getElementsByTagName("tr");
+      for (i = 0; i < tr.length; i++) {
+        td = tr[i].getElementsByTagName("td")[1];
+        if (td) {
+          txtValue = td.textContent || td.innerText;
+          if (txtValue.toUpperCase().indexOf(filter) > -1) {
+            tr[i].style.display = "";
+          } else {
+            tr[i].style.display = "none";
+          }
+        }       
+      }
+    })
+    $( "#id_form_gastos" ).submit(function( event ) {
+      event.preventDefault()
+      let inputs = document.querySelectorAll('[name="gastos[]"]')
+      for (let i = 0; i<inputs.length; i++){
+        let input = inputs[i]
+        let tr = inputs[i].closest('tr')
+        let cells = tr.children
+        input.value = cells[0].innerText + '-' + input.value
+      }
+      if(inputs.length == 0){
+        Swal.fire({
+          type: 'error',
+          title: 'Ingrese al menos un gasto',
+          customClass:{
+            confirmButton: 'guinda',
+            cancelButton: 'guinda',
           }
         })
-        $(`#input-gastos-${i}`).on('keyup',()=>{
-          arregloGastos[i].valor = document.getElementById(`input-gastos-${i}`).value;
-          arregloGastos[i].pk = document.getElementById(`input-gastos-${i}`).getAttribute('pk');
-        })
+      }else{
+        this.submit()
       }
-     
-      $('#id_tabla_presupuesto').DataTable();
-      //Validaciones
-      $('.input-gastos').mask('00000000.00', {reverse: true});
-      $("#id_form_gastos").submit(function(event) {
-        event.preventDefault();
-        if (arregloGastos.length == 0) {
-            Swal.fire({
-              title: `<h4 class="modal-title" id="exampleModalLabel">
-                  <strong>Ingrese gastos</strong>
-                </h4>`,
-              type:'warning',
-              customClass:{
-                confirmButton: 'guinda',
-                cancelButton: 'guinda',
-              },
-              html:`
-              <ul>
-                  <li>En caso de que la actividad no haya llevado ningún gasto, elegir uno y escribir 0.</li>
-                </ul>
-                `
-              })
-        }else{
-          //ESTE CODIGO INCRUSTA INPUTS PARA ENVIARLOS AL FORMULARIO POR MÉTODO POST
-            for (let i = 0; i < arregloGastos.length; i++) {
-              const element = arregloGastos[i];
-              if(element.valor != ""){
-                gastoIngresado = true
-                valorString = element.valor + '|' + element.pk
-                $(`#id_gastos`).append(`
-                        <input readonly="true" id="input-gastos-${i}" name="gastos[]"
-                        type="text" class="form-control input-gastos"
-                        hidden value=${valorString}> 
-                `);
-              }
-              
-            }
-            let timerInterval
-            Swal.fire({
-              title: 'Subiendo',
-              timer: 30000,
-              onBeforeOpen: () => {
-                Swal.showLoading()
-              },
-              onClose: () => {
-                clearInterval(timerInterval)
-              }
-            }).then((result) => {
-              if (
-                // Read more about handling dismissals
-                result.dismiss === Swal.DismissReason.timer
-              ) {
-                console.log('I was closed by the timer')
-              }
-            })
-            this.submit()
-        }
-      })
-    
-    });
+  });
+  
+  
+  })
 
+  </script>
 
-
-</script>
-{% endblock %}
-
+{%endblock%}

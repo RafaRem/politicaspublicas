@@ -338,9 +338,10 @@ Nueva actividad
         title: 'Añadido'
       }) 
     }
-    
     $("[name='delSelectedVariableBtn']").click(deleteRowFromSeleccionados)
     $('[name="cantidadVariable"]').mask('00000000');
+
+
     $('#id_fecha_in').datepicker({
           uiLibrary: 'bootstrap4',
           format: 'yyyy-mm-dd'
@@ -352,77 +353,7 @@ Nueva actividad
           format: 'yyyy-mm-dd'
     });
     
-    $( "#id_form_actividad" ).submit(function( event ) {
-      latitud = document.getElementById('id_latitud');
-      let inputs = document.querySelectorAll('[name="cantidadVariable"]')
-      for (let i = 0; i<inputs.length; i++){
-        let input = inputs[i]
-        let tr = inputs[i].closest('tr')
-        let cells = tr.children
-        input.value = cells[0].innerText + '-' + input.value
-        input.readonly = true
-      }
-      if (latitud.value == "0") {
-        Swal.fire({
-          title: `<h4 class="modal-title" id="exampleModalLabel">
-              <strong>Selecciona el lugar de esta actividad</strong>
-            </h4>`,
-          type:'warning',
-          customClass:{
-            confirmButton: 'guinda',
-            cancelButton: 'guinda',
-          },
-          html:`
-          <ul>
-              <li>
-                  <strong>
-                      En caso de ser una sindicatura, basta con poner su nombre 
-                      en el campo del mapa y presionar enter.
-                  </strong>
-              </li>
-              <li>
-                  <strong>
-                      En caso de ser en Los Mochis, escribir la colonia y presionar enter.
-                    </strong>
-              </li>
-    
-              <li>
-                  <strong>
-                      En caso de ser una actividad del Ayuntamiento, 
-                      escribir "H. Ayuntamiento" y presionar enter.
-                    </strong>
-              </li>
-            </ul>
-          `
-          })
-      }else if(inputs.length==0){
-        Swal.fire({
-          type: 'error',
-          title: 'Variables de medición obligatorias',
-          text: 'Ingresa al menos una variable de medición. ejemplo: 3 reuniones',
-          customClass:{
-            confirmButton: 'guinda',
-            cancelButton: 'guinda',
-          }
-        })
-      }else{
-        let timerInterval
-        Swal.fire({
-          title: 'Subiendo',
-          timer: 30000,
-          onBeforeOpen: () => {
-            Swal.showLoading()
-          },
-          onClose: () => {
-            clearInterval(timerInterval)
-          }
-        })
-        this.submit()
 
-      }
-
-      event.preventDefault();
-    });
     //********************VARIABLES************************
     $("#infoAlcance").click(()=>{
       Swal.fire({

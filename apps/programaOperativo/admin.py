@@ -45,9 +45,9 @@ class ActividadAdmin(admin.ModelAdmin):
 
 @admin.register(DetallesGasto)
 class DetallesGastoAdmin(admin.ModelAdmin):
-    list_display = ['id','gasto','accion','cantidad']
+    list_display = ['id','gasto','programaOperativo','cantidad']
     ordering = ['accion']
-    search_fields = ['id','accion__nombre', 'gasto__nombre']
+    search_fields = ['id', 'gasto__nombre']
 
 @admin.register(LogActividad)
 class LogActividadAdmin(admin.ModelAdmin):
