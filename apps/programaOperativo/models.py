@@ -118,8 +118,8 @@ class DetallesGasto(models.Model):
     periodo = models.ForeignKey(Periodo,on_delete=models.PROTECT, 
     verbose_name="Periodo del gasto")
     class Meta:
-        verbose_name = 'Detalle de gasto por acción'
-        verbose_name_plural = 'Detalles de gasto por acción'
+        verbose_name = 'Detalle de gasto por programa operativo'
+        verbose_name_plural = 'Detalles de gasto por programas operativos'
         unique_together = ['programaOperativo','gasto','periodo']
     def __str__(self):
         return (self.gasto.nombre)
@@ -158,7 +158,8 @@ class BeneficiariosActividad(models.Model):
     cantidad = models.IntegerField()
     class Meta:
         unique_together = ['alcance','actividad']
-        verbose_name = "Cantidad de beneficiarios por actividad"
+        verbose_name = "Detalle de beneficiarios por actividad"
+        verbose_name_plural = "Detalles de beneficiarios por actividad"
     def __str__(self):
         return self.alcance.nombre
     
@@ -168,8 +169,8 @@ class VariableActividad(models.Model):
     actividad = models.ForeignKey(Actividad, on_delete=models.PROTECT)
     cantidad = models.IntegerField()
     class Meta:
-        verbose_name='Variable de la actividad'
-        verbose_name_plural = 'Variables de las actividades'
+        verbose_name='Detalle de variable y actividad'
+        verbose_name_plural = 'Detalles de variables y actividades'
         unique_together = ['variable','actividad']
     def __str__(self):
         return self.variable.nombre

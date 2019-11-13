@@ -71,3 +71,16 @@ class MetaAccionAdmin(admin.ModelAdmin):
     list_display = ['id','variable', 'accion']
     list_display_links =['id','variable']
     ordering = ['accion']
+
+@admin.register(BeneficiariosActividad)
+class BeneficiariosActividadAdmin(admin.ModelAdmin):
+    list_display = ['id','alcance']
+    list_display_links =['id','alcance']
+    ordering = ['alcance']
+
+@admin.register(VariableActividad)
+class VariableActividadAdmin(admin.ModelAdmin):
+    list_display = ['id','variable']
+    list_display_links =['id','variable']
+    ordering = ['variable']
+    

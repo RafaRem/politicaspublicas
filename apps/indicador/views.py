@@ -13,7 +13,7 @@ from apps.dependencia.views import getGastoPeriodoAccion
 from apps.programaOperativo.views import ListActividadesAdmin
 """Modelos"""
 from apps.indicador.models import PeriodoGobierno, Meta, Configuracion, Periodo
-from apps.programaOperativo.models import Acciones,ProgramaOperativo,Actividad,Variable,DetallesGasto
+from apps.programaOperativo.models import Acciones,ProgramaOperativo,Actividad,Variable,DetallesGasto, MetaAccion
 from apps.objetivo.models import Objetivo
 from apps.dependencia.models import Dependencia
 """Forms"""
@@ -176,6 +176,7 @@ def obtenerCantidadesBrutasMetas(tipoArreglo, arreglo):
     return metas
 
 class PorcentajesMetas():
+    """ESTE ES VIEJOOOOOO NO SIRVEEEEEEEEEEEEE PARA LA NUEVA VERSIÓN"""
     def obtenerActividadesGastos(self,tipo,arreglo):
         """si tipo es 'o' se hará por objetivos en el xAxis"""
         if tipo == 'o':
@@ -620,6 +621,42 @@ class PorcentajesMetas():
         }
     def obtenerPorcentajePMD(self):
         return ''
+
+class EstadísticosMetas():
+    """Nueva versión"""
+    def obtenerSemaforo(self,cantidad,tieneMeta=False):
+        'obtiene la clase de semáforo que se utilizará'
+        if not tieneMeta:
+            return 'info'
+        if cantidad <= 40:
+            return 'danger'
+        elif cantidad > 40 and cantidad <= 80:
+            return 'warning'
+        else:
+            return 'success'
+    def obtenerEstadisticoAccion(self,idAccion):
+        accion = Acciones.objects.get(pk=idAccion)
+        metasAccion = MetaAccion.objects.filter(accion=accion)
+        resultadosMetas = []
+        if metasAccion:
+            tieneMeta = True
+        variablesActividad = VariableActividad.objects.filter(
+            variable=metaAccion.variable)
+        for metaAccion in metasAccion:
+            variablesActividadAccion = variablesActividad.filter(
+                actividad__accion=accion,
+                variable=metaAccion.variable)
+            sumaVariable = sum(int(c.cantidad) for c in variablesActividadAccion)
+            resultadosMetas.append({
+                'asdasd':12321321
+            })
+
+        return {
+            'variablesMeta':variablesMeta,
+            'variablesAuxiliares':variablesAuxiliares,
+            'porcentajeAvance':porcentajeAvance,
+            'tieneMeta':tieneMeta
+        }
 
 class AccionesMetasView(LoginRequiredMixin,View):
     login_url = 'login'

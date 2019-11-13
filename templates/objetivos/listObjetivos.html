@@ -8,12 +8,13 @@
 
 
  {%block navTitle%}
- Objetivos de {{request.user.profile.dependencia}}
+Objetivos
  {% endblock %}
 
 
 {% block content %}
-  
+<h3 class="text-center">Objetivos de {{request.user.profile.dependencia}}  </h3>
+<br>
   <div class="row">
     {% for objetivo in objetivos %}
         <div class="col-xl-4 col-sm-6 mb-3 animated fadeIn">

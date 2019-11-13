@@ -214,6 +214,8 @@ class DependenciasAdmin(LoginRequiredMixin,View):
 
 @login_required(login_url='login')
 def accionesMetas(request):
+    configuracion = Configuracion.objects.get(pk=1)
+    periodo = configuracion.periodoGobierno
     programasOperativos = ProgramaOperativo.objects.filter(dependencia=request.user.profile.dependencia)
     acciones = []
     for programaOperativo in programasOperativos:
@@ -222,7 +224,7 @@ def accionesMetas(request):
     acciones = list(set(acciones))
     accionesMetas = []
     for accion in acciones:
-        metas = MetaAccion.objects.filter(accion=accion)
+        metas = MetaAccion.objects.filter(accion=accion,periodoGobierno=periodo)
         tieneMetas = False
         if metas:
             tieneMetas = True
