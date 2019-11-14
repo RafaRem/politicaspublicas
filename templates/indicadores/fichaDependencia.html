@@ -11,6 +11,8 @@ Dependencia
 {%endblock%}
 {%block messages %}
 {% endblock%}
+{% block configuraciones%}
+{% endblock configuraciones %}
 {% block extracss %}
 <style>
         /* Always set the map height explicitly to define the size of the div
@@ -58,8 +60,33 @@ Dependencia
                 {% endfor %}
         </ul>
     {% endif %}
+    
+
     <h2 class="text-center">{{dependencia.nombre}}</h2>
     <hr>
+    
+    <div id="div_id_periodoGobierno" class="form-group"> 
+        <label for="id_periodoGobierno" class="col-form-label ">
+            Periodo de gobierno a graficar
+        </label> 
+        <div class=""> 
+            <select name="periodoGobierno" class="select form-control" id="id_periodoGobierno"> 
+                <option value="">---------</option> 
+                {% for pg in periodosGobierno %}
+                <option value="">{{ pg.descripcion }}</option>
+                {% endfor %}
+            </select> 
+        </div> 
+        <form method="get" id="consultarPg">
+                {% csrf_token %}
+                
+                <div class="d-flex justify-content-center mt-5">
+                    <button type="submit" class="btn btn-primary guinda">
+                      Consulatar &nbsp;<i class="fas fa-check"></i>
+                    </button>
+                  </div>
+        </form>
+    </div>
     <h3 class="text-center"><strong>Total actividades:</strong>{{numeroActividades}}, de las 
     cuales son {{numeroActividadesSecundarias}} secundarias</h3>
     <hr>
