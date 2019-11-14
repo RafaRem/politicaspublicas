@@ -776,7 +776,7 @@ class FichaProgramaOperativo(LoginRequiredMixin,View):
 class FichaDependencia(LoginRequiredMixin,View):
     login_url = 'login'
     def get(self,request, idDependencia, idPeriodoGobierno="0"):
-      
+        print(idPeriodoGobierno)
         if (str(request.user.profile.dependencia.id) != str(idDependencia)) and ((request.user.profile.tipoUsuario != 'a') and (request.user.profile.tipoUsuario != 's') and (request.user.profile.tipoUsuario != 'i')):
             return redirect('index')
         porcentajeMeta = PorcentajesMetas()
