@@ -622,7 +622,7 @@ class PorcentajesMetas():
     def obtenerPorcentajePMD(self):
         return ''
 
-class EstadísticosMetas():
+class EstadisticosMetas():
     """Nueva versión"""
     def obtenerSemaforo(self,cantidad,tieneMeta=False):
         'obtiene la clase de semáforo que se utilizará'
@@ -775,14 +775,19 @@ class FichaProgramaOperativo(LoginRequiredMixin,View):
 
 class FichaDependencia(LoginRequiredMixin,View):
     login_url = 'login'
-    def get(self,request, idDependencia):
+    def get(self,request, idDependencia, idPeriodoGobierno="0"):
+      
         if (str(request.user.profile.dependencia.id) != str(idDependencia)) and ((request.user.profile.tipoUsuario != 'a') and (request.user.profile.tipoUsuario != 's') and (request.user.profile.tipoUsuario != 'i')):
             return redirect('index')
         porcentajeMeta = PorcentajesMetas()
         contexto = porcentajeMeta.obtenerPorcentajeDependencia(idDependencia)
+        priodosGobierno = PeriodoGobierno.objects.all().order_by('descripcion')
+        contexto['periodosGobierno'] = priodosGobierno
         return render(request,'indicadores/fichaDependencia.html',contexto)
+
     def post(self,request, idDependencia):
         if request.POST.get('accion'):
+            #ignorar
             programasOperativos = ProgramaOperativo.objects.filter(estado='a').order_by('nombre')
             dependencias = ListActividadesAdmin.obtenerDependencias(self)
             objetivos = Objetivo.objects.filter(estado='a')
