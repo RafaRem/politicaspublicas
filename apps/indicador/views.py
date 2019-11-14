@@ -637,9 +637,13 @@ class EstadísticosMetas():
     def obtenerEstadisticoAccion(self,idAccion):
         accion = Acciones.objects.get(pk=idAccion)
         metasAccion = MetaAccion.objects.filter(accion=accion)
-        resultadosMetas = []
+        #Este arreglo guarda los resultados de las metas
         if metasAccion:
             tieneMeta = True
+        #*********Metas
+        resultadosMetas = []
+        porcentajeAvancePonderadoDecimal = 0
+        sumaPorcentajeAvancePonderado = 0
         variablesActividad = VariableActividad.objects.filter(
             variable=metaAccion.variable)
         for metaAccion in metasAccion:
@@ -647,14 +651,28 @@ class EstadísticosMetas():
                 actividad__accion=accion,
                 variable=metaAccion.variable)
             sumaVariable = sum(int(c.cantidad) for c in variablesActividadAccion)
+            resultadoDecimal = round(((sumaVariable / metaAccion) * 100),2)
+            sumaPorcentajeAvancePonderado += resultadoDecimal
+            resultadoEntero=int(round(resultadoDecimal,0))
             resultadosMetas.append({
-                'asdasd':12321321
+                'idVariable':metaAccion.variable.id,
+                'nombreVariable':metaAccion.variable.nombre,
+                'cantidadRealizada':sumaVariable,
+                'cantidadMeta':metaAccion.cantidad,
+                'resultadoDecimal':resultadoDecimal,
+                'resultadoEntero':resultadoEntero,
+                'claseSemaforo':self.obtenerSemaforo(cantidad=resultadoDecimal,tieneMeta=True)
             })
-
+        porcentajeAvancePonderadoDecimal = round((sumaPorcentajeAvancePonderado / metaAccion.count()) * 100,2)
+        porcentajeAvancePonderadoEntero = int(round(porcentajeAvancePonderadoDecimal,0))
+        #****Metas
         return {
-            'variablesMeta':variablesMeta,
-            'variablesAuxiliares':variablesAuxiliares,
-            'porcentajeAvance':porcentajeAvance,
+            'idAccion':accion.id,
+            'nombreAccion':accion.nombre,
+            'resultadosMetas':resultadosMetas,
+            'porcentajeAvancePonderadoDecimal':porcentajeAvancePonderadoDecimal,
+            'porcentajeAvancePonderadoEntero':porcentajeAvancePonderadoEntero
+            'variablesActividad':variablesActividad,
             'tieneMeta':tieneMeta
         }
 
