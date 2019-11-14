@@ -230,7 +230,8 @@ def accionesMetas(request):
             tieneMetas = True
         accionesMetas.append({
             'accion':accion,
-            'tieneMetas':tieneMetas
+            'tieneMetas':tieneMetas,
+            'programaOperativo':programaOperativo 
         })
     return render(request,'dependencias/accionesMetas.html',{
         'accionesMetas':accionesMetas
