@@ -651,7 +651,7 @@ class EstadísticosMetas():
                 actividad__accion=accion,
                 variable=metaAccion.variable)
             sumaVariable = sum(int(c.cantidad) for c in variablesActividadAccion)
-            resultadoDecimal = round(((sumaVariable / metaAccion) * 100),2)
+            resultadoDecimal = round(((sumaVariable / metaAccion) * 100),2) if metaAccion > 0 else 0
             sumaPorcentajeAvancePonderado += resultadoDecimal
             resultadoEntero=int(round(resultadoDecimal,0))
             resultadosMetas.append({
@@ -663,16 +663,30 @@ class EstadísticosMetas():
                 'resultadoEntero':resultadoEntero,
                 'claseSemaforo':self.obtenerSemaforo(cantidad=resultadoDecimal,tieneMeta=True)
             })
-        porcentajeAvancePonderadoDecimal = round((sumaPorcentajeAvancePonderado / metaAccion.count()) * 100,2)
+        porcentajeAvancePonderadoDecimal = round((sumaPorcentajeAvancePonderado / metaAccion.count()) * 100,2) if metaAccion.count() > 0 else 0
         porcentajeAvancePonderadoEntero = int(round(porcentajeAvancePonderadoDecimal,0))
         #****Metas
+        totalVariablesActividad = []
+        for variableActividad in variablesActividad:
+            #Si no existe lo mete en el arreglo,
+            #si existe lo suma
+            for totalVariableActividad in totalVariablesActividad:
+                if totalVariableActividad['idVariable'] == variableActividad.variable.id:
+                    totalVariableActividad['cantidad'] += int(variableActividad.cantidad)
+                else:
+                    totalVariablesActividad.append({
+                    'idVariable':variableActividad.variable.id,
+                    'nombreVariable':variableActividad.variable.nombre,
+                    'cantidad':int(variableActividad.cantidad)
+                })
         return {
             'idAccion':accion.id,
             'nombreAccion':accion.nombre,
             'resultadosMetas':resultadosMetas,
             'porcentajeAvancePonderadoDecimal':porcentajeAvancePonderadoDecimal,
-            'porcentajeAvancePonderadoEntero':porcentajeAvancePonderadoEntero
+            'porcentajeAvancePonderadoEntero':porcentajeAvancePonderadoEntero,
             'variablesActividad':variablesActividad,
+            'totalVariablesActividad':totalVariablesActividad,
             'tieneMeta':tieneMeta
         }
 
