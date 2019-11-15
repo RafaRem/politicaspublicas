@@ -67,25 +67,21 @@ Dependencia
     
     <div id="div_id_periodoGobierno" class="form-group"> 
         <label for="id_periodoGobierno" class="col-form-label ">
-            Periodo de gobierno a graficar
-        </label> 
-        <div class=""> 
-            <select name="periodoGobierno" class="select form-control" id="id_periodoGobierno"> 
+                Periodo de gobierno a graficar
+        </label>     
+            <select name="periodoGobierno" class="form-control" id="id_periodoGobierno"> 
                 <option value="">---------</option> 
                 {% for pg in periodosGobierno %}
-                <option value="">{{ pg.descripcion }}</option>
+                <option value= {{pg.id}} >{{ pg.descripcion }}</option>
                 {% endfor %}
             </select> 
-        </div> 
-        <form method="get" id="consultarPg">
-                {% csrf_token %}
-                
-                <div class="d-flex justify-content-center mt-5">
-                    <button type="submit" class="btn btn-primary guinda">
-                      Consulatar &nbsp;<i class="fas fa-check"></i>
-                    </button>
-                  </div>
-        </form>
+    
+            <div class="d-flex justify-content-center mt-5">
+                <a class="btn btn-primary guinda"
+                href="">
+                    Consulatar &nbsp;<i class="fas fa-check"></i>
+                </a>
+            </div>
     </div>
     <h3 class="text-center"><strong>Total actividades:</strong>{{numeroActividades}}, de las 
     cuales son {{numeroActividadesSecundarias}} secundarias</h3>
@@ -141,7 +137,15 @@ Dependencia
 
 {% block extrascripts %}
 <script>
+
         $(document).ready(()=>{
+            $( "#id_periodoGobierno" ).change(function() {
+               
+                var periodo = document.getElementById("id_periodoGobierno").value;
+                //alert(periodo);
+                var URLactual = "/indicador/fichas/dependencia/13/"+periodo;
+                window.location.href = URLactual;
+            });
             $('[data-toggle="tooltip"]').tooltip();
             $('.accion').click((event)=>{
                 event.preventDefault();
@@ -152,9 +156,6 @@ Dependencia
                 `);
                 $('#form_verActividades').submit();
             });
-
-
-
             porcentajesProgramasOperativos = '{{porcentajesProgramasOperativos|escapejs}}'
             porcentajesProgramasOperativos = JSON.parse(porcentajesProgramasOperativos);
             console.log(porcentajesProgramasOperativos)
